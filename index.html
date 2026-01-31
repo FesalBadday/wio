@@ -51,7 +51,7 @@
         اللعبة الرسمية لكشف "الضايع" بينكم!</p>
       <div class="space-y-4 text-center">
         <button onclick="showScreen('setup')"
-          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black text-white shadow-2xl text-center">بدء
+          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black text-white text-center">بدء
           التحدي</button>
         <div class="grid grid-cols-2 gap-4 text-center">
           <button onclick="showScreen('leaderboard')"
@@ -153,7 +153,7 @@
       <div id="names-container"
         class="space-y-4 mb-8 max-h-[50vh] overflow-y-auto px-1 text-right text-right text-right text-right"></div>
       <button onclick="startGame()"
-        class="btn-gradient w-full py-6 rounded-3xl font-black text-white text-xl shadow-2xl text-center text-center">انطلاق!
+        class="btn-gradient w-full py-6 rounded-3xl font-black text-white text-xl text-center text-center">انطلاق!
         🚀</button>
     </div>
 
@@ -178,7 +178,7 @@
         </p>
       </div>
       <button id="btn-reveal-action" onclick="toggleReveal()"
-        class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white shadow-2xl text-center font-black text-center text-center text-center text-center">إظهار
+        class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white text-center font-black text-center text-center text-center text-center">إظهار
         السالفة</button>
     </div>
 
@@ -210,8 +210,8 @@
         تناقشوا بذكاء.. لا تكشفوا السالفة للضايع!</p>
       <div class="grid grid-cols-2 gap-4 text-center text-center text-center text-center text-center">
         <button onclick="endGameEarly()"
-          class="py-5 bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-3xl font-black text-lg text-center font-black text-center text-center text-center">إنهاء
-          الوقت</button>
+          class="py-5 bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-3xl font-black text-lg text-center font-black text-center text-center text-center">تصويت
+          مبكر</button>
         <button onclick="pauseTimer()" id="btn-pause"
           class="py-5 btn-secondary rounded-3xl font-black text-lg border-2 border-white/5 text-white text-center font-black text-center text-center text-center">إيقاف
           مؤقت</button>
@@ -224,7 +224,7 @@
         class="text-3xl sm:text-5xl font-black mb-4 text-white text-center font-black text-center text-center text-center text-center text-center">
         من الضايع؟ ⚖️</h2>
       <p
-        class="text-slate-400 mb-8 text-lg font-semibold underline decoration-indigo-500 text-center text-center text-center text-center text-center text-center">
+        class="text-slate-400 mb-8 text-lg font-semibold decoration-indigo-500 text-center text-center text-center text-center text-center text-center">
         اضغط على صورة الشخص المتهم مباشرة</p>
       <div id="voting-grid"
         class="grid grid-cols-2 gap-4 mb-8 max-h-[50vh] overflow-y-auto px-2 text-center text-white text-center text-center text-center text-center text-center text-center">
@@ -256,7 +256,7 @@
       </h2>
 
       <div
-        class="bg-slate-800/60 p-8 rounded-[2.5rem] mb-8 border border-white/10 shadow-2xl text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
+        class="bg-slate-800/60 p-8 rounded-[2.5rem] mb-8 border border-white/10 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
         <p
           class="text-slate-400 mb-3 font-bold text-sm uppercase tracking-widest text-center text-center text-center text-center text-center text-center text-center text-center text-center">
           السالفة كانت:</p>
@@ -282,7 +282,7 @@
       <div
         class="grid grid-cols-1 gap-4 text-center text-center text-center text-center text-center text-center text-center text-center">
         <button onclick="restartSameGame()"
-          class="btn-gradient py-6 rounded-[2rem] font-black text-white text-2xl shadow-2xl text-center font-black text-center text-center text-center text-center">جولة
+          class="btn-gradient py-6 rounded-[2rem] font-black text-white text-2xl text-center font-black text-center text-center text-center text-center">جولة
           جديدة 🔁</button>
         <button onclick="openCategoryModal()"
           class="btn-secondary py-5 rounded-2xl font-bold text-indigo-300 text-lg border border-indigo-500/20 shadow-md text-white text-center font-black text-center text-center text-center">تغيير
@@ -429,7 +429,7 @@
         </div>
       </div>
       <button onclick="showScreen('start')"
-        class="btn-gradient w-full py-6 rounded-3xl mt-10 font-black text-white shadow-2xl text-2xl text-center font-black text-center text-center text-center text-center text-center">تم،
+        class="btn-gradient w-full py-6 rounded-3xl mt-10 font-black text-white text-2xl text-center font-black text-center text-center text-center text-center text-center">تم،
         لنلعب! 🔥</button>
     </div>
   </div>
@@ -561,7 +561,7 @@
         <button onclick="closeModal()"
           class="flex-1 py-5 btn-secondary rounded-3xl font-bold text-xl text-white text-center font-black text-center text-center text-center text-center text-center">تراجع</button>
         <button onclick="resetPoints()"
-          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white shadow-2xl text-xl font-black text-white text-center text-center text-center text-center text-center text-center">نعم،
+          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white text-xl font-black text-white text-center text-center text-center text-center text-center text-center">نعم،
           صفّر</button>
       </div>
     </div>
@@ -570,7 +570,7 @@
   <div id="modal-category"
     class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center text-center text-center text-center text-center">
     <div
-      class="glass-panel max-w-sm w-full shadow-2xl text-center font-black text-center text-center text-center text-center text-center text-center">
+      class="glass-panel max-w-sm w-full text-center font-black text-center text-center text-center text-center text-center text-center">
       <h3
         class="text-2xl font-black mb-8 text-white underline decoration-indigo-500 font-black text-center text-center text-center text-center text-center">
         تبديل الفئة ⚙️</h3>
@@ -1127,6 +1127,20 @@
         grid.innerHTML += `<button onclick="selectVote(${p.id})" class="p-4 sm:p-6 bg-white/5 border-2 border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3 active:bg-indigo-500/20 transition-all shadow-lg text-center"><span class="text-5xl text-center">${p.avatar}</span><span class="font-black text-xs sm:text-sm text-center text-white">${p.name}</span></button>`;
       });
       showScreen('voting');
+    }
+
+    function setAvatar(playerIdx, avatar) {
+      // إزالة التحديد عن جميع الأزرار لهذا اللاعب
+      document.querySelectorAll(`#names-container > div:nth-child(${playerIdx + 1}) .avatar-btn`).forEach(b => b.classList.remove('selected'));
+
+      // تحديد الزر المختار وإضافة فئة التنسيق
+      const btnId = `av-${playerIdx}-${avatar}`;
+      const btn = document.getElementById(btnId);
+      if (btn) btn.classList.add('selected');
+
+      // حفظ القيمة في الحقل المخفي لاستخدامها عند بدء اللعبة
+      const hiddenInp = document.getElementById(`avatar-${playerIdx}`);
+      if (hiddenInp) hiddenInp.value = avatar;
     }
 
     function selectVote(id) {
