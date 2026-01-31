@@ -16,7 +16,7 @@
       --bg-dark: #0f172a;
     }
 
-    /* إخفاء شريط التمرير لمظهر التطبيقات */
+    /* إخفاء شريط التمرير */
     * {
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -39,7 +39,42 @@
       margin: 0;
       overflow: hidden;
       touch-action: manipulation;
+      transition: all 0.3s ease;
       padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
+    }
+
+    /* فئة الوميض الأحمر عند الخطأ */
+    body.wrong-flash-active {
+      background: #450a0a !important;
+    }
+
+    /* أنيميشن الاهتزاز عند الخطأ */
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-12px) rotate(-1deg);
+      }
+
+      40% {
+        transform: translateX(12px) rotate(1deg);
+      }
+
+      60% {
+        transform: translateX(-12px) rotate(-1deg);
+      }
+
+      80% {
+        transform: translateX(12px) rotate(1deg);
+      }
+    }
+
+    .shake-effect {
+      animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
     }
 
     /* حاوية التنبيه عند وضع الجهاز الأفقي للجوالات فقط */
@@ -63,12 +98,12 @@
     }
 
     .glass-panel {
-      /*background: rgba(30, 41, 59, 0.85);
+      background: rgba(30, 41, 59, 0.85);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 2.5rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);*/
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
       max-height: 94vh;
       width: 100%;
       max-width: 550px;
@@ -76,6 +111,7 @@
       position: relative;
       padding: 1.5rem;
       z-index: 10;
+      transition: border-color 0.3s ease;
     }
 
     .btn-gradient {
@@ -195,6 +231,7 @@
       background: var(--primary);
       border: 4px solid #fff;
       border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
     }
 
     .custom-checkbox {
@@ -243,13 +280,13 @@
   <div id="confetti-container"></div>
 
   <div id="app" class="w-full flex justify-center items-center">
-    <!-- زر الصوت -->
+    <!-- Sound Toggle -->
     <button onclick="toggleMute()" id="mute-toggle"
       class="fixed top-6 left-6 z-50 p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all">
       🔊
     </button>
 
-    <!-- شاشة البداية -->
+    <!-- Start Screen -->
     <div id="screen-start" class="glass-panel text-center">
       <div class="mb-14 detective-float text-8xl sm:text-9xl text-center text-center text-center">🕵️‍♂️</div>
       <h1
@@ -272,7 +309,7 @@
       </div>
     </div>
 
-    <!-- شاشة الإعدادات -->
+    <!-- Setup Screen -->
     <div id="screen-setup" class="glass-panel hidden text-right">
       <h2 class="text-2xl sm:text-3xl font-black mb-6 text-center text-white font-black text-center text-center">⚙️
         إعدادات الجلسة</h2>
@@ -283,14 +320,14 @@
         </div>
 
         <div id="custom-words-ui"
-          class="bg-indigo-500/10 p-5 rounded-3xl border border-indigo-500/20 hidden text-right text-right">
+          class="bg-indigo-500/10 p-5 rounded-3xl border border-indigo-500/20 hidden text-right text-right text-right">
           <label
             class="text-indigo-300 font-bold block mb-3 text-right text-sm font-black w-full text-right text-right text-right">أضف
             كلماتك الخاصة للفئة (4 كلمات كحد أدنى):</label>
           <div class="flex gap-2">
             <input type="text" id="custom-word-input"
               class="flex-1 bg-slate-800 border-none rounded-xl p-4 text-white outline-none focus:ring-2 ring-indigo-500 text-sm text-right"
-              placeholder="إضافة كلمة...">
+              placeholder="كلمة سرية...">
             <button onclick="addCustomWord()"
               class="bg-indigo-600 px-6 rounded-2xl font-black text-white">إضافة</button>
           </div>
@@ -335,7 +372,7 @@
                 class="font-bold text-sm text-white font-black text-right text-right text-right text-right text-right text-right text-right">
                 🕵️ المموه</h4>
               <p
-                class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right text-right text-right text-right">
+                class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right text-right text-right text-right text-right">
                 يملك كلمة مشابهة ويضلل الجميع!</p>
             </div>
             <input type="checkbox" id="check-undercover" class="custom-checkbox">
@@ -344,14 +381,14 @@
 
         <div class="grid grid-cols-2 gap-4 pt-4 text-center text-center">
           <button onclick="showScreen('start')"
-            class="py-5 rounded-3xl btn-secondary font-bold text-lg border-2 border-white/5 text-white text-center">رجوع</button>
+            class="py-5 rounded-3xl btn-secondary font-bold text-lg text-white text-center">رجوع</button>
           <button onclick="checkAndNext()"
             class="py-5 rounded-3xl btn-gradient font-black text-white text-lg shadow-xl text-center">التالي</button>
         </div>
       </div>
     </div>
 
-    <!-- شاشة الأسماء -->
+    <!-- Names Screen -->
     <div id="screen-names" class="glass-panel hidden text-right text-right text-right">
       <h2
         class="text-2xl sm:text-3xl font-black mb-8 text-center text-white text-right font-black text-center text-center text-center">
@@ -363,7 +400,7 @@
         🚀</button>
     </div>
 
-    <!-- شاشة توزيع الأدوار -->
+    <!-- Reveal Screen -->
     <div id="screen-reveal" class="glass-panel hidden text-center">
       <div class="text-7xl sm:text-8xl mb-6 text-center text-center text-center text-center text-center">📱</div>
       <p
@@ -387,7 +424,7 @@
         السالفة</button>
     </div>
 
-    <!-- شاشة العداد -->
+    <!-- Game Screen -->
     <div id="screen-game" class="glass-panel hidden text-center text-center text-center">
       <div class="flex justify-center mb-10 text-center text-center text-center text-center text-center">
         <div
@@ -423,127 +460,128 @@
       </div>
     </div>
 
-    <!-- شاشة التصويت -->
+    <!-- Voting Screen -->
     <div id="screen-voting" class="glass-panel hidden text-center text-center text-center text-center">
       <h2
-        class="text-3xl sm:text-5xl font-black mb-4 text-white text-center font-black text-center text-center text-center text-center text-center">
+        class="text-3xl sm:text-5xl font-black mb-4 text-white text-center font-black text-center text-center text-center text-center text-center text-center">
         من الضايع؟ ⚖️</h2>
       <p
         class="text-slate-400 mb-8 text-lg font-semibold underline decoration-indigo-500 text-center text-center text-center text-center text-center text-center">
         اضغط على صورة الشخص المتهم مباشرة</p>
       <div id="voting-grid"
-        class="grid grid-cols-2 gap-4 mb-8 max-h-[50vh] overflow-y-auto px-2 text-center text-white text-center text-center text-center text-center">
+        class="grid grid-cols-2 gap-4 mb-8 max-h-[50vh] overflow-y-auto px-2 text-center text-white text-center text-center text-center text-center text-center text-center">
       </div>
     </div>
 
-    <!-- شاشة التخمين -->
+    <!-- Guess Screen -->
     <div id="screen-guess"
-      class="glass-panel hidden text-center text-center text-center text-center text-center text-center text-center">
+      class="glass-panel hidden text-center text-center text-center text-center text-center text-center text-center text-center">
       <h2
-        class="text-3xl sm:text-4xl font-black mb-6 text-red-400 text-center font-black text-center text-center text-center text-center text-center text-center">
+        class="text-3xl sm:text-4xl font-black mb-6 text-red-400 text-center font-black text-center text-center text-center text-center text-center text-center text-center">
         لقد كشفوك! 🎯</h2>
       <p
-        class="text-slate-300 mb-10 text-xl font-bold leading-relaxed text-center text-white text-center text-center text-center text-center text-center text-center text-center">
+        class="text-slate-300 mb-10 text-xl font-bold leading-relaxed text-center text-white text-center text-center text-center text-center text-center text-center text-center text-center">
         خمن السالفة من الخيارات التالية!</p>
       <div id="guess-options"
-        class="grid grid-cols-1 gap-4 mb-8 text-center text-white text-center text-center text-center text-center text-center text-center">
+        class="grid grid-cols-1 gap-4 mb-8 text-center text-white text-center text-center text-center text-center text-center text-center text-center text-center">
       </div>
     </div>
 
-    <!-- شاشة النتائج النهائية -->
+    <!-- Final Result Screen -->
     <div id="screen-final"
-      class="glass-panel hidden text-center overflow-y-auto text-center text-center text-center text-center text-center text-center">
+      class="glass-panel hidden text-center overflow-y-auto text-center text-center text-center text-center text-center text-center text-center text-center">
       <div id="final-status-emoji"
-        class="text-8xl sm:text-9xl mb-6 text-center text-center text-center text-center text-center text-center text-center">
+        class="text-8xl sm:text-9xl mb-6 text-center text-center text-center text-center text-center text-center text-center text-center text-center">
         🏆</div>
       <h2 id="final-result-title"
-        class="text-3xl sm:text-5xl font-black mb-6 text-center text-white font-black text-center text-center text-center text-center text-center text-center text-center">
+        class="text-3xl sm:text-5xl font-black mb-6 text-center text-white font-black text-center text-center text-center text-center text-center text-center text-center text-center">
       </h2>
 
       <div
-        class="bg-slate-800/60 p-8 rounded-[2.5rem] mb-8 border border-white/10 shadow-2xl text-center text-center text-center text-center text-center text-center text-center">
+        class="bg-slate-800/60 p-8 rounded-[2.5rem] mb-8 border border-white/10 shadow-2xl text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
         <p
-          class="text-slate-400 mb-3 font-bold text-sm uppercase tracking-widest text-center text-center text-center text-center text-center text-center text-center text-center">
+          class="text-slate-400 mb-3 font-bold text-sm uppercase tracking-widest text-center text-center text-center text-center text-center text-center text-center text-center text-center">
           السالفة كانت:</p>
         <div id="final-word-emoji"
-          class="text-7xl sm:text-8xl mb-3 text-center text-center text-center text-center text-center text-center text-center text-center text-center">
+          class="text-7xl sm:text-8xl mb-3 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
         </div>
         <p id="final-secret-word"
-          class="text-5xl sm:text-7xl font-black text-emerald-400 mb-4 tracking-wider break-word-custom text-center text-center text-center text-center text-center text-center text-center text-center">
+          class="text-5xl sm:text-7xl font-black text-emerald-400 mb-4 tracking-wider break-word-custom text-center text-center text-center text-center text-center text-center text-center text-center text-center">
         </p>
         <p id="topic-description"
-          class="text-lg sm:text-xl text-indigo-100 opacity-80 italic text-center text-center text-center text-center text-center text-center text-center text-center text-center">
+          class="text-lg sm:text-xl text-indigo-100 opacity-80 italic text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
         </p>
       </div>
 
-      <div class="mb-10 text-right text-right text-right text-right text-right text-right text-right text-right">
+      <div
+        class="mb-10 text-right text-right text-right text-right text-right text-right text-right text-right text-right">
         <h3
-          class="text-2xl sm:text-3xl font-black mb-6 text-center text-white font-black text-center text-right text-right text-right text-right text-right text-right">
+          class="text-2xl sm:text-3xl font-black mb-6 text-center text-white font-black text-center text-right text-right text-right text-right text-right text-right text-right">
           📊 نتائج الجولة والأدوار</h3>
-        <div id="final-leaderboard" class="space-y-3 text-right text-right text-right text-right"></div>
+        <div id="final-leaderboard" class="space-y-3 text-right text-right text-right text-right text-right"></div>
       </div>
 
-      <div class="grid grid-cols-1 gap-4 text-center text-center text-center text-center text-center text-center">
+      <div
+        class="grid grid-cols-1 gap-4 text-center text-center text-center text-center text-center text-center text-center text-center">
         <button onclick="restartSameGame()"
-          class="btn-gradient py-6 rounded-[2rem] font-black text-white text-2xl shadow-2xl text-center font-black text-center text-center text-center">جولة
+          class="btn-gradient py-6 rounded-[2rem] font-black text-white text-2xl shadow-2xl text-center font-black text-center text-center text-center text-center">جولة
           جديدة 🔁</button>
         <button onclick="openCategoryModal()"
-          class="btn-secondary py-5 rounded-2xl font-bold text-indigo-300 text-lg border border-indigo-500/20 shadow-md text-white text-center font-black text-center text-center">تغيير
+          class="btn-secondary py-5 rounded-2xl font-bold text-indigo-300 text-lg border border-indigo-500/20 shadow-md text-white text-center font-black text-center text-center text-center">تغيير
           الفئة فقط ⚙️</button>
         <button onclick="showScreen('start')"
-          class="py-3 text-slate-500 underline text-base font-bold text-center text-center text-center text-center">العودة
+          class="py-3 text-slate-500 underline text-base font-bold text-center text-center text-center text-center text-center">العودة
           للرئيسية</button>
       </div>
     </div>
 
-    <!-- لوحة الصدارة -->
+    <!-- Leaderboard Screen -->
     <div id="screen-leaderboard"
-      class="glass-panel hidden text-center text-right text-right text-right text-right text-right">
+      class="glass-panel hidden text-center text-right text-right text-right text-right text-right text-right text-right">
       <h2
-        class="text-3xl font-black mb-10 text-center text-white text-right font-black text-center text-right text-right text-right text-right text-right">
+        class="text-3xl font-black mb-10 text-center text-white text-right font-black text-center text-right text-right text-right text-right text-right text-right">
         🏆 أبطال السوالف</h2>
       <p
-        class="text-slate-500 text-xs mb-4 text-center text-right text-right text-right text-right text-right text-right">
+        class="text-slate-500 text-xs mb-4 text-center text-right text-right text-right text-right text-right text-right text-right text-right text-right">
         (اضغط على اسم اللاعب لمشاهدة إحصائياته)</p>
       <div id="leaderboard-list"
-        class="space-y-4 mb-10 max-h-[60vh] overflow-y-auto px-2 text-right text-center text-right text-right text-right text-right text-right">
+        class="space-y-4 mb-10 max-h-[60vh] overflow-y-auto px-2 text-right text-center text-right text-right text-right text-right text-right text-right">
       </div>
-      <div id="leaderboard-buttons" class="flex justify-center gap-4 text-center text-center text-center text-center">
+      <div id="leaderboard-buttons"
+        class="flex justify-center gap-4 text-center text-center text-center text-center text-center text-center">
         <button onclick="showScreen('start')" id="btn-close-lb"
-          class="flex-1 py-5 btn-secondary rounded-3xl font-black border border-white/10 text-white min-w-[140px] text-center font-black text-center text-center">إغلاق</button>
+          class="flex-1 py-5 btn-secondary rounded-3xl font-black border border-white/10 text-white min-w-[140px] text-center font-black text-center text-center text-center">إغلاق</button>
         <button id="btn-reset-points-trigger" onclick="confirmReset()"
-          class="flex-1 py-5 bg-red-600/20 text-red-500 rounded-3xl font-black border border-red-500/20 text-sm hidden min-w-[140px] text-center font-black text-center text-center">تصفير
+          class="flex-1 py-5 bg-red-600/20 text-red-500 rounded-3xl font-black border border-red-500/20 text-sm hidden min-w-[140px] text-center font-black text-center text-center text-center">تصفير
           النقاط</button>
       </div>
     </div>
 
-    <!-- شاشة القوانين -->
+    <!-- Rules Screen -->
     <div id="screen-rules"
-      class="glass-panel hidden text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+      class="glass-panel hidden text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
       <h2
-        class="text-3xl sm:text-4xl font-black mb-10 text-center text-indigo-400 border-b-4 border-indigo-500/10 pb-6 text-center font-black text-right text-center text-right text-center text-right text-center text-right text-center">
+        class="text-3xl sm:text-4xl font-black mb-10 text-center text-indigo-400 border-b-4 border-indigo-500/10 pb-6 text-center font-black text-right text-center text-right text-center text-right text-center text-right text-center text-right text-center">
         📜 دليل السالفة الشامل</h2>
 
-      <div class="space-y-6 text-right text-right text-right text-right text-right text-right">
-        <div class="rule-card text-right">
+      <div class="space-y-6 text-right text-right text-right text-right text-right text-right text-right">
+        <div class="rule-card text-right text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl text-right text-right text-right text-right text-right text-right">
-            <span class="order-first">❓</span> ما هي هذه اللعبة؟
-          </h4>
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl text-right text-right text-right text-right text-right text-right text-right">
+            <span class="order-first">❓</span> ما هي هذه اللعبة؟</h4>
           <p
-            class="text-base leading-relaxed text-slate-300 font-semibold italic text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="text-base leading-relaxed text-slate-300 font-semibold italic text-right text-right text-right text-right text-right text-right text-right text-right text-right">
             لعبة ذكاء وتمويه جماعية. في كل جولة، توجد "سالفة" يعرفها الجميع إلا <span
-              class="highlight-text font-black text-white text-right text-right text-right text-right text-right text-right text-right text-right">شخص
+              class="highlight-text font-black text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">شخص
               واحد</span> يسمى "الضايع".</p>
         </div>
 
-        <div class="rule-card text-right">
+        <div class="rule-card text-right text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right">
-            <span class="order-first">🎭</span> الأدوار وشروط الفوز
-          </h4>
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <span class="order-first">🎭</span> الأدوار وشروط الفوز</h4>
           <ul
-            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
             <li class="text-right">🕵️ المحققون: يفوزون إذا كشفوا الضايع، وفشل في تخمين السالفة.</li>
             <li class="text-right">🌫️ الضايع: يفوز إذا لم يُكشف أو إذا نجح في تخمين السالفة صح.</li>
             <li class="text-right">🎭 العميل: يفوز إذا فاز الضايع بمساعدته سراً.</li>
@@ -551,172 +589,171 @@
           </ul>
         </div>
 
-        <div class="rule-card text-right">
+        <div class="rule-card text-right text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
-            <span class="order-first">📊</span> نظام النقاط المطور
-          </h4>
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <span class="order-first">📊</span> نظام النقاط المطور</h4>
           <div
-            class="text-xs space-y-3 font-bold text-right leading-relaxed text-right text-right text-right text-right text-right text-right text-right">
-            <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right text-right text-right">
-              <p class="text-emerald-400 mb-1 text-right text-right text-right text-right">🕵️ المحققون:</p>
-              <p class="text-slate-300 text-right text-right text-right text-right">الفوز: <span
-                  class="text-white text-right text-right">+1 نقطة</span> | الخسارة: <span
-                  class="text-white text-right text-right">0 نقطة</span></p>
+            class="text-xs space-y-3 font-bold text-right leading-relaxed text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <div
+              class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right text-right text-right text-right">
+              <p class="text-emerald-400 mb-1 text-right text-right text-right text-right text-right">🕵️ المحققون:</p>
+              <p class="text-slate-300 text-right text-right text-right text-right text-right">الفوز: <span
+                  class="text-white text-right text-right text-right">+1 نقطة</span> | الخسارة: <span
+                  class="text-white text-right text-right text-right">0 نقطة</span></p>
             </div>
             <div
-              class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right text-right text-right text-right">
-              <p class="text-indigo-400 mb-1 text-right text-right text-right text-right text-right">🌫️ الضايع / 🎭
-                العميل / 🤫 المموه:</p>
-              <p class="text-slate-300 text-right text-right text-right text-right text-right">الفوز: <span
-                  class="text-white text-right text-right text-right">+2 نقطة</span> | الخسارة: <span
-                  class="text-white text-right text-right text-right">0 نقطة</span></p>
+              class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right text-right text-right text-right text-right">
+              <p class="text-indigo-400 mb-1 text-right text-right text-right text-right text-right text-right">🌫️
+                الضايع / 🎭 العميل / 🤫 المموه:</p>
+              <p class="text-slate-300 text-right text-right text-right text-right text-right text-right">الفوز: <span
+                  class="text-white text-right text-right text-right text-right">+2 نقطة</span> | الخسارة: <span
+                  class="text-white text-right text-right text-right text-right">0 نقطة</span></p>
             </div>
           </div>
         </div>
       </div>
       <button onclick="showScreen('start')"
-        class="btn-gradient w-full py-6 rounded-3xl mt-10 font-black text-white shadow-2xl text-2xl text-center font-black text-center text-center text-center">تم،
+        class="btn-gradient w-full py-6 rounded-3xl mt-10 font-black text-white shadow-2xl text-2xl text-center font-black text-center text-center text-center text-center text-center">تم،
         لنلعب! 🔥</button>
     </div>
   </div>
 
-  <!-- نافذة إحصائيات اللاعب -->
+  <!-- Modals -->
   <div id="modal-stats"
-    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[500] p-6 backdrop-blur-md text-center text-center text-center text-center text-center text-center text-center">
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[500] p-6 backdrop-blur-md text-center text-center text-center text-center text-center text-center text-center text-center">
     <div
-      class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center text-center text-center text-center">
+      class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center text-center text-center text-center text-center">
       <div id="player-stat-avatar"
-        class="text-6xl mb-4 text-center text-center text-center text-center text-center text-center"></div>
+        class="text-6xl mb-4 text-center text-center text-center text-center text-center text-center text-center"></div>
       <h3 id="player-stat-name"
-        class="text-2xl font-black text-white mb-4 text-center font-black text-center text-center text-center text-center text-center text-center">
+        class="text-2xl font-black text-white mb-4 text-center font-black text-center text-center text-center text-center text-center text-center text-center">
       </h3>
 
       <div
-        class="bg-white/5 p-4 rounded-3xl border border-white/10 mb-6 text-center text-center text-center text-center text-center text-center">
-        <p class="text-slate-400 text-xs mb-2 font-bold text-center text-center text-center text-center text-center">
+        class="bg-white/5 p-4 rounded-3xl border border-white/10 mb-6 text-center text-center text-center text-center text-center">
+        <p
+          class="text-slate-400 text-xs mb-2 font-bold text-center text-center text-center text-center text-center text-center">
           إجمالي النشاط</p>
-        <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-center text-center text-center text-center text-center">
-          <div class="text-center border-b border-l border-white/5 pb-2 text-center text-center text-center">
-            <p class="text-indigo-400 text-lg font-black text-center text-center" id="stat-total-games">0</p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center">لعبة</p>
+        <div
+          class="grid grid-cols-2 gap-y-4 gap-x-2 text-center text-center text-center text-center text-center text-center">
+          <div
+            class="text-center border-b border-l border-white/5 pb-2 text-center text-center text-center text-center">
+            <p class="text-indigo-400 text-lg font-black text-center text-center text-center" id="stat-total-games">0
+            </p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">لعبة</p>
           </div>
-          <div class="text-center border-b border-white/5 pb-2 text-center text-center text-center">
-            <p class="text-yellow-400 text-lg font-black text-center text-center" id="stat-total-points">0</p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center">مجموع النقاط</p>
+          <div class="text-center border-b border-white/5 pb-2 text-center text-center text-center text-center">
+            <p class="text-yellow-400 text-lg font-black text-center text-center text-center" id="stat-total-points">0
+            </p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">مجموع النقاط</p>
           </div>
-          <div class="text-center border-l border-white/5 pt-2 text-center text-center text-center">
-            <p class="text-emerald-400 text-lg font-black text-center text-center" id="stat-total-wins">0</p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center">فوز</p>
+          <div class="text-center border-l border-white/5 pt-2 text-center text-center text-center text-center">
+            <p class="text-emerald-400 text-lg font-black text-center text-center text-center" id="stat-total-wins">0
+            </p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">فوز</p>
           </div>
-          <div class="text-center pt-2 text-center text-center text-center">
-            <p class="text-red-400 text-lg font-black text-center text-center" id="stat-total-losses">0</p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center">خسارة</p>
+          <div class="text-center pt-2 text-center text-center text-center text-center text-center">
+            <p class="text-red-400 text-lg font-black text-center text-center text-center" id="stat-total-losses">0</p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">خسارة</p>
           </div>
         </div>
       </div>
 
-      <p class="text-slate-400 text-[10px] mb-3 text-right font-bold text-right text-right">تفاصيل الأدوار:</p>
-      <div class="grid grid-cols-2 gap-4 mb-8 text-right text-right text-right text-right">
-        <div class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right text-right text-right">
-          <p class="text-[10px] text-emerald-400 font-bold mb-1 text-right text-right text-right">🕵️ محقق</p>
-          <div class="flex justify-between text-xs font-black text-right text-right text-right"><span>فوز: <span
-                id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span></div>
-        </div>
-        <div class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right text-right text-right">
-          <p class="text-[10px] text-indigo-400 font-bold mb-1 text-right text-right text-right">🌫️ ضايع</p>
-          <div class="flex justify-between text-xs font-black text-right text-right text-right text-right"><span>فوز:
-              <span id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span></div>
-        </div>
-        <div class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right text-right text-right">
-          <p class="text-[10px] text-orange-400 font-bold mb-1 text-right text-right text-right text-right">🎭 عميل</p>
-          <div class="flex justify-between text-xs font-black text-right text-right text-right text-right"><span>فوز:
-              <span id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span></div>
+      <p class="text-slate-400 text-[10px] mb-3 text-right font-bold text-right text-right text-right text-right">تفاصيل
+        الأدوار:</p>
+      <div class="grid grid-cols-2 gap-4 mb-8 text-right text-right text-right text-right text-right">
+        <div
+          class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right text-right text-right text-right">
+          <p class="text-[10px] text-emerald-400 font-bold mb-1 text-right text-right text-right text-right">🕵️ محقق
+          </p>
+          <div class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right">
+            <span>فوز: <span id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span></div>
         </div>
         <div
-          class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right text-right text-right text-right">
-          <p class="text-[10px] text-yellow-400 font-bold mb-1 text-right text-right text-right text-right text-right">
-            🤫 مموه</p>
+          class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right text-right text-right text-right text-right">
+          <p class="text-[10px] text-indigo-400 font-bold mb-1 text-right text-right text-right text-right text-right">
+            🌫️ ضايع</p>
           <div class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right">
-            <span>فوز: <span id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span>
-          </div>
+            <span>فوز: <span id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span></div>
+        </div>
+        <div
+          class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right text-right text-right text-right text-right text-right">
+          <p
+            class="text-[10px] text-orange-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right">
+            🎭 عميل</p>
+          <div
+            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right">
+            <span>فوز: <span id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span></div>
+        </div>
+        <div
+          class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right text-right text-right text-right text-right text-right text-right">
+          <p
+            class="text-[10px] text-yellow-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right text-right">
+            🤫 مموه</p>
+          <div
+            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right text-right">
+            <span>فوز: <span id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span></div>
         </div>
       </div>
       <button onclick="closeStatsModal()"
-        class="w-full py-4 btn-secondary rounded-2xl font-black text-white text-center text-center text-center text-center">إغلاق</button>
+        class="w-full py-4 btn-secondary rounded-2xl font-black text-white text-center text-center text-center text-center text-center">إغلاق</button>
     </div>
   </div>
 
-  <!-- نافذة تنبيه -->
   <div id="modal-alert"
-    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[200] p-6 backdrop-blur-md text-center text-center text-center text-center text-center">
-    <div class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center">
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[200] p-6 backdrop-blur-md text-center text-center text-center text-center text-center text-center">
+    <div class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center text-center">
       <h3
         class="text-2xl font-black mb-4 text-yellow-400 text-center font-black text-center text-center text-center text-center text-center text-center">
         تنبيه! ⚠️</h3>
       <p id="alert-message"
-        class="text-slate-300 font-bold mb-8 text-center text-white text-center text-center text-center text-center text-center">
+        class="text-slate-300 font-bold mb-8 text-center text-white text-center text-center text-center text-center text-center text-center">
       </p>
       <button onclick="closeAlert()"
-        class="w-full py-4 btn-gradient rounded-3xl font-black text-white text-xl text-center font-black text-center text-center text-center text-center">موافق</button>
+        class="w-full py-4 btn-gradient rounded-3xl font-black text-white text-xl text-center font-black text-center text-center text-center text-center text-center">موافق</button>
     </div>
   </div>
 
   <div id="modal-confirm"
-    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center text-center text-center text-center text-center text-center">
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center text-center text-center text-center text-center text-center text-center">
     <div
-      class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center text-center text-center text-center">
+      class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center text-center text-center text-center text-center">
       <h3
-        class="text-3xl font-black mb-6 text-red-500 text-center font-black text-center text-center text-center text-center text-center text-center">
+        class="text-3xl font-black mb-6 text-red-500 text-center font-black text-center text-center text-center text-center text-center text-center text-center">
         تأكيد! ⚠️</h3>
       <p
-        class="mb-10 text-slate-400 text-lg font-bold text-center text-white font-black text-center text-center text-center text-center text-center text-center">
+        class="mb-10 text-slate-400 text-lg font-bold text-center text-white font-black text-center text-center text-center text-center text-center text-center text-center">
         هل تريد تصفير جميع النقاط والإحصائيات نهائياً؟</p>
       <div
-        class="flex gap-4 text-center text-center text-center text-center text-center text-center text-center text-center">
+        class="flex gap-4 text-center text-center text-center text-center text-center text-center text-center text-center text-center">
         <button onclick="closeModal()"
-          class="flex-1 py-5 btn-secondary rounded-3xl font-bold text-xl text-white text-center font-black text-center text-center text-center text-center">تراجع</button>
+          class="flex-1 py-5 btn-secondary rounded-3xl font-bold text-xl text-white text-center font-black text-center text-center text-center text-center text-center">تراجع</button>
         <button onclick="resetPoints()"
-          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white shadow-2xl text-xl font-black text-white text-center text-center text-center text-center text-center">نعم،
+          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white shadow-2xl text-xl font-black text-white text-center text-center text-center text-center text-center text-center">نعم،
           صفّر</button>
       </div>
     </div>
   </div>
 
-  <!-- نافذة تغيير الفئة (Modal) -->
   <div id="modal-category"
-    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center text-center text-center text-center">
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center text-center text-center text-center text-center">
     <div
-      class="glass-panel max-w-sm w-full shadow-2xl text-center font-black text-center text-center text-center text-center text-center">
+      class="glass-panel max-w-sm w-full shadow-2xl text-center font-black text-center text-center text-center text-center text-center text-center">
       <h3
-        class="text-2xl font-black mb-8 text-white underline decoration-indigo-500 font-black text-center text-center text-center text-center">
+        class="text-2xl font-black mb-8 text-white underline decoration-indigo-500 font-black text-center text-center text-center text-center text-center">
         تبديل الفئة ⚙️</h3>
       <div id="modal-categories-grid"
-        class="grid grid-cols-2 gap-4 mb-10 text-center text-center text-center text-center text-center text-center text-center">
+        class="grid grid-cols-2 gap-4 mb-10 text-center text-center text-center text-center text-center text-center text-center text-center">
       </div>
       <button onclick="closeCategoryModal()"
-        class="w-full py-5 btn-gradient rounded-3xl font-black text-white text-xl text-center font-black text-center text-center text-center text-center text-center">تأكيد
+        class="w-full py-5 btn-gradient rounded-3xl font-black text-white text-xl text-center font-black text-center text-center text-center text-center text-center text-center">تأكيد
         وإغلاق</button>
     </div>
   </div>
 
   <script>
-    // --- 1. قاعدة البيانات والتعريفات (يجب تعريفها في البداية) ---
-    const wordBank = {
-      "طعام": [{ word: "بيتزا", emoji: "🍕", desc: "أكلة إيطالية دائرية بصلصة وجبنة.", related: "فطيرة" }, { word: "كبسة", emoji: "🍛", desc: "رز ولحم، أكلة خليجية مشهورة.", related: "مندي" }, { word: "برجر", emoji: "🍔", desc: "لحم مشوي داخل خبز مع جبنة.", related: "ساندوتش" }, { word: "شاورما", emoji: "🌯", desc: "لحم مقطع ملفوف في خبز صاج.", related: "فلافل" }, { word: "باستا", emoji: "🍝", desc: "مكرونة إيطالية بصوصات ملونة.", related: "لازانيا" }, { word: "سوشي", emoji: "🍣", desc: "رز وسمك ملفوف ياباني.", related: "روبيان" }, { word: "كنافة", emoji: "🍮", desc: "حلوى شرقية بالجبنة أو القشطة.", related: "بسبوسة" }, { word: "جريش", emoji: "🥣", desc: "أكلة شعبية بيضاء مشهورة.", related: "سليق" }],
-      "أدوات": [{ word: "شاحن", emoji: "🔌", desc: "ينقذ جوالك لما تخلص البطارية.", related: "توصيلة" }, { word: "مكيف", emoji: "❄️", desc: "يبرد الجو في الصيف الحارق.", related: "مروحة" }, { word: "ساعة", emoji: "⌚", desc: "تنلبس في المعصم لمعرفة الوقت.", related: "سوار" }, { word: "نظارة", emoji: "👓", desc: "تساعدك تشوف بوضوح.", related: "عدسات" }, { word: "مطرقة", emoji: "🔨", desc: "أداة بناء تُستخدم لدق المسامير.", related: "مفك" }, { word: "مقص", emoji: "✂️", desc: "أداة لقص الورق والقماش.", related: "سكين" }],
-      "ماركات": [{ word: "أبل", emoji: "🍎", desc: "شركة تقنية مشهورة بالآيفون وشعار التفاحة.", related: "سامسونج" }, { word: "نايكي", emoji: "✔️", desc: "ماركة رياضية عالمية للأحذية والملابس.", related: "أديداس" }, { word: "مرسيدس", emoji: "🚗", desc: "سيارات ألمانية فخمة ورمز للرفاهية والقوة.", related: "بي إم" }, { word: "بيبسي", emoji: "🥤", desc: "مشروب غازي عالمي لونه أسود.", related: "كوكاكولا" }],
-      "حيوانات": [{ word: "خروف", emoji: "🐑", desc: "حيوان المزرعة المفضل في العيد.", related: "ماعز" }, { word: "أسد", emoji: "🦁", desc: "ملك الغابة، حيوان مفترس وقوي.", related: "نمر" }, { word: "جمل", emoji: "🐪", desc: "سفينة الصحراء الصبورة.", related: "خيل" }, { word: "دلفين", emoji: "🐬", desc: "حيوان بحري ذكي وصديق للبشر.", related: "حوت" }],
-      "تكنولوجيا": [{ word: "جوال", emoji: "📱", desc: "جهاز في جيبك يوصلك بكل العالم.", related: "ايباد" }, { word: "حاسوب", emoji: "💻", desc: "جهاز للدراسة أو العمل.", related: "لابتوب" }, { word: "إنترنت", emoji: "🌐", desc: "الشبكة العنكبوتية العالمية.", related: "واي فاي" }, { word: "روبوت", emoji: "🤖", desc: "آلة مبرمجة لتقوم بمهام الإنسان.", related: "ذكاء اصطناعي" }],
-      "ألعاب": [{ word: "بلايستيشن", emoji: "🎮", desc: "جهاز ألعاب من شركة سوني.", related: "اكس بوكس" }, { word: "فيفا", emoji: "⚽", desc: "لعبة كرة القدم الأشهر رقمياً.", related: "روكيت ليغ" }],
-      "مشروبات": [{ word: "قهوة", emoji: "☕", desc: "مشروب الصباح الذي يعدل المزاج.", related: "شاي" }, { word: "حمضيات", emoji: "🍊", desc: "مشروب غازي برتقالي اللون.", related: "ميرندا" }],
-      "أماكن": [{ word: "مكة المكرمة", emoji: "🕋", desc: "قبلة المسلمين وأقدس مكان.", related: "المدينة" }, { word: "برج إيفل", emoji: "🗼", desc: "أشهر معلم حديدي في باريس.", related: "برج خليفة" }, { word: "الهرم", emoji: "📐", desc: "بناء حجري قديم جداً.", related: "أبوالهول" }],
-      "دول": [{ word: "السعودية", emoji: "🇸🇦", desc: "دولة خليجية عاصمتها الرياض.", related: "الكويت" }, { word: "مصر", emoji: "🇪🇬", desc: "دولة النيل والحضارة القديمة.", related: "الأردن" }, { word: "اليابان", emoji: "🇯🇵", desc: "كوكب التكنولوجيا والأنمي.", related: "كوريا" }],
-      "عطور": [{ word: "بخور", emoji: "💨", desc: "رائحة شرقية ناتجة عن الاحتراق.", related: "مسك" }, { word: "دهن عود", emoji: "🪵", desc: "زيت عطري ثمين وقوي.", related: "ورد" }],
-      "كلمات خاصة": []
-    };
-
-    // --- دالة تنسيق الوقت ---
+    // --- 0. دالة تنسيق الوقت (تعريف مبكر جداً) ---
     function formatTimeLabel(seconds) {
       if (seconds === 30) return "30 ثانية";
       if (seconds === 60) return "دقيقة واحدة";
@@ -726,11 +763,26 @@
       return secs === 0 ? `${mins} دقائق` : `${mins} دقيقة و${secs} ثانية`;
     }
 
+    // --- 1. قاعدة البيانات والتعريفات ---
+    const wordBank = {
+      "طعام": [{ word: "بيتزا", emoji: "🍕", desc: "أكلة إيطالية دائرية بصلصة وجبنة.", related: "فطيرة" }, { word: "كبسة", emoji: "🍛", desc: "رز ولحم، أكلة خليجية مشهورة.", related: "مندي" }, { word: "برجر", emoji: "🍔", desc: "لحم مشوي داخل خبز مع جبنة.", related: "ساندوتش" }, { word: "شاورما", emoji: "🌯", desc: "لحم مقطع ملفوف في خبز صاج.", related: "فلافل" }, { word: "باستا", emoji: "🍝", desc: "مكرونة إيطالية بصوصات ملونة.", related: "لازانيا" }, { word: "سوشي", emoji: "🍣", desc: "رز وسمك ملفوف ياباني.", related: "روبيان" }, { word: "كنافة", emoji: "🍮", desc: "حلوى شرقية بالجبنة أو القشطة.", related: "بسبوسة" }, { word: "جريش", emoji: "🥣", desc: "أكلة شعبية بيضاء مشهورة.", related: "سليق" }],
+      "أدوات": [{ word: "شاحن", emoji: "🔌", desc: "ينقذ جوالك لما تخلص البطارية.", related: "توصيلة" }, { word: "مكيف", emoji: "❄️", desc: "يبرد الجو في الصيف الحارق.", related: "مروحة" }, { word: "ساعة", emoji: "⌚", desc: "تنلبس في المعصم لمعرفة الوقت.", related: "سوار" }, { word: "نظارة", emoji: "👓", desc: "تساعدك تشوف بوضوح.", related: "عدسات" }, { word: "مطرقة", emoji: "🔨", desc: "أداة بناء تُستخدم لدق المسامير.", related: "مفك" }, { word: "مقص", emoji: "✂️", desc: "أداة لقص الورق والقماش.", related: "سكين" }],
+      "ماركات": [{ word: "أبل", emoji: "🍎", desc: "شركة تقنية مشهورة بالآيفون وشعار التفاحة.", related: "سامسونج" }, { word: "نايكي", emoji: "✔️", desc: "ماركة رياضية عالمية للأحذية والملابس.", related: "أديداس" }, { word: "مرسيدس", emoji: "🚗", desc: "سيارات ألمانية فخمة ورمز للرفاهية والقوة.", related: "بي إم" }, { word: "بيبسي", emoji: "🥤", desc: "مشروب غازي عالمي لونه أسود.", related: "كوكاكولا" }],
+      "حيوانات": [{ word: "خروف", emoji: "🐑", desc: "حيوان المزرعة المفضل في العيد.", related: "ماعز" }, { word: "أسد", emoji: "🦁", desc: "ملك الغابة، حيوان مفترس وقوي.", related: "نمر" }, { word: "جمل", emoji: "🐪", desc: "سفينة الصحراء الصبورة.", related: "خيل" }, { word: "دلفين", emoji: "🐬", desc: "حيوان بحري ذكي وصديق للبشر.", related: "حوت" }],
+      "تكنولوجيا": [{ word: "جوال", emoji: "📱", desc: "جهاز في جيبك يوصلك بكل العالم.", related: "ايباد" }, { word: "حاسوب", emoji: "💻", desc: "جهاز للدراسة أو العمل.", related: "لابتوب" }, { word: "إنترنت", emoji: "🌐", desc: "الشبكة العنكبوتية العالمية.", related: "واي فاي" }, { word: "روبوت", emoji: "🤖", desc: "أالة مبرمجة لتقوم بمهام الإنسان.", related: "ذكاء اصطناعي" }],
+      "ألعاب": [{ word: "بلايستيشن", emoji: "🎮", desc: "جهاز ألعاب من شركة سوني.", related: "اكس بوكس" }, { word: "فيفا", emoji: "⚽", desc: "لعبة كرة القدم الأشهر رقمياً.", related: "روكيت ليغ" }],
+      "مشروبات": [{ word: "قهوة", emoji: "☕", desc: "مشروب الصباح الذي يعدل المزاج.", related: "شاي" }, { word: "عصير منجا", emoji: "🥭", desc: "فاكهة استوائية ثقيلة القوام.", related: "فراولة" }, { word: "حمضيات", emoji: "🍊", desc: "مشروب غازي برتقالي اللون.", related: "ميرندا" }],
+      "أماكن": [{ word: "مكة المكرمة", emoji: "🕋", desc: "قبلة المسلمين وأقدس مكان.", related: "المدينة" }, { word: "برج إيفل", emoji: "🗼", desc: "أشهر معلم حديدي في باريس.", related: "برج خليفة" }],
+      "دول": [{ word: "السعودية", emoji: "🇸🇦", desc: "دولة خليجية عاصمتها الرياض.", related: "الكويت" }, { word: "مصر", emoji: "🇪🇬", desc: "دولة النيل والحضارة القديمة.", related: "الأردن" }],
+      "عطور": [{ word: "بخور", emoji: "💨", desc: "رائحة شرقية ناتجة عن الاحتراق.", related: "مسك" }, { word: "دهن عود", emoji: "🪵", desc: "زيت عطري ثمين وقوي.", related: "ورد" }],
+      "كلمات خاصة": []
+    };
+
     const avatars = ["🕵️", "👤", "👮", "🧑‍🚀", "🧙", "🧛", "🧟", "🦁", "🦊", "🐻", "🐼", "🤖", "🤡", "👺", "😈", "🦉", "🦒", "🦈"];
     const funnyTitles = ["الضايع المبتديء 😶", "المحقق المتدرب 🔍", "راعي الفزعة 🤝", "كاشف السوالف 🔎", "المراوغ الأسطوري 🤺", "الذيب 🐺", "ملك التمويه 🎭", "العميل السري 🕵️‍♂️", "البروفيسور 👨‍🏫", "أسطورة السوالف 🏆"];
     const roleNamesMap = { 'in': '🕵️ محقق', 'out': '🌫️ الضايع', 'agent': '🎭 عميل مزدوج', 'undercover': '🤫 المموه' };
 
-    // --- نظام الأصوات ---
+    // --- الأصوات ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, duration, type = 'sine', vol = 0.1) {
       if (state.isMuted) return;
@@ -742,14 +794,14 @@
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
       osc.start(); osc.stop(audioCtx.currentTime + duration);
     }
-
     const sounds = {
       tick: () => playTone(800, 0.05, 'sine', 0.03),
       win: () => { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100); setTimeout(() => playTone(783, 0.3), 200); },
-      lose: () => playTone(150, 0.6, 'sawtooth', 0.15)
+      lose: () => playTone(150, 0.6, 'sawtooth', 0.15),
+      wrong: () => playTone(100, 0.5, 'square', 0.2)
     };
 
-    // --- الحالة العامة ---
+    // --- 2. الحالة العامة (State) ---
     let state = {
       players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
       revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false,
@@ -757,7 +809,7 @@
       customWords: [], isMuted: false, lastWinner: null
     };
 
-    // --- وظائف اللعبة ---
+    // --- 3. الوظائف المنطقية ---
     function toggleMute() {
       state.isMuted = !state.isMuted;
       const btn = document.getElementById('mute-toggle');
@@ -781,12 +833,13 @@
         if (gridId === 'modal-categories-grid' && cat === "كلمات خاصة" && state.customWords.length < 4) return;
         const isActive = state.selectedCategory === cat;
         const emoji = categoryIcons[cat] || '🏷️';
-        grid.innerHTML += `<div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span class="text-xl text-center">${emoji}</span><span class="text-xs text-white font-bold text-center">${cat}</span></div>`;
+        grid.innerHTML += `<div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span class="text-xl text-center text-center">${emoji}</span><span class="text-xs text-white font-bold text-center text-center text-center">${cat}</span></div>`;
       });
     }
 
     function selectCategory(cat, gridId) {
-      state.selectedCategory = cat; renderCategories(gridId);
+      state.selectedCategory = cat;
+      renderCategories(gridId);
       sounds.tick();
       if (gridId === 'categories-grid') {
         const ui = document.getElementById('custom-words-ui');
@@ -803,7 +856,7 @@
           document.getElementById('modal-alert').classList.remove('hidden'); document.getElementById('modal-alert').classList.add('flex');
           return;
         }
-        state.customWords.push({ word, emoji: "✏️", desc: "سالفة مضافة.", related: "" });
+        state.customWords.push({ word, emoji: "✏️", desc: "سالفة مضافة." });
         input.value = ''; renderCustomWords(); renderCategories('categories-grid');
       }
     }
@@ -841,16 +894,16 @@
       initPlayerNames();
     }
 
-    function closeAlert() { document.getElementById('modal-alert').classList.add('hidden'); }
-
     function initPlayerNames() {
-      const count = parseInt(document.getElementById('input-players').value);
+      const pInput = document.getElementById('input-players');
+      if (!pInput) return;
+      const count = parseInt(pInput.value);
       const container = document.getElementById('names-container');
       if (!container) return; container.innerHTML = '';
       const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
       for (let i = 0; i < count; i++) {
         const p = saved[i] || { name: `المحقق ${i + 1}`, avatar: avatars[i % avatars.length] };
-        container.innerHTML += `<div class="bg-white/5 p-4 rounded-3xl border border-white/10 shadow-inner"><div class="flex gap-3 mb-3 flex-row-reverse text-right"><input type="text" id="name-${i}" value="${p.name}" class="player-input flex-1 bg-slate-800 border-none rounded-2xl p-4 text-white font-bold outline-none focus:ring-2 ring-indigo-500 text-lg text-right" placeholder="اسم اللاعب"><input type="hidden" id="avatar-${i}" value="${p.avatar}"></div><div class="flex flex-wrap gap-2 justify-center">${avatars.map(a => `<button onclick="setAvatar(${i}, '${a}')" id="av-${i}-${a}" class="avatar-btn ${a === p.avatar ? 'selected' : ''}">${a}</button>`).join('')}</div></div>`;
+        container.innerHTML += `<div class="bg-white/5 p-4 rounded-3xl border border-white/10 shadow-inner"><div class="flex gap-3 mb-3 flex-row-reverse text-right text-right"><input type="text" id="name-${i}" value="${p.name}" class="player-input flex-1 bg-slate-800 border-none rounded-2xl p-4 text-white font-bold outline-none focus:ring-2 ring-indigo-500 text-lg text-right text-right text-right" placeholder="اسم اللاعب"><input type="hidden" id="avatar-${i}" value="${p.avatar}"></div><div class="flex flex-wrap gap-2 justify-center text-center text-center text-center">${avatars.map(a => `<button onclick="setAvatar(${i}, '${a}')" id="av-${i}-${a}" class="avatar-btn ${a === p.avatar ? 'selected' : ''}">${a}</button>`).join('')}</div></div>`;
       }
       showScreen('names');
     }
@@ -862,22 +915,17 @@
     }
 
     function startGame() {
-      const countInput = document.getElementById('input-players');
-      const count = parseInt(countInput.value);
+      const pInp = document.getElementById('input-players');
+      if (!pInp) return;
+      const count = parseInt(pInp.value);
       state.players = [];
       const savedData = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
       for (let i = 0; i < count; i++) {
         const name = document.getElementById(`name-${i}`).value.trim() || `المحقق ${i + 1}`;
         const avatar = document.getElementById(`avatar-${i}`).value;
-        const existing = savedData[i]; // مصلح: البحث بالمقعد (Index) لعدم مسح النقاط عند تغيير الاسم
+        const existing = savedData[i];
         const emptyStats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
-        state.players.push({
-          id: i,
-          name,
-          avatar,
-          points: existing ? (existing.points || 0) : 0,
-          stats: (existing && existing.stats) ? existing.stats : emptyStats
-        });
+        state.players.push({ id: i, name, avatar, points: existing ? (existing.points || 0) : 0, stats: (existing && existing.stats) ? existing.stats : emptyStats });
       }
       localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(state.players));
       state.timer = parseInt(document.getElementById('input-time').value);
@@ -891,6 +939,7 @@
 
     function setupRoles() {
       let pool = wordBank[state.selectedCategory] || wordBank["طعام"];
+      if (pool.length === 0) pool = wordBank["طعام"];
       state.secretData = pool[Math.floor(Math.random() * pool.length)];
       let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
       const numOut = state.players.length > 8 ? 2 : 1;
@@ -927,7 +976,7 @@
         else if (roleData.role === 'undercover') {
           let rel = (state.selectedCategory === "كلمات خاصة") ? (state.customWords.filter(w => w.word !== state.secretData.word)[0]?.word || "سالفة قريبة") : (state.secretData.related || "مشابهة");
           txt.innerText = "أنت المموه! كلمتك هي:"; word.innerText = rel; img.innerText = "🤫"; txt.className = "text-2xl mb-4 text-yellow-400 font-bold text-center";
-        } else { txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; txt.className = "text-2xl mb-4 text-red-500 font-bold text-center text-center"; }
+        } else { txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; txt.className = "text-2xl mb-4 text-red-500 font-bold text-center text-center text-center"; }
         box.classList.remove('hidden'); document.getElementById('btn-reveal-action').innerText = 'فهمت، التالي';
       } else { state.revealIndex++; startRevealSequence(); }
     }
@@ -957,15 +1006,25 @@
       const grid = document.getElementById('voting-grid');
       if (!grid) return; grid.innerHTML = '';
       state.players.forEach(p => {
-        grid.innerHTML += `<button onclick="selectVote(${p.id})" class="p-4 sm:p-6 bg-white/5 border-2 border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3 active:bg-indigo-500/20 transition-all shadow-lg text-center"><span class="text-5xl text-center">${p.avatar}</span><span class="font-black text-xs sm:text-sm text-center text-white">${p.name}</span></button>`;
+        grid.innerHTML += `<button onclick="selectVote(${p.id})" class="p-4 sm:p-6 bg-white/5 border-2 border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3 active:bg-indigo-500/20 transition-all shadow-lg text-center text-center text-center text-center text-center text-center"><span class="text-5xl text-center text-center text-center text-center text-center text-center">${p.avatar}</span><span class="font-black text-xs sm:text-sm text-center text-center text-white text-center text-center text-center">${p.name}</span></button>`;
       });
       showScreen('voting');
     }
 
     function selectVote(id) {
       const isOut = state.outPlayerIds.includes(id) || id === state.undercoverPlayerId;
-      if (isOut) startGuessingPhase();
-      else showFinalResults('out_win', "الضايع خدعكم! 🌫️");
+      if (isOut) {
+        startGuessingPhase();
+      } else {
+        sounds.wrong();
+        document.body.classList.add('wrong-flash-active');
+        document.getElementById('app').classList.add('shake-effect');
+        setTimeout(() => {
+          document.body.classList.remove('wrong-flash-active');
+          document.getElementById('app').classList.remove('shake-effect');
+          showFinalResults('out_win', "الضايع خدعكم! 🌫️");
+        }, 600);
+      }
     }
 
     function startGuessingPhase() {
@@ -980,7 +1039,7 @@
       let shuffled = distractors.sort(() => 0.5 - Math.random()).slice(0, 3);
       let options = [...shuffled, state.secretData].sort(() => 0.5 - Math.random());
       options.forEach(opt => {
-        container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-5 bg-white/5 rounded-3xl text-xl sm:text-2xl font-black active:bg-indigo-500/20 transition-all shadow-xl border-2 border-white/5 text-white break-word-custom">${opt.word} ${opt.emoji}</button>`;
+        container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-5 bg-white/5 rounded-3xl text-xl sm:text-2xl font-black active:bg-indigo-500/20 transition-all shadow-xl border-2 border-white/5 text-white break-word-custom text-center text-center text-center text-center text-center text-center">${opt.word} ${opt.emoji}</button>`;
       });
       showScreen('guess');
     }
@@ -1005,7 +1064,7 @@
 
     function awardPoints(winner) {
       let saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-      saved = saved.map(p => {
+      saved = saved.map((p) => {
         const roleData = state.currentRoles.find(r => r.id === p.id);
         if (!roleData) return p;
         if (!p.stats) p.stats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
@@ -1034,7 +1093,7 @@
         const statusColorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-100' : 'bg-red-500/20 border-red-500/40 text-red-100';
         const roleLabel = roleNamesMap[roleData.role] || 'محقق';
 
-        list.innerHTML += `<div class="flex items-center justify-between p-4 rounded-2xl border ${statusColorClass} mb-2 shadow-inner"><div class="flex items-center gap-4 text-right text-right"><span class="text-3xl text-center text-center">${p.avatar}</span><div class="flex flex-col text-right text-right text-right"><span class="font-black text-white text-base text-right text-right text-right">${p.name}</span><span class="text-[9px] font-bold uppercase text-right text-right opacity-80">${roleLabel}</span></div></div><span class="bg-black/20 px-4 py-1 rounded-full font-mono text-xs font-black text-center text-center text-center text-center">${p.points}</span></div>`;
+        list.innerHTML += `<div class="flex items-center justify-between p-4 rounded-2xl border ${statusColorClass} mb-2 shadow-inner"><div class="flex items-center gap-4 text-right text-right text-right text-right"><span class="text-3xl text-center text-center text-center text-center">${p.avatar}</span><div class="flex flex-col text-right text-right text-right text-right text-right text-right"><span class="font-black text-white text-base text-right text-right text-right text-right text-right text-right">${p.name}</span><span class="text-[9px] font-bold uppercase text-right text-right text-right text-right opacity-80 text-right text-right">${roleLabel}</span></div></div><span class="bg-black/20 px-4 py-1 rounded-full font-mono text-xs font-black text-center text-center text-center text-center text-center text-center">${p.points}</span></div>`;
       });
     }
 
@@ -1046,23 +1105,22 @@
       list.innerHTML = '';
       sorted.forEach((p, idx) => {
         const titleIndex = Math.min(Math.floor(p.points / 2), funnyTitles.length - 1);
-        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 mb-2 shadow-inner hover:bg-white/10 transition-all cursor-pointer text-right text-right text-right"><div class="flex items-center gap-4 text-right text-center text-center text-center text-center text-center">${p.avatar}</span><div class="flex flex-col text-right text-right text-right text-right text-right text-right"><span class="font-black text-base ${idx === 0 ? 'text-yellow-400' : ''} text-white text-right text-right text-right text-right text-right text-right">${idx + 1}. ${p.name}</span><span class="text-[10px] text-indigo-400 font-bold text-right text-right text-right text-right text-right text-right">${funnyTitles[titleIndex]}</span></div></div><span class="bg-indigo-500/20 px-4 py-1 rounded-full font-mono text-sm font-black text-indigo-200 text-center text-center text-center text-center text-center">${p.points}</span></div>`;
+        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 mb-2 shadow-inner hover:bg-white/10 transition-all cursor-pointer text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right"><div class="flex items-center gap-4 text-right text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">${p.avatar}</span><div class="flex flex-col text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right"><span class="font-black text-base ${idx === 0 ? 'text-yellow-400' : ''} text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">${idx + 1}. ${p.name}</span><span class="text-[10px] text-indigo-400 font-bold text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">${funnyTitles[titleIndex]}</span></div></div><span class="bg-indigo-500/20 px-4 py-1 rounded-full font-mono text-sm font-black text-indigo-200 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">${p.points}</span></div>`;
       });
     }
 
     function openStatsModal(playerId) {
       const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-      const p = saved[playerId]; // مصلح: البحث بالمقعد مباشرة
+      const p = saved[playerId];
       if (!p) return;
-
-      document.getElementById('player-stat-avatar').innerText = p.avatar;
-      document.getElementById('player-stat-name').innerText = p.name;
 
       const s = p.stats || { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
       const totalWins = (s.det?.w || 0) + (s.out?.w || 0) + (s.agt?.w || 0) + (s.und?.w || 0);
       const totalLosses = (s.det?.l || 0) + (s.out?.l || 0) + (s.agt?.l || 0) + (s.und?.l || 0);
       const totalGames = totalWins + totalLosses;
 
+      document.getElementById('player-stat-avatar').innerText = p.avatar;
+      document.getElementById('player-stat-name').innerText = p.name;
       document.getElementById('stat-total-games').innerText = totalGames;
       document.getElementById('stat-total-wins').innerText = totalWins;
       document.getElementById('stat-total-losses').innerText = totalLosses;
@@ -1091,7 +1149,7 @@
 
     function checkResetButtonVisibility() {
       const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-      const hasData = saved.some(p => (p.points || 0) > 0 || (p.stats && (p.stats.det?.w > 0 || p.stats.out?.w > 0)));
+      const hasData = saved.some(p => (p.points || 0) > 0 || (p.stats && ((p.stats.det?.w || 0) > 0 || (p.stats.out?.w || 0) > 0)));
       const trigger = document.getElementById('btn-reset-points-trigger');
       if (trigger) trigger.classList.toggle('hidden', !hasData);
     }
@@ -1123,7 +1181,11 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => { updateSetupInfo(); renderCustomWords(); checkResetButtonVisibility(); });
+    window.addEventListener('DOMContentLoaded', () => {
+      updateSetupInfo();
+      renderCustomWords();
+      checkResetButtonVisibility();
+    });
   </script>
 </body>
 
