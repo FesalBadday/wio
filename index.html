@@ -6,266 +6,8 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>من برا السالفة؟ - نسخة الضايع الذهبية النهائية</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #6366f1;
-      --accent: #10b981;
-      --danger: #ef4444;
-      --bg-dark: #0f172a;
-    }
-
-    /* إخفاء شريط التمرير لمظهر التطبيقات */
-    * {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    *::-webkit-scrollbar {
-      display: none;
-    }
-
-    body {
-      font-family: 'Cairo', sans-serif;
-      background-color: var(--bg-dark);
-      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-      color: #f8fafc;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      overflow: hidden;
-      touch-action: manipulation;
-      transition: all 0.3s ease;
-      padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
-    }
-
-    /* فئة الوميض الأحمر عند الخطأ */
-    body.wrong-flash-active {
-      background: #450a0a !important;
-    }
-
-    /* أنيميشن الاهتزاز عند الخطأ */
-    @keyframes shake {
-
-      0%,
-      100% {
-        transform: translateX(0);
-      }
-
-      20% {
-        transform: translateX(-12px) rotate(-1deg);
-      }
-
-      40% {
-        transform: translateX(12px) rotate(1deg);
-      }
-
-      60% {
-        transform: translateX(-12px) rotate(-1deg);
-      }
-
-      80% {
-        transform: translateX(12px) rotate(1deg);
-      }
-    }
-
-    .shake-effect {
-      animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
-    }
-
-    /* حاوية التنبيه عند وضع الجهاز الأفقي للجوالات فقط */
-    #orientation-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: var(--bg-dark);
-      z-index: 10000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    @media screen and (orientation: landscape) and (pointer: coarse) {
-      #orientation-overlay {
-        display: flex;
-      }
-    }
-
-    .glass-panel {
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 2.5rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      max-height: 94vh;
-      width: 100%;
-      max-width: 550px;
-      overflow-y: auto;
-      position: relative;
-      padding: 1.5rem;
-      z-index: 10;
-      transition: border-color 0.3s ease;
-    }
-
-    .btn-gradient {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .btn-gradient:active {
-      transform: scale(0.96);
-    }
-
-    .category-card {
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 2px solid transparent;
-      padding: 1rem 0.5rem;
-      border-radius: 1.5rem;
-      background: rgba(255, 255, 255, 0.05);
-      text-align: center;
-      font-weight: bold;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      align-items: center;
-    }
-
-    .category-card.active {
-      border-color: var(--primary);
-      background: rgba(99, 102, 241, 0.25);
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-    }
-
-    .rule-card {
-      background: rgba(255, 255, 255, 0.03);
-      border-right: 5px solid var(--primary);
-      padding: 1.25rem;
-      border-radius: 1.25rem;
-      margin-bottom: 1rem;
-      text-align: right;
-    }
-
-    .avatar-btn {
-      font-size: 1.6rem;
-      padding: 0.5rem;
-      border-radius: 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      transition: all 0.2s;
-      width: 52px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .avatar-btn.selected {
-      background: var(--primary);
-      transform: scale(1.15);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-    }
-
-    #confetti-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 9999;
-      overflow: hidden;
-    }
-
-    .confetti-piece {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      top: -20px;
-    }
-
-    .detective-float {
-      animation: smoothFloat 10s ease-in-out infinite;
-    }
-
-    @keyframes smoothFloat {
-
-      0%,
-      100% {
-        transform: translateY(0px) rotate(0deg);
-      }
-
-      50% {
-        transform: translateY(-30px) rotate(5deg);
-      }
-    }
-
-    .break-word-custom {
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-      word-break: break-word;
-      max-width: 100%;
-      line-height: 1.4;
-    }
-
-    input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 10px;
-      background: #1e293b;
-      border-radius: 15px;
-      outline: none;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 28px;
-      height: 28px;
-      background: var(--primary);
-      border: 4px solid #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-    }
-
-    .custom-checkbox {
-      appearance: none;
-      width: 58px;
-      height: 30px;
-      background-color: #334155;
-      border-radius: 20px;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .custom-checkbox:checked {
-      background-color: var(--primary);
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
-    }
-
-    .custom-checkbox::before {
-      content: '';
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      background-color: white;
-      border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: all 0.3s;
-    }
-
-    .custom-checkbox:checked::before {
-      transform: translateX(28px);
-    }
-  </style>
+  <script src="tailwind.min.js" defer></script>
+  <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
@@ -446,7 +188,7 @@
               </linearGradient>
             </defs>
           </svg>
-          <div id="game-timer"
+          <div id="game-timer" style="font-size: 5rem;"
             class="text-6xl sm:text-8xl font-black font-mono tracking-tighter text-white text-center text-center text-center text-center text-center text-center text-center text-center">
             00:00</div>
         </div>
@@ -578,20 +320,74 @@
             class="text-base leading-relaxed text-slate-300 font-semibold italic text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
             لعبة ذكاء وتمويه جماعية. في كل جولة، توجد "سالفة" يعرفها الجميع إلا <span
               class="highlight-text font-black text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">شخص
-              واحد</span> يسمى "الضايع".</p>
+              واحد او شخصين (في حال اختيار العميل المزدوج)
+            </span> يسمى "الضايع".</p>
         </div>
 
         <div class="rule-card text-right text-right">
           <h4
             class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
-            <span class="order-first">🎭</span> الأدوار وشروط الفوز
+            <span class="order-first">👥</span> الأدوار في اللعبة
+          </h4>
+          <ul
+            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <li class="text-right">🕵️ المحققون: لاعبون يعرفون "الكلمة السرية"، هدفهم كشف الأشخاص الضائعين دون إعطاء
+              تلميحات واضحة.</li>
+            <li class="text-right">🌫️ الضايع: لاعب لا يعرف الكلمة، هدفه التظاهر بالمعرفة من خلال إجابات عامة، ومحاولة
+              تخمين الكلمة من سياق الحديث.</li>
+            <li class="text-right">🎭 العميل المزدوج: هذا هو الدور الأخطر! هو لاعب يعرف الكلمة، لكنه يربح إذا استطاع
+              إقناع الجميع بأنه هو "الضايع" أو إذا تم التصويت عليه بالخطأ. هو يلعب ضد الجميع ليربك الحسابات.</li>
+            <li class="text-right">🤫 المموه: لاعب يملك كلمة مشابهة، لكنه يعمل لصالح "الضايع"؛ وظيفته تضليل البقية
+              وإثارة الشكوك حول لاعبين آخرين لتشتيت الانتباه عن الضايع.</li>
+          </ul>
+        </div>
+
+        <div class="rule-card text-right text-right">
+          <h4
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <span class="order-first">🛠️</span> خطوات الجولة
+          </h4>
+          <ul
+            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <li class="text-right">1️⃣ اختيار الفئة: يتم اختيار موضوع الجولة (أكلات، دول، مشروبات، إلخ).</li>
+            <li class="text-right">2️⃣ توزيع الأدوار: يمر الجوال على اللاعبين، كل شخص يرى "الكلمة" أو يرى "أنت
+              الضايع"، "أنت العميل المزدوج" أو "أنت المموه".</li>
+            <li class="text-right">3️⃣ الأسئلة: يبدأ اللاعبون بسؤال بعضهم البعض أسئلة ذكية (غير مباشرة). <span
+                class="highlight-text font-black text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">مثال:
+                إذا كانت الكلمة "بيتزا"، اسأل: "هل تحتاج لوقت طويل في الفرن؟ أو هل تؤكل باليد؟"
+              </span></li>
+            <li class="text-right">4️⃣ التصويت: بعد انتهاء الوقت، يبدأ الجميع بمناقشة من هو "الضايع ويتم التصويت على
+              الشخص المشكوك فيه".</li>
+          </ul>
+        </div>
+
+        <div class="rule-card text-right text-right">
+          <h4
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <span class="order-first">🏆</span> شروط الفوز
           </h4>
           <ul
             class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
             <li class="text-right">🕵️ المحققون: يفوزون إذا كشفوا الضايع، وفشل في تخمين السالفة.</li>
             <li class="text-right">🌫️ الضايع: يفوز إذا لم يُكشف أو إذا نجح في تخمين السالفة صح.</li>
-            <li class="text-right">🎭 العميل: يفوز إذا فاز الضايع بمساعدته سراً.</li>
-            <li class="text-right">🤫 المموه: يملك كلمة قريبة ويفوز إذا بقي متخفياً.</li>
+            <li class="text-right">🎭 العميل المزدوج: يفوز إذا فاز الضايع بمساعدته سراً.</li>
+            <li class="text-right">🤫 المموه: يملك كلمة قريبة ويفوز إذا فاز الضايع.</li>
+          </ul>
+        </div>
+
+        <div class="rule-card text-right text-right">
+          <h4
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <span class="order-first">💡</span> نصائح ذهبية
+          </h4>
+          <ul
+            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <li class="text-right">1️⃣ إذا كنت محقق: لا تعطِ إجابة واضحة جداً فيفهمها "الضايع"، ولا تكون غامضاً جداً
+              فيشك فيك المحققون!</li>
+            <li class="text-right">2️⃣ إذا كنت العميل المزدوج أو المموه: حاول أن تكون إجاباتك غريبة بعض الشيء لتجذب
+              الأنظار إليك وتجعلهم يصوتون ضدك.</li>
+            <li class="text-right">3️⃣ إذا كنت الضايع: راقب ردات فعل الآخرين جيداً، وحاول التقاط أي خيط يوصلك للكلمة.
+            </li>
           </ul>
         </div>
 
