@@ -16,7 +16,7 @@
       --bg-dark: #0f172a;
     }
 
-    /* إخفاء شريط التمرير */
+    /* إخفاء شريط التمرير لمظهر التطبيقات */
     * {
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -294,7 +294,7 @@
         من برا السالفة؟</h1>
       <p class="text-slate-400 text-base sm:text-xl mb-14 font-bold opacity-90 px-4 mt-6 leading-relaxed text-center">
         اللعبة الرسمية لكشف "الضايع" بينكم!</p>
-      <div class="space-y-4">
+      <div class="space-y-4 text-center">
         <button onclick="showScreen('setup')"
           class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black text-white shadow-2xl text-center">بدء
           التحدي</button>
@@ -329,22 +329,26 @@
               class="flex-1 bg-slate-800 border-none rounded-xl p-4 text-white outline-none focus:ring-2 ring-indigo-500 text-sm text-right"
               placeholder="كلمة سرية...">
             <button onclick="addCustomWord()"
-              class="bg-indigo-600 px-6 rounded-2xl font-black text-white">إضافة</button>
+              class="bg-indigo-600 px-6 rounded-2xl font-black text-white text-sm">إضافة</button>
           </div>
           <div id="custom-words-list" class="flex flex-wrap gap-2 mt-4 max-h-32 overflow-y-auto justify-end"></div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 text-right text-right">
-          <div class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner text-right">
-            <div class="flex justify-between mb-3 flex-row-reverse text-right text-right text-right">
-              <label class="text-slate-300 font-bold text-sm text-right">عدد اللاعبين</label>
+          <div
+            class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner text-right text-right text-right">
+            <div class="flex justify-between mb-3 flex-row-reverse text-right text-right text-right text-right">
+              <label class="text-slate-300 font-bold text-sm text-right text-right text-right">عدد اللاعبين</label>
               <span class="text-indigo-400 font-mono font-black text-xl" id="val-players">3</span>
             </div>
             <input type="range" id="input-players" min="3" max="20" value="3" oninput="updateSetupInfo()">
           </div>
-          <div class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner text-right text-right">
-            <div class="flex justify-between mb-3 flex-row-reverse text-right text-right text-right text-right">
-              <label class="text-slate-300 font-bold text-sm text-right">وقت النقاش</label>
+          <div
+            class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner text-right text-right text-right text-right">
+            <div
+              class="flex justify-between mb-3 flex-row-reverse text-right text-right text-right text-right text-right text-right">
+              <label class="text-slate-300 font-bold text-sm text-right text-right text-right text-right">وقت
+                النقاش</label>
               <span class="text-emerald-400 font-black text-lg" id="val-time-label">دقيقة واحدة</span>
             </div>
             <input type="range" id="input-time" min="30" max="300" step="30" value="60" oninput="updateSetupInfo()">
@@ -355,12 +359,10 @@
           <div id="double-agent-container"
             class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
             <div class="text-right text-right text-right text-right text-right">
-              <h4
-                class="font-bold text-sm text-white font-black text-right text-right text-right text-right text-right">
-                🎭 العميل المزدوج</h4>
-              <p
-                class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right text-right">
-                متاح لـ 5 لاعبين فأكثر</p>
+              <h4 class="font-bold text-sm text-white font-black text-right text-right text-right text-right">🎭 العميل
+                المزدوج</h4>
+              <p class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right">متاح لـ
+                5 لاعبين فأكثر</p>
             </div>
             <input type="checkbox" id="check-double-agent" class="custom-checkbox">
           </div>
@@ -369,10 +371,10 @@
             class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
             <div class="text-right text-right text-right text-right text-right text-right">
               <h4
-                class="font-bold text-sm text-white font-black text-right text-right text-right text-right text-right text-right text-right">
+                class="font-bold text-sm text-white font-black text-right text-right text-right text-right text-right">
                 🕵️ المموه</h4>
               <p
-                class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right text-right text-right text-right text-right">
+                class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right text-right">
                 يملك كلمة مشابهة ويضلل الجميع!</p>
             </div>
             <input type="checkbox" id="check-undercover" class="custom-checkbox">
@@ -402,7 +404,8 @@
 
     <!-- Reveal Screen -->
     <div id="screen-reveal" class="glass-panel hidden text-center">
-      <div class="text-7xl sm:text-8xl mb-6 text-center text-center text-center text-center text-center">📱</div>
+      <div class="text-7xl sm:text-8xl mb-6 text-center text-center text-center text-center text-center text-center">📱
+      </div>
       <p
         class="text-slate-400 mb-2 text-xl font-bold text-center text-center text-center text-center text-center text-center">
         مرر الجهاز إلى المحقق:</p>
@@ -413,7 +416,7 @@
         class="hidden p-8 bg-indigo-500/10 border-4 border-dashed border-indigo-500/20 rounded-3xl mb-10 animate-pulse shadow-inner text-center text-center text-center text-center">
         <p id="reveal-role-text" class="text-2xl sm:text-3xl font-bold mb-4 text-center text-center text-center"></p>
         <div id="reveal-img-placeholder"
-          class="text-8xl sm:text-9xl mb-6 text-center text-center text-center text-center text-center text-center">
+          class="text-8xl sm:text-9xl mb-6 text-center text-center text-center text-center text-center text-center text-center text-center">
         </div>
         <p id="reveal-secret-word"
           class="text-4xl sm:text-5xl font-black text-white tracking-widest uppercase text-center break-word-custom text-center text-center text-center text-center">
@@ -428,7 +431,7 @@
     <div id="screen-game" class="glass-panel hidden text-center text-center text-center">
       <div class="flex justify-center mb-10 text-center text-center text-center text-center text-center">
         <div
-          class="relative w-56 h-56 sm:w-72 sm:h-72 flex items-center justify-center text-center text-center text-center text-center text-center text-center">
+          class="relative w-56 h-56 sm:w-72 sm:h-72 flex items-center justify-center text-center text-center text-center text-center text-center text-center text-center text-center">
           <svg class="absolute inset-0 w-full h-full -rotate-90 text-center text-center text-center"
             viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
@@ -443,19 +446,19 @@
             </defs>
           </svg>
           <div id="game-timer"
-            class="text-6xl sm:text-8xl font-black font-mono tracking-tighter text-white text-center text-center text-center text-center text-center text-center">
+            class="text-6xl sm:text-8xl font-black font-mono tracking-tighter text-white text-center text-center text-center text-center text-center text-center text-center text-center">
             00:00</div>
         </div>
       </div>
       <p
-        class="text-2xl sm:text-3xl text-slate-200 mb-12 font-bold px-4 text-center text-white text-center text-center text-center">
+        class="text-2xl sm:text-3xl text-slate-200 mb-12 font-bold px-4 text-center text-white text-center text-center text-center text-center">
         تناقشوا بذكاء.. لا تكشفوا السالفة للضايع!</p>
-      <div class="grid grid-cols-2 gap-4 text-center text-center text-center text-center">
+      <div class="grid grid-cols-2 gap-4 text-center text-center text-center text-center text-center">
         <button onclick="endGameEarly()"
-          class="py-5 bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-3xl font-black text-lg text-center font-black text-center text-center">إنهاء
+          class="py-5 bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-3xl font-black text-lg text-center font-black text-center text-center text-center">إنهاء
           الوقت</button>
         <button onclick="pauseTimer()" id="btn-pause"
-          class="py-5 btn-secondary rounded-3xl font-black text-lg border-2 border-white/5 text-white text-center font-black text-center text-center">إيقاف
+          class="py-5 btn-secondary rounded-3xl font-black text-lg border-2 border-white/5 text-white text-center font-black text-center text-center text-center">إيقاف
           مؤقت</button>
       </div>
     </div>
@@ -463,7 +466,7 @@
     <!-- Voting Screen -->
     <div id="screen-voting" class="glass-panel hidden text-center text-center text-center text-center">
       <h2
-        class="text-3xl sm:text-5xl font-black mb-4 text-white text-center font-black text-center text-center text-center text-center text-center text-center">
+        class="text-3xl sm:text-5xl font-black mb-4 text-white text-center font-black text-center text-center text-center text-center text-center">
         من الضايع؟ ⚖️</h2>
       <p
         class="text-slate-400 mb-8 text-lg font-semibold underline decoration-indigo-500 text-center text-center text-center text-center text-center text-center">
@@ -477,7 +480,7 @@
     <div id="screen-guess"
       class="glass-panel hidden text-center text-center text-center text-center text-center text-center text-center text-center">
       <h2
-        class="text-3xl sm:text-4xl font-black mb-6 text-red-400 text-center font-black text-center text-center text-center text-center text-center text-center text-center">
+        class="text-3xl sm:text-4xl font-black mb-6 text-red-400 text-center font-black text-center text-center text-center text-center text-center text-center text-center text-center">
         لقد كشفوك! 🎯</h2>
       <p
         class="text-slate-300 mb-10 text-xl font-bold leading-relaxed text-center text-white text-center text-center text-center text-center text-center text-center text-center text-center">
@@ -561,16 +564,17 @@
     <div id="screen-rules"
       class="glass-panel hidden text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
       <h2
-        class="text-3xl sm:text-4xl font-black mb-10 text-center text-indigo-400 border-b-4 border-indigo-500/10 pb-6 text-center font-black text-right text-center text-right text-center text-right text-center text-right text-center text-right text-center">
+        class="text-3xl sm:text-4xl font-black mb-10 text-center text-indigo-400 border-b-4 border-indigo-500/10 pb-6 text-center font-black text-right text-center text-right text-center text-right text-center text-right text-center text-right text-center text-right">
         📜 دليل السالفة الشامل</h2>
 
       <div class="space-y-6 text-right text-right text-right text-right text-right text-right text-right">
         <div class="rule-card text-right text-right">
           <h4
             class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl text-right text-right text-right text-right text-right text-right text-right">
-            <span class="order-first">❓</span> ما هي هذه اللعبة؟</h4>
+            <span class="order-first">❓</span> ما هي هذه اللعبة؟
+          </h4>
           <p
-            class="text-base leading-relaxed text-slate-300 font-semibold italic text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="text-base leading-relaxed text-slate-300 font-semibold italic text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
             لعبة ذكاء وتمويه جماعية. في كل جولة، توجد "سالفة" يعرفها الجميع إلا <span
               class="highlight-text font-black text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">شخص
               واحد</span> يسمى "الضايع".</p>
@@ -579,7 +583,8 @@
         <div class="rule-card text-right text-right">
           <h4
             class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
-            <span class="order-first">🎭</span> الأدوار وشروط الفوز</h4>
+            <span class="order-first">🎭</span> الأدوار وشروط الفوز
+          </h4>
           <ul
             class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
             <li class="text-right">🕵️ المحققون: يفوزون إذا كشفوا الضايع، وفشل في تخمين السالفة.</li>
@@ -592,9 +597,10 @@
         <div class="rule-card text-right text-right">
           <h4
             class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
-            <span class="order-first">📊</span> نظام النقاط المطور</h4>
+            <span class="order-first">📊</span> نظام النقاط المطور
+          </h4>
           <div
-            class="text-xs space-y-3 font-bold text-right leading-relaxed text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="text-xs space-y-3 font-bold text-right leading-relaxed text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
             <div
               class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right text-right text-right text-right">
               <p class="text-emerald-400 mb-1 text-right text-right text-right text-right text-right">🕵️ المحققون:</p>
@@ -621,83 +627,99 @@
 
   <!-- Modals -->
   <div id="modal-stats"
-    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[500] p-6 backdrop-blur-md text-center text-center text-center text-center text-center text-center text-center text-center">
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[500] p-6 backdrop-blur-md text-center text-center text-center text-center text-center text-center text-center text-center text-center">
     <div
-      class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center text-center text-center text-center text-center">
+      class="glass-panel max-w-sm w-full text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
       <div id="player-stat-avatar"
-        class="text-6xl mb-4 text-center text-center text-center text-center text-center text-center text-center"></div>
+        class="text-6xl mb-4 text-center text-center text-center text-center text-center text-center text-center text-center">
+      </div>
       <h3 id="player-stat-name"
-        class="text-2xl font-black text-white mb-4 text-center font-black text-center text-center text-center text-center text-center text-center text-center">
+        class="text-2xl font-black text-white mb-4 text-center font-black text-center text-center text-center text-center text-center text-center text-center text-center">
       </h3>
 
       <div
-        class="bg-white/5 p-4 rounded-3xl border border-white/10 mb-6 text-center text-center text-center text-center text-center">
+        class="bg-white/5 p-4 rounded-3xl border border-white/10 mb-6 text-center text-center text-center text-center text-center text-center text-center">
         <p
-          class="text-slate-400 text-xs mb-2 font-bold text-center text-center text-center text-center text-center text-center">
+          class="text-slate-400 text-xs mb-2 font-bold text-center text-center text-center text-center text-center text-center text-center text-center">
           إجمالي النشاط</p>
         <div
-          class="grid grid-cols-2 gap-y-4 gap-x-2 text-center text-center text-center text-center text-center text-center">
+          class="grid grid-cols-2 gap-y-4 gap-x-2 text-center text-center text-center text-center text-center text-center text-center">
           <div
-            class="text-center border-b border-l border-white/5 pb-2 text-center text-center text-center text-center">
-            <p class="text-indigo-400 text-lg font-black text-center text-center text-center" id="stat-total-games">0
-            </p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">لعبة</p>
+            class="text-center border-b border-l border-white/5 pb-2 text-center text-center text-center text-center text-center">
+            <p class="text-indigo-400 text-lg font-black text-center text-center text-center text-center"
+              id="stat-total-games">0</p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center text-center">لعبة</p>
           </div>
-          <div class="text-center border-b border-white/5 pb-2 text-center text-center text-center text-center">
-            <p class="text-yellow-400 text-lg font-black text-center text-center text-center" id="stat-total-points">0
-            </p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">مجموع النقاط</p>
+          <div
+            class="text-center border-b border-white/5 pb-2 text-center text-center text-center text-center text-center">
+            <p class="text-yellow-400 text-lg font-black text-center text-center text-center text-center"
+              id="stat-total-points">0</p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center text-center text-center">
+              مجموع النقاط</p>
           </div>
-          <div class="text-center border-l border-white/5 pt-2 text-center text-center text-center text-center">
-            <p class="text-emerald-400 text-lg font-black text-center text-center text-center" id="stat-total-wins">0
-            </p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">فوز</p>
+          <div
+            class="text-center border-l border-white/5 pt-2 text-center text-center text-center text-center text-center">
+            <p class="text-emerald-400 text-lg font-black text-center text-center text-center text-center text-center"
+              id="stat-total-wins">0</p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center text-center text-center">
+              فوز</p>
           </div>
-          <div class="text-center pt-2 text-center text-center text-center text-center text-center">
-            <p class="text-red-400 text-lg font-black text-center text-center text-center" id="stat-total-losses">0</p>
-            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center">خسارة</p>
+          <div class="text-center pt-2 text-center text-center text-center text-center text-center text-center">
+            <p class="text-red-400 text-lg font-black text-center text-center text-center text-center text-center"
+              id="stat-total-losses">0</p>
+            <p class="text-[10px] text-slate-500 uppercase text-center text-center text-center text-center text-center">
+              خسارة</p>
           </div>
         </div>
       </div>
 
-      <p class="text-slate-400 text-[10px] mb-3 text-right font-bold text-right text-right text-right text-right">تفاصيل
-        الأدوار:</p>
-      <div class="grid grid-cols-2 gap-4 mb-8 text-right text-right text-right text-right text-right">
+      <p
+        class="text-slate-400 text-[10px] mb-3 text-right font-bold text-right text-right text-right text-right text-right">
+        تفاصيل الأدوار:</p>
+      <div class="grid grid-cols-2 gap-4 mb-8 text-right text-right text-right text-right text-right text-right">
         <div
-          class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right text-right text-right text-right">
-          <p class="text-[10px] text-emerald-400 font-bold mb-1 text-right text-right text-right text-right">🕵️ محقق
-          </p>
-          <div class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right">
-            <span>فوز: <span id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span></div>
-        </div>
-        <div
-          class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right text-right text-right text-right text-right">
-          <p class="text-[10px] text-indigo-400 font-bold mb-1 text-right text-right text-right text-right text-right">
-            🌫️ ضايع</p>
-          <div class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right">
-            <span>فوز: <span id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span></div>
-        </div>
-        <div
-          class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right text-right text-right text-right text-right text-right">
+          class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right text-right text-right text-right text-right">
           <p
-            class="text-[10px] text-orange-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right">
-            🎭 عميل</p>
+            class="text-[10px] text-emerald-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right">
+            🕵️ محقق</p>
           <div
             class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right">
-            <span>فوز: <span id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span></div>
+            <span>فوز: <span id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span>
+          </div>
         </div>
         <div
-          class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right text-right text-right text-right text-right text-right text-right">
+          class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right text-right text-right text-right text-right text-right">
           <p
-            class="text-[10px] text-yellow-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right text-right">
-            🤫 مموه</p>
+            class="text-[10px] text-indigo-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right">
+            🌫️ ضايع</p>
+          <div
+            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right">
+            <span>فوز: <span id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span>
+          </div>
+        </div>
+        <div
+          class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right text-right text-right text-right text-right text-right text-right">
+          <p
+            class="text-[10px] text-orange-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right text-right">
+            🎭 عميل</p>
           <div
             class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right text-right">
-            <span>فوز: <span id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span></div>
+            <span>فوز: <span id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span>
+          </div>
+        </div>
+        <div
+          class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right text-right text-right text-right text-right text-right text-right text-right">
+          <p
+            class="text-[10px] text-yellow-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right text-right text-right">
+            🤫 مموه</p>
+          <div
+            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right text-right text-right">
+            <span>فوز: <span id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span>
+          </div>
         </div>
       </div>
       <button onclick="closeStatsModal()"
-        class="w-full py-4 btn-secondary rounded-2xl font-black text-white text-center text-center text-center text-center text-center">إغلاق</button>
+        class="w-full py-4 btn-secondary rounded-2xl font-black text-white text-center text-center text-center text-center text-center text-center">إغلاق</button>
     </div>
   </div>
 
@@ -753,7 +775,10 @@
   </div>
 
   <script>
-    // --- 0. دالة تنسيق الوقت (تعريف مبكر جداً) ---
+    // --- 0. التعريفات الأساسية والتوابع المساعدة (مقدمة لمنع ReferenceErrors) ---
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
     function formatTimeLabel(seconds) {
       if (seconds === 30) return "30 ثانية";
       if (seconds === 60) return "دقيقة واحدة";
@@ -763,29 +788,22 @@
       return secs === 0 ? `${mins} دقائق` : `${mins} دقيقة و${secs} ثانية`;
     }
 
-    // --- 1. قاعدة البيانات والتعريفات ---
-    const wordBank = {
-      "طعام": [{ word: "بيتزا", emoji: "🍕", desc: "أكلة إيطالية دائرية بصلصة وجبنة.", related: "فطيرة" }, { word: "كبسة", emoji: "🍛", desc: "رز ولحم، أكلة خليجية مشهورة.", related: "مندي" }, { word: "برجر", emoji: "🍔", desc: "لحم مشوي داخل خبز مع جبنة.", related: "ساندوتش" }, { word: "شاورما", emoji: "🌯", desc: "لحم مقطع ملفوف في خبز صاج.", related: "فلافل" }, { word: "باستا", emoji: "🍝", desc: "مكرونة إيطالية بصوصات ملونة.", related: "لازانيا" }, { word: "سوشي", emoji: "🍣", desc: "رز وسمك ملفوف ياباني.", related: "روبيان" }, { word: "كنافة", emoji: "🍮", desc: "حلوى شرقية بالجبنة أو القشطة.", related: "بسبوسة" }, { word: "جريش", emoji: "🥣", desc: "أكلة شعبية بيضاء مشهورة.", related: "سليق" }],
-      "أدوات": [{ word: "شاحن", emoji: "🔌", desc: "ينقذ جوالك لما تخلص البطارية.", related: "توصيلة" }, { word: "مكيف", emoji: "❄️", desc: "يبرد الجو في الصيف الحارق.", related: "مروحة" }, { word: "ساعة", emoji: "⌚", desc: "تنلبس في المعصم لمعرفة الوقت.", related: "سوار" }, { word: "نظارة", emoji: "👓", desc: "تساعدك تشوف بوضوح.", related: "عدسات" }, { word: "مطرقة", emoji: "🔨", desc: "أداة بناء تُستخدم لدق المسامير.", related: "مفك" }, { word: "مقص", emoji: "✂️", desc: "أداة لقص الورق والقماش.", related: "سكين" }],
-      "ماركات": [{ word: "أبل", emoji: "🍎", desc: "شركة تقنية مشهورة بالآيفون وشعار التفاحة.", related: "سامسونج" }, { word: "نايكي", emoji: "✔️", desc: "ماركة رياضية عالمية للأحذية والملابس.", related: "أديداس" }, { word: "مرسيدس", emoji: "🚗", desc: "سيارات ألمانية فخمة ورمز للرفاهية والقوة.", related: "بي إم" }, { word: "بيبسي", emoji: "🥤", desc: "مشروب غازي عالمي لونه أسود.", related: "كوكاكولا" }],
-      "حيوانات": [{ word: "خروف", emoji: "🐑", desc: "حيوان المزرعة المفضل في العيد.", related: "ماعز" }, { word: "أسد", emoji: "🦁", desc: "ملك الغابة، حيوان مفترس وقوي.", related: "نمر" }, { word: "جمل", emoji: "🐪", desc: "سفينة الصحراء الصبورة.", related: "خيل" }, { word: "دلفين", emoji: "🐬", desc: "حيوان بحري ذكي وصديق للبشر.", related: "حوت" }],
-      "تكنولوجيا": [{ word: "جوال", emoji: "📱", desc: "جهاز في جيبك يوصلك بكل العالم.", related: "ايباد" }, { word: "حاسوب", emoji: "💻", desc: "جهاز للدراسة أو العمل.", related: "لابتوب" }, { word: "إنترنت", emoji: "🌐", desc: "الشبكة العنكبوتية العالمية.", related: "واي فاي" }, { word: "روبوت", emoji: "🤖", desc: "أالة مبرمجة لتقوم بمهام الإنسان.", related: "ذكاء اصطناعي" }],
-      "ألعاب": [{ word: "بلايستيشن", emoji: "🎮", desc: "جهاز ألعاب من شركة سوني.", related: "اكس بوكس" }, { word: "فيفا", emoji: "⚽", desc: "لعبة كرة القدم الأشهر رقمياً.", related: "روكيت ليغ" }],
-      "مشروبات": [{ word: "قهوة", emoji: "☕", desc: "مشروب الصباح الذي يعدل المزاج.", related: "شاي" }, { word: "عصير منجا", emoji: "🥭", desc: "فاكهة استوائية ثقيلة القوام.", related: "فراولة" }, { word: "حمضيات", emoji: "🍊", desc: "مشروب غازي برتقالي اللون.", related: "ميرندا" }],
-      "أماكن": [{ word: "مكة المكرمة", emoji: "🕋", desc: "قبلة المسلمين وأقدس مكان.", related: "المدينة" }, { word: "برج إيفل", emoji: "🗼", desc: "أشهر معلم حديدي في باريس.", related: "برج خليفة" }],
-      "دول": [{ word: "السعودية", emoji: "🇸🇦", desc: "دولة خليجية عاصمتها الرياض.", related: "الكويت" }, { word: "مصر", emoji: "🇪🇬", desc: "دولة النيل والحضارة القديمة.", related: "الأردن" }],
-      "عطور": [{ word: "بخور", emoji: "💨", desc: "رائحة شرقية ناتجة عن الاحتراق.", related: "مسك" }, { word: "دهن عود", emoji: "🪵", desc: "زيت عطري ثمين وقوي.", related: "ورد" }],
-      "كلمات خاصة": []
-    };
+    // دالة إغلاق النوافذ (تم إصلاحها لعدم إخفاء زر الصوت)
+    function closeModal() {
+      // نقوم بإخفاء النوافذ المنبثقة المحددة فقط بدلاً من استهداف .fixed بشكل عام
+      const modals = ['modal-stats', 'modal-alert', 'modal-confirm', 'modal-category'];
+      modals.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
 
-    const avatars = ["🕵️", "👤", "👮", "🧑‍🚀", "🧙", "🧛", "🧟", "🦁", "🦊", "🐻", "🐼", "🤖", "🤡", "👺", "😈", "🦉", "🦒", "🦈"];
-    const funnyTitles = ["الضايع المبتديء 😶", "المحقق المتدرب 🔍", "راعي الفزعة 🤝", "كاشف السوالف 🔎", "المراوغ الأسطوري 🤺", "الذيب 🐺", "ملك التمويه 🎭", "العميل السري 🕵️‍♂️", "البروفيسور 👨‍🏫", "أسطورة السوالف 🏆"];
-    const roleNamesMap = { 'in': '🕵️ محقق', 'out': '🌫️ الضايع', 'agent': '🎭 عميل مزدوج', 'undercover': '🤫 المموه' };
+    function closeAlert() {
+      document.getElementById('modal-alert').classList.add('hidden');
+    }
 
-    // --- الأصوات ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, duration, type = 'sine', vol = 0.1) {
-      if (state.isMuted) return;
+      if (typeof state !== 'undefined' && state.isMuted) return;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.connect(gain); gain.connect(audioCtx.destination);
@@ -794,6 +812,7 @@
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
       osc.start(); osc.stop(audioCtx.currentTime + duration);
     }
+
     const sounds = {
       tick: () => playTone(800, 0.05, 'sine', 0.03),
       win: () => { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100); setTimeout(() => playTone(783, 0.3), 200); },
@@ -801,7 +820,288 @@
       wrong: () => playTone(100, 0.5, 'square', 0.2)
     };
 
-    // --- 2. الحالة العامة (State) ---
+    const wordBank = {
+      "طعام": [
+        // --- أطباق عالمية مشهورة ---
+        { word: "بيتزا", emoji: "🍕", desc: "أكلة إيطالية دائرية بصلصة وجبنة وسرها في العجينة.", related: "فطيرة" },
+        { word: "برجر", emoji: "🍔", desc: "لحم مشوي داخل خبز مع جبنة، ملك الوجبات السريعة.", related: "ساندوتش" },
+        { word: "باستا", emoji: "🍝", desc: "مكرونة إيطالية بصوصات ملونة ولذيذة.", related: "لازانيا" },
+        { word: "سوشي", emoji: "🍣", desc: "رز وسمك ملفوف ياباني يؤكل بالسيقان الخشبية.", related: "روبيان" },
+        { word: "تاكو", emoji: "🌮", desc: "خبز ذرة مكسيكي محشو باللحم والخضروات.", related: "بوريتو" },
+
+        // --- أطباق خليجية وعربية ---
+        { word: "كبسة", emoji: "🍛", desc: "رز ولحم، أكلة خليجية مشهورة تتوسط المائدة.", related: "مندي" },
+        { word: "شاورما", emoji: "🌯", desc: "لحم مقطع ملفوف في خبز صاج مع ثومية.", related: "فلافل" },
+        { word: "جريش", emoji: "🥣", desc: "أكلة شعبية بيضاء مشهورة مصنوعة من القمح المجروش.", related: "سليق" },
+        { word: "فلافل", emoji: "🧆", desc: "أقراص مقلية من الحمص، فطور شرقي لا يقاوم.", related: "فول" },
+
+        // --- المطبخ العراقي (إضافة مميزة) ---
+        { word: "مسكوف", emoji: "🐟", desc: "السمك العراقي المشوي على الحطب بلمسة بغدادية.", related: "بني" },
+        { word: "دولمة", emoji: "🥘", desc: "خضروات محشوة بالرز واللحم، ملكة السفرة العراقية.", related: "برياني" },
+        { word: "باچة", emoji: "🍲", desc: "أكلة عراقية دسمة جداً تتكون من رأس وأطراف الغنم.", related: "تشريب" },
+        { word: "برياني", emoji: "🍚", desc: "رز مع اللحم أو الدجاج والمكسرات والبهارات الغنية.", related: "دولمة" },
+        { word: "كبة موصلية", emoji: "🥟", desc: "كبة كبيرة الحجم تشتهر بها مدينة الموصل.", related: "كبة حلب" },
+
+        // --- الحلويات ---
+        { word: "كنافة", emoji: "🍮", desc: "حلوى شرقية بالجبنة أو القشطة وتسقى بالقطر.", related: "بسبوسة" },
+        { word: "بسبوسة", emoji: "🥮", desc: "حلوى سميد ناعمة ومحلاة، تذوب في الفم.", related: "كنافة" },
+        { word: "كليچة", emoji: "🍪", desc: "حلوى عراقية تقليدية تقدم في الأعياد والمناسبات.", related: "شاي" },
+        { word: "دونات", emoji: "🍩", desc: "حلوى دائرية مقلية ومغطاة بالسكر أو الشوكولاتة.", related: "كيك" },
+        { word: "بقلاوة", emoji: "💎", desc: "رقائق عجين هشة محشوة بالمكسرات والعسل.", related: "زلابية" }
+      ],
+      "أدوات": [
+        // --- مستلزمات كهربائية وإلكترونية ---
+        { word: "شاحن", emoji: "🔌", desc: "ينقذ جوالك لما تخلص البطارية.", related: "توصيلة" },
+        { word: "مكيف", emoji: "❄️", desc: "يبرد الجو في الصيف الحارق.", related: "مروحة" },
+        { word: "مروحة", emoji: "🌀", desc: "تحرك الهواء وتلطف الأجواء في الغرفة.", related: "مكيف" },
+        { word: "تلفاز", emoji: "📺", desc: "شاشة الترفيه والأخبار في صالة المنزل.", related: "ريموت" },
+        { word: "ريموت", emoji: "🎮", desc: "جهاز التحكم عن بعد بكل الأجهزة الكهربائية.", related: "بطارية" },
+
+        // --- أدوات شخصية وزينة ---
+        { word: "ساعة", emoji: "⌚", desc: "تنلبس في المعصم لمعرفة الوقت وأناقة المظهر.", related: "سوار" },
+        { word: "نظارة", emoji: "👓", desc: "تساعدك تشوف بوضوح أو تحميك من الشمس.", related: "عدسات" },
+        { word: "محفظة", emoji: "👛", desc: "مكان آمن لحفظ المال والبطاقات الشخصية.", related: "حقيبة" },
+        { word: "مظلة", emoji: "☂️", desc: "تحميك من المطر الغزير أو شمس الظهيرة.", related: "مطر" },
+        { word: "عطر", emoji: "🧴", desc: "رائحة زكية تعكس شخصيتك في حضور الآخرين.", related: "بخور" },
+
+        // --- أدوات يدوية ومنزلية ---
+        { word: "مطرقة", emoji: "🔨", desc: "أداة بناء تُستخدم لدق المسامير في الخشب.", related: "مسمار" },
+        { word: "مفك", emoji: "🪛", desc: "أداة لشد أو فك البراغي في الأجهزة والأثاث.", related: "زرادية" },
+        { word: "مقص", emoji: "✂️", desc: "أداة حادة لقص الورق، القماش، أو حتى الشعر.", related: "سكين" },
+        { word: "مصباح", emoji: "🔦", desc: "ينير لك الطريق عند انقطاع الكهرباء أو في الظلام.", related: "شمعة" },
+        { word: "ميزان", emoji: "⚖️", desc: "يستخدم لمعرفة الوزن سواء للأشخاص أو الأطعمة.", related: "قياس" },
+        { word: "قفل", emoji: "🔒", desc: "وسيلة الأمان لحماية الأبواب والخزائن.", related: "مفتاح" }
+      ],
+      "ماركات": [
+        // --- التكنولوجيا والهواتف الذكية ---
+        { word: "أبل", emoji: "🍎", desc: "شركة تقنية مشهورة بالآيفون وشعار التفاحة المقضومة.", related: "سامسونج" },
+        { word: "سامسونج", emoji: "📱", desc: "عملاق التقنية الكوري ومنافس أبل الأول في الهواتف.", related: "أبل" },
+        { word: "مايكروسوفت", emoji: "💻", desc: "شركة البرمجيات الأكبر، صاحبة نظام ويندوز وأوفيس.", related: "جوجل" },
+        { word: "سوني", emoji: "🎮", desc: "شركة يابانية رائدة في الإلكترونيات وصناعة الألعاب.", related: "نينتندو" },
+
+        // --- الملابس والرياضة ---
+        { word: "نايكي", emoji: "✔️", desc: "ماركة رياضية عالمية للأحذية والملابس الرياضية.", related: "أديداس" },
+        { word: "أديداس", emoji: "👟", desc: "شركة ألمانية شهيرة بشعار الخطوط الثلاثة.", related: "نايكي" },
+        { word: "رولكس", emoji: "👑", desc: "أشهر ماركة للساعات السويسرية الفاخرة في العالم.", related: "أوميغا" },
+        { word: "لويس فيتون", emoji: "👜", desc: "رمز الفخامة الفرنسية في الحقائب والأزياء.", related: "شانيل" },
+
+        // --- السيارات والرفاهية ---
+        { word: "مرسيدس", emoji: "🚗", desc: "سيارات ألمانية فخمة ورمز للرفاهية والقوة.", related: "بي إم دبليو" },
+        { word: "بي إم دبليو", emoji: "🏎️", desc: "شركة سيارات ألمانية تركز على الأداء والقيادة الرياضية.", related: "مرسيدس" },
+        { word: "تويوتا", emoji: "🚙", desc: "شركة السيارات الأكثر مبيعاً واعتمادية في العالم.", related: "نيسان" },
+        { word: "فيراري", emoji: "🐎", desc: "أيقونة السيارات الرياضية الخارقة والسرعة الإيطالية.", related: "لامبورغيني" },
+
+        // --- الأطعمة والمشروبات السريعة ---
+        { word: "بيبسي", emoji: "🥤", desc: "مشروب غازي عالمي يتميز بلونه الأزرق (للعبوة) والأسود.", related: "كوكاكولا" },
+        { word: "كوكاكولا", emoji: "🔴", desc: "أقدم وأشهر علامة تجارية للمشروبات الغازية في التاريخ.", related: "بيبسي" },
+        { word: "ستاربكس", emoji: "☕", desc: "أكبر سلسلة مقاهي في العالم وموطن الفرابوتشينو.", related: "دونات" },
+        { word: "ماكدونالدز", emoji: "🍟", desc: "ملك الوجبات السريعة وشعار الأقواس الذهبية.", related: "برجر كنج" },
+
+        // --- البيع بالتجزئة والإنترنت ---
+        { word: "أمازون", emoji: "📦", desc: "أكبر متجر إلكتروني في العالم يوصل كل شيء لباب بيتك.", related: "علي بابا" },
+        { word: "نتفليكس", emoji: "🎬", desc: "المنصة الرائدة في بث الأفلام والمسلسلات عبر الإنترنت.", related: "ديزني+" }
+      ],
+      "حيوانات": [
+        // --- حيوانات المزرعة والألفة ---
+        { word: "خروف", emoji: "🐑", desc: "حيوان المزرعة المفضل في العيد ومصدر الصوف.", related: "ماعز" },
+        { word: "خيل", emoji: "🐎", desc: "رمز الأصالة والسرعة، خاصة الخيول العربية.", related: "جمل" },
+        { word: "قطة", emoji: "🐱", desc: "حيوان منزلي محبوب يتميز بالذكاء واللطافة.", related: "كلب" },
+        { word: "دجاجة", emoji: "🐔", desc: "طائر داجن نعتمد عليه في البيض والغذاء.", related: "ديك" },
+
+        // --- وحوش الغابة والبرية ---
+        { word: "أسد", emoji: "🦁", desc: "ملك الغابة، حيوان مفترس وقوي يعيش في جماعات.", related: "نمر" },
+        { word: "نمر", emoji: "🐯", desc: "قط كبير مفترس يتميز بخطوطه السوداء وسرعته.", related: "فهد" },
+        { word: "فيل", emoji: "🐘", desc: "أضخم الحيوانات البرية ويمتاز بذاكرة قوية وخرطوم طويل.", related: "زرافة" },
+        { word: "ذئب", emoji: "🐺", desc: "حيوان بري ذكي يعيش في قطعان ويمتاز بالوفاء لفصيلته.", related: "ثعلب" },
+
+        // --- حيوانات البيئة العربية والصحراوية ---
+        { word: "جمل", emoji: "🐪", desc: "سفينة الصحراء الصبورة القادرة على تحمل العطش.", related: "ناقة" },
+        { word: "غزال", emoji: "🦌", desc: "رمز الجمال والرشاقة في الأدب العربي.", related: "مها" },
+        { word: "صقر", emoji: "🦅", desc: "طائر جارح يمثل القوة والشجاعة وهواية الصيد العربية.", related: "عقاب" },
+        { word: "هدهد", emoji: "🪽", desc: "طائر جميل ذُكر في القرآن الكريم ويشتهر بتاجه الملون.", related: "عصفور" },
+
+        // --- عالم البحار والمحيطات ---
+        { word: "دلفين", emoji: "🐬", desc: "حيوان بحري ذكي جداً ويحب اللعب مع البشر.", related: "حوت" },
+        { word: "حوت", emoji: "🐋", desc: "عملاق المحيطات، أكبر الكائنات الحية مساحة.", related: "قرش" },
+        { word: "بطريق", emoji: "🐧", desc: "طائر بحري لا يطير، يعيش في المناطق الجليدية.", related: "فقمة" },
+        { word: "أخطبوط", emoji: "🐙", desc: "كائن بحري بثمانية أذرع وثلاثة قلوب ويغير لونه.", related: "حبار" }
+      ],
+      "تكنولوجيا": [
+        // --- الأجهزة والعتاد التقني ---
+        { word: "جوال", emoji: "📱", desc: "جهاز في جيبك يوصلك بكل العالم.", related: "ايباد" },
+        { word: "حاسوب", emoji: "💻", desc: "جهاز للدراسة أو العمل ومعالجة البيانات.", related: "لابتوب" },
+        { word: "ساعة ذكية", emoji: "⌚", desc: "مساعد رقمي على معصمك لمراقبة الصحة والتنبيهات.", related: "جوال" },
+        { word: "سماعات", emoji: "🎧", desc: "أداة للاستماع للموسيقى أو المكالمات بخصوصية.", related: "بلوتوث" },
+        { word: "كاميرا", emoji: "📷", desc: "جهاز لتوثيق اللحظات وصناعة المحتوى المرئي.", related: "عدسة" },
+
+        // --- الشبكات والاتصال ---
+        { word: "إنترنت", emoji: "🌐", desc: "الشبكة العنكبوتية العالمية التي تربط المليارات.", related: "واي فاي" },
+        { word: "واي فاي", emoji: "📶", desc: "تقنية الاتصال اللاسلكي بالإنترنت.", related: "مودم" },
+        { word: "قمر صناعي", emoji: "🛰️", desc: "جهاز يدور حول الأرض لتوفير الاتصالات والبث.", related: "جي بي إس" },
+
+        // --- المستقبل والذكاء الاصطناعي ---
+        { word: "روبوت", emoji: "🤖", desc: "آلة مبرمجة لتقوم بمهام الإنسان بدقة.", related: "ذكاء اصطناعي" },
+        { word: "ذكاء اصطناعي", emoji: "🧠", desc: "أنظمة تحاكي القدرات الذهنية البشرية لحل المشكلات.", related: "روبوت" },
+        { word: "واقع افتراضي", emoji: "🥽", desc: "تقنية تنقلك إلى عالم رقمي بالكامل عبر نظارات خاصة.", related: "واقع معزز" },
+        { word: "طائرة درون", emoji: "🚁", desc: "طائرة بدون طيار تستخدم للتصوير أو التوصيل.", related: "تحكم عن بعد" },
+
+        // --- البرمجيات والتطبيقات ---
+        { word: "تطبيق", emoji: "📲", desc: "برنامج مصمم لتأدية وظيفة معينة على الجوال.", related: "متجر تطبيقات" },
+        { word: "سحابة", emoji: "☁️", desc: "تخزين البيانات عبر الإنترنت للوصول إليها من أي مكان.", related: "سيرفر" },
+        { word: "برمجة", emoji: "💻", desc: "لغة التخاطب مع الآلة لبناء المواقع والتطبيقات.", related: "كود" },
+        { word: "أمن سيبراني", emoji: "🛡️", desc: "حماية الأنظمة والبيانات من الهجمات الرقمية.", related: "تشفير" }
+      ],
+      "ألعاب": [
+        // --- أجهزة ومنصات الألعاب ---
+        { word: "بلايستيشن", emoji: "🎮", desc: "جهاز ألعاب من شركة سوني، المفضل في الشرق الأوسط.", related: "اكس بوكس" },
+        { word: "اكس بوكس", emoji: "💚", desc: "منصة ألعاب مايكروسوفت القوية وخدمة القيم باس.", related: "بلايستيشن" },
+        { word: "نينتندو سويتش", emoji: "🔴", desc: "جهاز ألعاب هجين يجمع بين المنزلي والمحمول.", related: "ماريو" },
+        { word: "بي سي (PC)", emoji: "🖥️", desc: "جهاز الكمبيوتر الشخصي، ملك الأداء والتعديل.", related: "ستيم" },
+        { word: "أتاري", emoji: "🕹️", desc: "جهاز الألعاب الكلاسيكي الذي بدأ ثورة الترفيه.", related: "سيجا" },
+
+        // --- ألعاب الفيديو الأيقونية ---
+        { word: "فيفا / FC", emoji: "⚽", desc: "لعبة كرة القدم الأشهر رقمياً والمنافسة في كل ديوانية.", related: "روكيت ليغ" },
+        { word: "ببجي (PUBG)", emoji: "🪂", desc: "لعبة البقاء التي أحدثت ضجة هائلة في العراق والوطن العربي.", related: "فورتنايت" },
+        { word: "كول اوف ديوتي", emoji: "🔫", desc: "أشهر سلسلة ألعاب تصويب وحروب عالمية.", related: "وارزون" },
+        { word: "ماينكرافت", emoji: "🧱", desc: "عالم من الإبداع والبناء باستخدام المكعبات.", related: "روبلوكس" },
+        { word: "جي تي أي (GTA)", emoji: "🚗", desc: "لعبة العالم المفتوح الشهيرة بمغامراتها في المدن.", related: "ريد ديد" },
+        { word: "كلاش اوف كلانس", emoji: "🏰", desc: "لعبة بناء القرى والحروب الاستراتيجية على الموبايل.", related: "كلاش رويال" },
+        { word: "روبلوكس", emoji: "🤖", desc: "منصة عالمية لصناعة ولعب الألعاب من قبل المستخدمين.", related: "ماينكرافت" },
+
+        // --- رموز ترفيهية ---
+        { word: "ستيم", emoji: "⚙️", desc: "أكبر متجر رقمي لألعاب الكمبيوتر في العالم.", related: "إيبك جيمز" },
+        { word: "تويتش", emoji: "💜", desc: "المنصة الأولى لبث الألعاب مباشرة والتفاعل مع الجمهور.", related: "ديسكورد" },
+        { word: "ديسكورد", emoji: "🎧", desc: "تطبيق التواصل المفضل للاعبين والمجتمعات الرقمية.", related: "تويتش" },
+        { word: "قيمر (Gamer)", emoji: "🎧", desc: "لقب يطلق على عشاق ومحترفي ألعاب الفيديو.", related: "ستريمر" }
+      ],
+      "مشروبات": [
+        // --- المشروبات الغازية والعالمية ---
+        { word: "كوكاكولا", emoji: "🥤", desc: "المشروب الغازي الأشهر عالمياً بصيغته السرية.", related: "بيبسي" },
+        { word: "بيبسي", emoji: "🔵", desc: "المنافس التقليدي للكوكاكولا، مشروب غازي منعش.", related: "كوكاكولا" },
+        { word: "سفن أب", emoji: "🍋", desc: "مشروب غازي شفاف بنكهة الليمون والليم الحامض.", related: "سبرايت" },
+        { word: "حمضيات", emoji: "🍊", desc: "مشروب غازي بنكهة البرتقال والحمضيات المنعشة.", related: "ميرندا" },
+        { word: "ريد بول", emoji: "🐂", desc: "مشروب الطاقة الأكثر شهرة الذي 'يعطيك جوانح'.", related: "بايسون" },
+
+        // --- القهوة وأنواعها (ساخنة وباردة) ---
+        { word: "اسبريسو", emoji: "☕", desc: "قهوة إيطالية مركزة جداً، أساس لمعظم أنواع القهوة.", related: "كابتشينو" },
+        { word: "كابتشينو", emoji: "☕", desc: "قهوة مع حليب مبخر ورغوة كثيفة.", related: "لاتيه" },
+        { word: "لاتيه", emoji: "🥛", desc: "قهوة بالحليب تتميز بطعم كريمي خفيف.", related: "موکا" },
+        { word: "سبانيش لاتيه", emoji: "🍯", desc: "قهوة باردة أو ساخنة مضاف إليها الحليب المكثف المحلى.", related: "أيس كوفي" },
+        { word: "قهوة عربية", emoji: "☕", desc: "قهوة شقراء بالهيل والزعفران، رمز الكرم العربي.", related: "تمر" },
+        { word: "قهوة تركية", emoji: "☕", desc: "قهوة سوداء قوية تحضر بالركوة وتتميز بالرغوة (الوش).", related: "قهوة فرنسية" },
+
+        // --- المشروبات التقليدية والشعبية (العراق والمنطقة) ---
+        { word: "شاي مهيّل", emoji: "🍵", desc: "الشاي العراقي الأصيل المطعم بحبات الهيل.", related: "استكان" },
+        { word: "لبن أربيل", emoji: "🥛", desc: "لبن عراقي طبيعي (شنينة) يقدم بارداً مع الوجبات.", related: "كباب" },
+        { word: "شاي كرك", emoji: "☕", desc: "شاي ثقيل مطبوخ مع الحليب والسكر والتوابل.", related: "هال" },
+        { word: "ورد ماي", emoji: "🌸", desc: "مشروب منعش يضاف له القليل من نكهة الورد.", related: "زعفران" },
+        { word: "نامليت", emoji: "🥤", desc: "مشروب غازي تراثي قديم في الخليج العربي.", related: "عصير" },
+
+        // --- العصائر والمشروبات الطبيعية ---
+        { word: "عصير برتقال", emoji: "🍹", desc: "ملك العصائر الطبيعية، غني بفيتامين سي.", related: "عصير ليمون" },
+        { word: "ليمون بالنعناع", emoji: "🍋", desc: "أكثر مشروب صيفي منعش ومبرد للجسم.", related: "موهيتو" },
+        { word: "تمر هندي", emoji: "🧃", desc: "مشروب طبيعي حامض وحلو، يشتهر في رمضان.", related: "عرق سوس" },
+        { word: "عصير رمان", emoji: "🍷", desc: "مشروب غني بمضادات الأكسدة وله طعم حاد ومميز.", related: "عصير تفاح" },
+        { word: "ماتشا", emoji: "🍵", desc: "شاي أخضر ياباني مطحون، صحي ومنبه جداً.", related: "شاي أخضر" }
+      ],
+      "أماكن": [
+        // --- معالم مستقبلية ومتطورة (إضافة جديدة) ---
+        { word: "متحف المستقبل", emoji: "💍", desc: "أجمل مبنى في العالم يقع في دبي ويمثل منصة لاستشراف الغد.", related: "برج خليفة" },
+        { word: "ذا لاين - نيوم", emoji: "🏙️", desc: "مدينة مستقبلية ذكية تمتد كخط مستقيم في قلب الصحراء السعودية.", related: "سندالة" },
+        { word: "سفير لاس فيغاس", emoji: "🔮", desc: "أكبر هيكل كروي في العالم مغطى بالكامل بشاشات LED تفاعلية.", related: "تمثال الحرية" },
+        { word: "حدائق الخليج", emoji: "🌳", desc: "واحة اصطناعية في سنغافورة تضم الأشجار العملاقة وقبب بيئية متطورة.", related: "مارينا باي ساندز" },
+        { word: "مطار حمد الدولي", emoji: "✈️", desc: "صرح معماري يضم حديقة 'أورتشيد' الاستوائية الداخلية في قطر.", related: "لوسيل" },
+        { word: "لوفر أبوظبي", emoji: "🏛️", desc: "متحف عائم بتصميم 'شعاع النور' الهندسي المذهل.", related: "جامع الشيخ زايد" },
+        { word: "مدينة مصدر", emoji: "🔋", desc: "أول مدينة مستدامة في العالم تعتمد بالكامل على الطاقة المتجددة.", related: "أبوظبي" },
+        { word: "برج السفير", emoji: "🗼", desc: "أطول برج حلزوني في طوكيو يجمع بين الحداثة ومقاومة الزلازل.", related: "سكاي تري" },
+
+        // --- معالم العراق ---
+        { word: "زقورة أور", emoji: "🏛️", desc: "صرح سومري عريق في جنوب العراق يمثل مهد الحضارات.", related: "بابل" },
+        { word: "ملوية سامراء", emoji: "🌀", desc: "مئذنة فريدة تعود للعصر العباسي وتتميز بتصميمها اللولبي.", related: "بغداد" },
+        { word: "نصب الشهيد", emoji: "🔷", desc: "تحفة معمارية في بغداد تتكون من قبتين مفتوحتين تخليداً للذكرى.", related: "نصب الحرية" },
+        { word: "قلعة أربيل", emoji: "🏰", desc: "تعد من أقدم القلاع المأهولة تاريخياً وتتوسط مدينة أربيل.", related: "نينوى" },
+        { word: "الأهوار", emoji: "🛶", desc: "مساحات مائية شاسعة في جنوب العراق تعكس حياة السومريين.", related: "شط العرب" },
+
+        // --- معالم كلاسيكية وعربية ---
+        { word: "مكة المكرمة", emoji: "🕋", desc: "قبلة المسلمين وأقدس بقعة على وجه الأرض.", related: "المدينة المنورة" },
+        { word: "برج إيفل", emoji: "🗼", desc: "رمز باريس الحديدي وأحد أكثر المعالم زيارة في العالم.", related: "متحف اللوفر" },
+        { word: "الأهرامات", emoji: "📐", desc: "عجائب هندسية مصرية قديمة صمدت لآلاف السنين.", related: "أبو الهول" },
+        { word: "سور الصين العظيم", emoji: "🧱", desc: "أعظم بناء دفاعي شيده الإنسان ويمتد عبر الجبال.", related: "المدينة المحرمة" },
+        { word: "تاج محل", emoji: "🏛️", desc: "جوهرة الفن الإسلامي في الهند ورمز للوفاء.", related: "نيودلهي" }
+      ],
+      "دول": [
+        // --- الدول العربية ---
+        { word: "السعودية", emoji: "🇸🇦", desc: "دولة خليجية عاصمتها الرياض.", related: "الكويت" },
+        { word: "مصر", emoji: "🇪🇬", desc: "دولة النيل والحضارة القديمة.", related: "الأردن" },
+        { word: "الإمارات", emoji: "🇦🇪", desc: "دولة رائدة في الابتكار وعاصمتها أبوظبي.", related: "عمان" },
+        { word: "الأردن", emoji: "🇯🇴", desc: "موطن مدينة البتراء الوردية.", related: "فلسطين" },
+        { word: "الكويت", emoji: "🇰🇼", desc: "دولة خليجية تمتاز بمركزها الثقافي.", related: "السعودية" },
+        { word: "قطر", emoji: "🇶🇦", desc: "دولة غنية بالموارد وعاصمتها الدوحة.", related: "البحرين" },
+        { word: "البحرين", emoji: "🇧🇭", desc: "مملكة جزرية عريقة في الخليج العربي.", related: "السعودية" },
+        { word: "عمان", emoji: "🇴🇲", desc: "سلطنة تمتاز بالطبيعة الجبلية والتراث.", related: "الإمارات" },
+        { word: "العراق", emoji: "🇮🇶", desc: "بلد الرافدين وعاصمتها بغداد.", related: "سوريا" },
+        { word: "لبنان", emoji: "🇱🇧", desc: "بلد الأرز والثقافة والفنون.", related: "سوريا" },
+        { word: "سوريا", emoji: "🇸🇾", desc: "قلب الشام ومهد الحضارات القديمة.", related: "لبنان" },
+        { word: "فلسطين", emoji: "🇵🇸", desc: "أرض المقدسات وعاصمتها القدس.", related: "الأردن" },
+        { word: "المغرب", emoji: "🇲🇦", desc: "مملكة عريقة تمزج بين الأندلس والأمازيغ.", related: "الجزائر" },
+        { word: "الجزائر", emoji: "🇩🇿", desc: "بلد المليون ونصف مليون شهيد.", related: "تونس" },
+        { word: "تونس", emoji: "🇹🇳", desc: "خضراء المغرب العربي وموطن قرطاج.", related: "المغرب" },
+        { word: "ليبيا", emoji: "🇱🇾", desc: "دولة غنية بالتاريخ والنفط في شمال أفريقيا.", related: "مصر" },
+        { word: "السودان", emoji: "🇸🇩", desc: "بلد النيلين والأراضي الزراعية الواسعة.", related: "مصر" },
+        { word: "اليمن", emoji: "🇾🇪", desc: "أصل العرب وموطن مملكة سبأ.", related: "عمان" },
+        { word: "موريتانيا", emoji: "🇲🇷", desc: "بلد المليون شاعر.", related: "المغرب" },
+
+        // --- دول آسيوية ---
+        { word: "اليابان", emoji: "🇯🇵", desc: "كوكب التكنولوجيا والتقاليد العريقة.", related: "كوريا الجنوبية" },
+        { word: "الصين", emoji: "🇨🇳", desc: "التنين الآسيوي وأكبر قوة صناعية.", related: "روسيا" },
+        { word: "الهند", emoji: "🇮🇳", desc: "شبه القارة الهندية وتنوعها الثقافي.", related: "باكستان" },
+        { word: "تركيا", emoji: "🇹🇷", desc: "جسر بين الشرق والغرب.", related: "اليونان" },
+        { word: "كوريا الجنوبية", emoji: "🇰🇷", desc: "عملاق التكنولوجيا والدراما والبوب.", related: "اليابان" },
+        { word: "إندونيسيا", emoji: "🇮🇩", desc: "أكبر أرخبيل في العالم وأكبر دولة إسلامية.", related: "ماليزيا" },
+        { word: "ماليزيا", emoji: "🇲🇾", desc: "مزيج ثقافي وسياحي في جنوب شرق آسيا.", related: "سنغافورة" },
+
+        // --- دول أوروبية ---
+        { word: "فرنسا", emoji: "🇫🇷", desc: "بلد العطور والأزياء وعاصمتها باريس.", related: "إيطاليا" },
+        { word: "ألمانيا", emoji: "🇩🇪", desc: "محرك الاقتصاد الأوروبي.", related: "النمسا" },
+        { word: "إيطاليا", emoji: "🇮🇹", desc: "بلد البيتزا والحضارة الرومانية.", related: "فرنسا" },
+        { word: "إسبانيا", emoji: "🇪🇸", desc: "موطن الأندلس ومصارعة الثيران.", related: "البرتغال" },
+        { word: "بريطانيا", emoji: "🇬🇧", desc: "المملكة المتحدة وعاصمتها لندن.", related: "أيرلندا" },
+        { word: "روسيا", emoji: "🇷🇺", desc: "أكبر دولة في العالم من حيث المساحة.", related: "الصين" },
+        { word: "سويسرا", emoji: "🇨🇭", desc: "بلد الساعات والشوكولاتة والحياد.", related: "ألمانيا" },
+
+        // --- الأمريكيتين وأوقيانوسيا ---
+        { word: "الولايات المتحدة", emoji: "🇺🇸", desc: "القوة الاقتصادية والعسكرية الأولى.", related: "كندا" },
+        { word: "كندا", emoji: "🇨🇦", desc: "بلد الطبيعة والبحيرات الشاسعة.", related: "الولايات المتحدة" },
+        { word: "البرازيل", emoji: "🇧🇷", desc: "أكبر دولة في أمريكا اللاتينية وبلد السامبا.", related: "الأرجنتين" },
+        { word: "الأرجنتين", emoji: "🇦🇷", desc: "بلد التانغو وميسي.", related: "البرازيل" },
+        { word: "أستراليا", emoji: "🇦🇺", desc: "قارة ودولة في آن واحد وموطن الكنغر.", related: "نيوزيلندا" }
+      ],
+      "عطور": [
+        { word: "بخور", emoji: "💨", desc: "رائحة شرقية ناتجة عن الاحتراق.", related: "مسك" },
+        { word: "دهن عود", emoji: "🪵", desc: "زيت عطري ثمين وقوي.", related: "ورد" },
+        { word: "مسك", emoji: "🦌", desc: "عطر حيواني المصدر يشتهر بنقائه.", related: "بخور" },
+        { word: "ورد", emoji: "🌹", desc: "زيت مستخلص من الزهور الطبيعية.", related: "دهن عود" },
+        { word: "عنبر", emoji: "🐋", desc: "مادة عطرية نادرة تخرج من حوت العنبر.", related: "خشب الصندل" },
+        { word: "خشب الصندل", emoji: "🌳", desc: "خشب عطري دافئ يستخدم في البخور والزيوت.", related: "عنبر" },
+        { word: "زعفران", emoji: "🪻", desc: "توابل وعطر ثمين يضيف نكهة ولوناً ورائحة.", related: "هيل" },
+        { word: "لبان", emoji: "💎", desc: "راتنج عطري يشتهر به جنوب الجزيرة العربية.", related: "مر" },
+        { word: "ياسمين", emoji: "🌼", desc: "زهرة بيضاء ذات رائحة نفاذة ومنعشة.", related: "فل" },
+        { word: "فل", emoji: "🤍", desc: "نوع من الياسمين يشتهر في الجزيرة العربية.", related: "ياسمين" },
+        { word: "لافندر", emoji: "💜", desc: "خزامى مهدئة للأعصاب ومنعشة.", related: "إكليل الجبل" },
+        { word: "فانيليا", emoji: "🍦", desc: "رائحة حلوة ودافئة تستخدم في العطور الفاخرة.", related: "كراميل" },
+        { word: "باتشولي", emoji: "🌿", desc: "عشب عطري يعطي رائحة ترابية عميقة.", related: "عود" },
+        { word: "مرامير", emoji: "🌫️", desc: "خلطات بخور منزلية تقليدية.", related: "مبخرة" },
+        { word: "مبخرة", emoji: "🏺", desc: "الأداة التي يوضع فيها الفحم والبخور.", related: "فحم" },
+        { word: "كادي", emoji: "🌾", desc: "زهرة عطرية تنمو في المناطق الاستوائية.", related: "ورد" }
+      ],
+      "كلمات خاصة": []
+    };
+
+    const avatars = ["🕵️", "👤", "👮", "🧑‍🚀", "🧙", "🧛", "🧟", "🦁", "🦊", "🐻", "🐼", "🤖", "🤡", "👺", "😈", "🦉", "🦒", "🦈"];
+    const funnyTitles = ["الضايع المبتديء 😶", "المحقق المتدرب 🔍", "راعي الفزعة 🤝", "كاشف السوالف 🔎", "المراوغ الأسطوري 🤺", "الذيب 🐺", "ملك التمويه 🎭", "العميل السري 🕵️‍♂️", "البروفيسور 👨‍🏫", "أسطورة السوالف 🏆"];
+    const roleNamesMap = { 'in': '🕵️ محقق', 'out': '🌫️ الضايع', 'agent': '🎭 عميل مزدوج', 'undercover': '🤫 المموه' };
+
+    // --- 1. الحالة العامة (State) ---
     let state = {
       players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
       revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false,
@@ -809,7 +1109,8 @@
       customWords: [], isMuted: false, lastWinner: null
     };
 
-    // --- 3. الوظائف المنطقية ---
+    // --- 2. وظائف التحكم والعرض ---
+
     function toggleMute() {
       state.isMuted = !state.isMuted;
       const btn = document.getElementById('mute-toggle');
@@ -825,6 +1126,15 @@
       if (screenId === 'final') updateFinalResultsUI();
     }
 
+    function renderCustomWords() {
+      const list = document.getElementById('custom-words-list');
+      if (!list) return; list.innerHTML = '';
+      state.customWords.forEach((w, i) => {
+        list.innerHTML += `<span class="bg-indigo-500/20 px-3 py-1 rounded-full text-xs flex items-center gap-1 border border-indigo-500/20 text-white">${w.word} <button onclick="state.customWords.splice(${i},1);renderCustomWords();">×</button></span>`;
+      });
+      wordBank["كلمات خاصة"] = state.customWords;
+    }
+
     function renderCategories(gridId) {
       const grid = document.getElementById(gridId);
       if (!grid) return; grid.innerHTML = '';
@@ -833,7 +1143,7 @@
         if (gridId === 'modal-categories-grid' && cat === "كلمات خاصة" && state.customWords.length < 4) return;
         const isActive = state.selectedCategory === cat;
         const emoji = categoryIcons[cat] || '🏷️';
-        grid.innerHTML += `<div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span class="text-xl text-center text-center">${emoji}</span><span class="text-xs text-white font-bold text-center text-center text-center">${cat}</span></div>`;
+        grid.innerHTML += `<div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span class="text-xl text-center">${emoji}</span><span class="text-xs text-white font-bold text-center">${cat}</span></div>`;
       });
     }
 
@@ -853,22 +1163,16 @@
       if (word) {
         if (state.customWords.some(w => w.word.toLowerCase() === word.toLowerCase())) {
           document.getElementById('alert-message').innerText = "هذه الكلمة مضافة بالفعل!";
-          document.getElementById('modal-alert').classList.remove('hidden'); document.getElementById('modal-alert').classList.add('flex');
+          document.getElementById('modal-alert').classList.remove('hidden');
+          document.getElementById('modal-alert').classList.add('flex');
           return;
         }
-        state.customWords.push({ word, emoji: "✏️", desc: "سالفة مضافة." });
+        state.customWords.push({ word, emoji: "✏️", desc: "سالفة خاصة." });
         input.value = ''; renderCustomWords(); renderCategories('categories-grid');
       }
     }
 
-    function renderCustomWords() {
-      const list = document.getElementById('custom-words-list');
-      if (!list) return; list.innerHTML = '';
-      state.customWords.forEach((w, i) => {
-        list.innerHTML += `<span class="bg-indigo-500/20 px-3 py-1 rounded-full text-xs flex items-center gap-1 border border-indigo-500/20 text-white">${w.word} <button onclick="state.customWords.splice(${i},1);renderCustomWords();">×</button></span>`;
-      });
-      wordBank["كلمات خاصة"] = state.customWords;
-    }
+    // --- 3. وظائف الإعداد واللاعبين ---
 
     function updateSetupInfo() {
       const pVal = document.getElementById('input-players')?.value;
@@ -888,7 +1192,8 @@
     function checkAndNext() {
       if (state.selectedCategory === "كلمات خاصة" && state.customWords.length < 4) {
         document.getElementById('alert-message').innerText = "يجب إدخال 4 كلمات خاصة على الأقل للبدء!";
-        document.getElementById('modal-alert').classList.remove('hidden'); document.getElementById('modal-alert').classList.add('flex');
+        document.getElementById('modal-alert').classList.remove('hidden');
+        document.getElementById('modal-alert').classList.add('flex');
         return;
       }
       initPlayerNames();
@@ -903,15 +1208,9 @@
       const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
       for (let i = 0; i < count; i++) {
         const p = saved[i] || { name: `المحقق ${i + 1}`, avatar: avatars[i % avatars.length] };
-        container.innerHTML += `<div class="bg-white/5 p-4 rounded-3xl border border-white/10 shadow-inner"><div class="flex gap-3 mb-3 flex-row-reverse text-right text-right"><input type="text" id="name-${i}" value="${p.name}" class="player-input flex-1 bg-slate-800 border-none rounded-2xl p-4 text-white font-bold outline-none focus:ring-2 ring-indigo-500 text-lg text-right text-right text-right" placeholder="اسم اللاعب"><input type="hidden" id="avatar-${i}" value="${p.avatar}"></div><div class="flex flex-wrap gap-2 justify-center text-center text-center text-center">${avatars.map(a => `<button onclick="setAvatar(${i}, '${a}')" id="av-${i}-${a}" class="avatar-btn ${a === p.avatar ? 'selected' : ''}">${a}</button>`).join('')}</div></div>`;
+        container.innerHTML += `<div class="bg-white/5 p-4 rounded-3xl border border-white/10 shadow-inner text-right"><div class="flex gap-3 mb-3 flex-row-reverse text-right"><input type="text" id="name-${i}" value="${p.name}" class="player-input flex-1 bg-slate-800 border-none rounded-2xl p-4 text-white font-bold outline-none focus:ring-2 ring-indigo-500 text-lg text-right" placeholder="اسم اللاعب"><input type="hidden" id="avatar-${i}" value="${p.avatar}"></div><div class="flex flex-wrap gap-2 justify-center">${avatars.map(a => `<button onclick="setAvatar(${i}, '${a}')" id="av-${i}-${a}" class="avatar-btn ${a === p.avatar ? 'selected' : ''}">${a}</button>`).join('')}</div></div>`;
       }
       showScreen('names');
-    }
-
-    function setAvatar(playerIdx, avatar) {
-      document.querySelectorAll(`#names-container > div:nth-child(${playerIdx + 1}) .avatar-btn`).forEach(b => b.classList.remove('selected'));
-      document.getElementById(`av-${playerIdx}-${avatar}`).classList.add('selected');
-      document.getElementById(`avatar-${playerIdx}`).value = avatar;
     }
 
     function startGame() {
@@ -921,11 +1220,18 @@
       state.players = [];
       const savedData = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
       for (let i = 0; i < count; i++) {
-        const name = document.getElementById(`name-${i}`).value.trim() || `المحقق ${i + 1}`;
+        const nameInp = document.getElementById(`name-${i}`);
+        const name = nameInp ? nameInp.value.trim() : `المحقق ${i + 1}`;
         const avatar = document.getElementById(`avatar-${i}`).value;
         const existing = savedData[i];
         const emptyStats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
-        state.players.push({ id: i, name, avatar, points: existing ? (existing.points || 0) : 0, stats: (existing && existing.stats) ? existing.stats : emptyStats });
+        state.players.push({
+          id: i,
+          name,
+          avatar,
+          points: existing ? (existing.points || 0) : 0,
+          stats: (existing && existing.stats) ? existing.stats : emptyStats
+        });
       }
       localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(state.players));
       state.timer = parseInt(document.getElementById('input-time').value);
@@ -936,6 +1242,8 @@
       state.revealIndex = 0;
       startRevealSequence();
     }
+
+    // --- 4. وظائف منطق اللعبة والتصويت ---
 
     function setupRoles() {
       let pool = wordBank[state.selectedCategory] || wordBank["طعام"];
@@ -976,7 +1284,8 @@
         else if (roleData.role === 'undercover') {
           let rel = (state.selectedCategory === "كلمات خاصة") ? (state.customWords.filter(w => w.word !== state.secretData.word)[0]?.word || "سالفة قريبة") : (state.secretData.related || "مشابهة");
           txt.innerText = "أنت المموه! كلمتك هي:"; word.innerText = rel; img.innerText = "🤫"; txt.className = "text-2xl mb-4 text-yellow-400 font-bold text-center";
-        } else { txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; txt.className = "text-2xl mb-4 text-red-500 font-bold text-center text-center text-center"; }
+        }
+        else { txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; txt.className = "text-2xl mb-4 text-red-500 font-bold text-center"; }
         box.classList.remove('hidden'); document.getElementById('btn-reveal-action').innerText = 'فهمت، التالي';
       } else { state.revealIndex++; startRevealSequence(); }
     }
@@ -1006,7 +1315,7 @@
       const grid = document.getElementById('voting-grid');
       if (!grid) return; grid.innerHTML = '';
       state.players.forEach(p => {
-        grid.innerHTML += `<button onclick="selectVote(${p.id})" class="p-4 sm:p-6 bg-white/5 border-2 border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3 active:bg-indigo-500/20 transition-all shadow-lg text-center text-center text-center text-center text-center text-center"><span class="text-5xl text-center text-center text-center text-center text-center text-center">${p.avatar}</span><span class="font-black text-xs sm:text-sm text-center text-center text-white text-center text-center text-center">${p.name}</span></button>`;
+        grid.innerHTML += `<button onclick="selectVote(${p.id})" class="p-4 sm:p-6 bg-white/5 border-2 border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3 active:bg-indigo-500/20 transition-all shadow-lg text-center"><span class="text-5xl text-center">${p.avatar}</span><span class="font-black text-xs sm:text-sm text-center text-white">${p.name}</span></button>`;
       });
       showScreen('voting');
     }
@@ -1039,7 +1348,7 @@
       let shuffled = distractors.sort(() => 0.5 - Math.random()).slice(0, 3);
       let options = [...shuffled, state.secretData].sort(() => 0.5 - Math.random());
       options.forEach(opt => {
-        container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-5 bg-white/5 rounded-3xl text-xl sm:text-2xl font-black active:bg-indigo-500/20 transition-all shadow-xl border-2 border-white/5 text-white break-word-custom text-center text-center text-center text-center text-center text-center">${opt.word} ${opt.emoji}</button>`;
+        container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-5 bg-white/5 rounded-3xl text-xl sm:text-2xl font-black active:bg-indigo-500/20 transition-all shadow-xl border-2 border-white/5 text-white break-word-custom text-center">${opt.word} ${opt.emoji}</button>`;
       });
       showScreen('guess');
     }
@@ -1048,6 +1357,8 @@
       if (word === state.secretData.word) showFinalResults('out_win', "تخمين ذكي! الضايع فاز 🧠");
       else showFinalResults('group_win', "المحققون ينتصرون! ⚖️");
     }
+
+    // --- 5. وظائف عرض النتائج والإحصائيات ---
 
     function showFinalResults(type, title) {
       state.lastWinner = type === 'group_win' ? 'group' : 'out';
@@ -1093,7 +1404,7 @@
         const statusColorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-100' : 'bg-red-500/20 border-red-500/40 text-red-100';
         const roleLabel = roleNamesMap[roleData.role] || 'محقق';
 
-        list.innerHTML += `<div class="flex items-center justify-between p-4 rounded-2xl border ${statusColorClass} mb-2 shadow-inner"><div class="flex items-center gap-4 text-right text-right text-right text-right"><span class="text-3xl text-center text-center text-center text-center">${p.avatar}</span><div class="flex flex-col text-right text-right text-right text-right text-right text-right"><span class="font-black text-white text-base text-right text-right text-right text-right text-right text-right">${p.name}</span><span class="text-[9px] font-bold uppercase text-right text-right text-right text-right opacity-80 text-right text-right">${roleLabel}</span></div></div><span class="bg-black/20 px-4 py-1 rounded-full font-mono text-xs font-black text-center text-center text-center text-center text-center text-center">${p.points}</span></div>`;
+        list.innerHTML += `<div class="flex items-center justify-between p-4 rounded-2xl border ${statusColorClass} mb-2 shadow-inner"><div class="flex items-center gap-4 text-right text-right"><span class="text-3xl text-center">${p.avatar}</span><div class="flex flex-col text-right text-right"><span class="font-black text-white text-base">${p.name}</span><span class="text-[9px] font-bold uppercase opacity-80">${roleLabel}</span></div></div><span class="bg-black/20 px-4 py-1 rounded-full font-mono text-xs font-black text-center">${p.points}</span></div>`;
       });
     }
 
@@ -1105,7 +1416,7 @@
       list.innerHTML = '';
       sorted.forEach((p, idx) => {
         const titleIndex = Math.min(Math.floor(p.points / 2), funnyTitles.length - 1);
-        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 mb-2 shadow-inner hover:bg-white/10 transition-all cursor-pointer text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right"><div class="flex items-center gap-4 text-right text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">${p.avatar}</span><div class="flex flex-col text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right"><span class="font-black text-base ${idx === 0 ? 'text-yellow-400' : ''} text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">${idx + 1}. ${p.name}</span><span class="text-[10px] text-indigo-400 font-bold text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">${funnyTitles[titleIndex]}</span></div></div><span class="bg-indigo-500/20 px-4 py-1 rounded-full font-mono text-sm font-black text-indigo-200 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">${p.points}</span></div>`;
+        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 mb-2 shadow-inner hover:bg-white/10 transition-all cursor-pointer text-right text-right"><div class="flex items-center gap-4 text-right text-center"><span class="text-3xl text-center text-center">${p.avatar}</span><div class="flex flex-col text-right text-right"><span class="font-black text-base ${idx === 0 ? 'text-yellow-400' : ''} text-white text-right">${idx + 1}. ${p.name}</span><span class="text-[10px] text-indigo-400 font-bold text-right">${funnyTitles[titleIndex]}</span></div></div><span class="bg-indigo-500/20 px-4 py-1 rounded-full font-mono text-sm font-black text-indigo-200 text-center">${p.points}</span></div>`;
       });
     }
 
@@ -1136,15 +1447,23 @@
     }
 
     function closeStatsModal() { document.getElementById('modal-stats').classList.add('hidden'); }
-    function confirmReset() { const m = document.getElementById('modal-confirm'); if (m) { m.classList.remove('hidden'); m.classList.add('flex'); } }
-    function closeModal() { document.querySelectorAll('.fixed').forEach(m => { m.classList.add('hidden'); m.classList.remove('flex'); }); }
+
+    function confirmReset() {
+      const m = document.getElementById('modal-confirm');
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+    }
 
     function resetPoints() {
       const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
       const resetData = saved.map(p => ({ ...p, points: 0, stats: { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } } }));
       localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(resetData));
       state.players = resetData;
-      closeModal(); updateLeaderboardUI('leaderboard-list'); checkResetButtonVisibility();
+      closeModal(); // تم إصلاحها لعدم إخفاء زر الصوت
+      updateLeaderboardUI('leaderboard-list');
+      checkResetButtonVisibility();
     }
 
     function checkResetButtonVisibility() {
@@ -1181,6 +1500,7 @@
       }
     }
 
+    // --- 6. تهيئة التطبيق عند التحميل ---
     window.addEventListener('DOMContentLoaded', () => {
       updateSetupInfo();
       renderCustomWords();
