@@ -89,6 +89,20 @@
           <div id="custom-words-list" class="flex flex-wrap gap-2 mt-4 max-h-32 overflow-y-auto justify-end"></div>
         </div>
 
+        <!-- نظام التصويت المطور -->
+        <div class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+          <div class="text-right">
+            <h4 class="font-bold text-sm text-white">⚖️ نظام التصويت</h4>
+            <p class="text-[10px] text-slate-500 italic">طريقة كشف الضايع</p>
+          </div>
+          <div class="flex bg-slate-900/50 p-1 rounded-xl border border-white/5">
+            <button id="btn-vote-group" onclick="setVotingMode('group')"
+              class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg">جماعي</button>
+            <button id="btn-vote-individual" onclick="setVotingMode('individual')"
+              class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">فردي</button>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 gap-4 text-right text-right">
           <div
             class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner text-right text-right text-right">
@@ -219,17 +233,15 @@
       </div>
     </div>
 
-    <!-- Voting Screen -->
-    <div id="screen-voting" class="glass-panel hidden text-center text-center text-center text-center">
-      <h2
-        class="text-3xl sm:text-5xl font-black mb-4 text-white text-center font-black text-center text-center text-center text-center text-center">
-        من الضايع؟ ⚖️</h2>
-      <p
-        class="text-slate-400 mb-8 text-lg font-semibold decoration-indigo-500 text-center text-center text-center text-center text-center text-center">
-        اضغط على صورة الشخص المتهم مباشرة</p>
+    <!-- شاشة التصويت -->
+    <div id="screen-voting" class="glass-panel hidden text-center">
+      <h2 class="text-3xl sm:text-5xl font-black mb-4 text-white text-center">من الضايع؟ ⚖️</h2>
+      <div id="voter-indicator" class="text-indigo-400 font-bold mb-4 hidden text-center text-xl"></div>
+      <p id="voting-instruction" class="text-slate-400 mb-8 text-lg font-semibold decoration-indigo-500 text-center">
+        اضغط على صورة
+        الشخص المتهم مباشرة</p>
       <div id="voting-grid"
-        class="grid grid-cols-2 gap-4 mb-8 max-h-[50vh] overflow-y-auto px-2 text-center text-white text-center text-center text-center text-center text-center text-center">
-      </div>
+        class="grid grid-cols-2 gap-4 mb-8 max-h-[50vh] overflow-y-auto px-2 text-center text-white"></div>
     </div>
 
     <!-- Guess Screen -->
@@ -386,6 +398,19 @@
             <li class="text-right">🎭 العميل المزدوج: يفوز إذا فاز الضايع بمساعدته سراً.</li>
             <li class="text-right">🤫 المموه: يفوز إذا نجح في جعل أغلبية اللاعبين يشكون فيه ويصوتون ضده بدلاً من
               الضايع. (في هذه الحالة يفوز هو وفريق الضايع معاً).</li>
+          </ul>
+        </div>
+
+        <div class="rule-card text-right text-right">
+          <h4
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <span class="order-first">⚖️</span> نظام التصويت
+          </h4>
+          <ul
+            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            <li class="text-right">🗳️ تصويت جماعي: يتفق الجميع على شخص واحد ويتم اختياره مرة واحدة.</li>
+            <li class="text-right">👤 تصويت فردي: يمرر الجهاز بين اللاعبين ليصوت كل شخص سراً، وتحسب النتيجة للأكثر
+              تصويتاً.</li>
           </ul>
         </div>
 
@@ -1248,6 +1273,21 @@
       wordBank["كلمات خاصة"] = state.customWords;
     }
 
+    function setVotingMode(mode) {
+      state.votingMode = mode;
+      const groupBtn = document.getElementById('btn-vote-group');
+      const indivBtn = document.getElementById('btn-vote-individual');
+
+      if (mode === 'group') {
+        groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
+        indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+      } else {
+        indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
+        groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+      }
+      sounds.tick();
+    }
+
     function renderCategories(gridId) {
       const grid = document.getElementById(gridId);
       if (!grid) return; grid.innerHTML = '';
@@ -1432,12 +1472,88 @@
     function endGameEarly() { clearInterval(state.interval); startVoting(); }
 
     function startVoting() {
-      const grid = document.getElementById('voting-grid');
-      if (!grid) return; grid.innerHTML = '';
-      state.players.forEach(p => {
-        grid.innerHTML += `<button onclick="selectVote(${p.id})" class="p-4 sm:p-6 bg-white/5 border-2 border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3 active:bg-indigo-500/20 transition-all shadow-lg text-center"><span class="text-5xl text-center">${p.avatar}</span><span class="font-black text-xs sm:text-sm text-center text-white">${p.name}</span></button>`;
-      });
+      state.voterIndex = 0;
+      state.votesAccumulated = {};
+      state.players.forEach(p => state.votesAccumulated[p.id] = 0);
+      updateVotingGrid();
       showScreen('voting');
+    }
+
+    function updateVotingGrid() {
+      const grid = document.getElementById('voting-grid');
+      const voterIndicator = document.getElementById('voter-indicator');
+      const instruction = document.getElementById('voting-instruction');
+      grid.innerHTML = '';
+
+      if (state.votingMode === 'individual') {
+        const currentVoter = state.players[state.voterIndex];
+        voterIndicator.innerText = `دور المصوّت: ${currentVoter.avatar} ${currentVoter.name}`;
+        voterIndicator.classList.remove('hidden');
+        instruction.innerText = "اختر الشخص الذي تعتقد أنه الضايع";
+      } else {
+        voterIndicator.classList.add('hidden');
+        instruction.innerText = "اتفقوا على شخص واحد واضغطوا عليه مباشرة";
+      }
+
+      state.players.forEach(p => {
+        grid.innerHTML += `<button onclick="handleVoteClick(${p.id})" class="p-4 bg-white/5 border border-white/10 rounded-3xl flex flex-col items-center gap-2 active:bg-indigo-500/20 transition-all text-center">
+                    <span class="text-4xl text-center">${p.avatar}</span>
+                    <span class="font-black text-xs text-white text-center">${p.name}</span>
+                </button>`;
+      });
+    }
+
+    function updateVotingGrid() {
+      const grid = document.getElementById('voting-grid');
+      const voterIndicator = document.getElementById('voter-indicator');
+      const instruction = document.getElementById('voting-instruction');
+      grid.innerHTML = '';
+
+      if (state.votingMode === 'individual') {
+        const currentVoter = state.players[state.voterIndex];
+        voterIndicator.innerText = `دور المصوّت: ${currentVoter.avatar} ${currentVoter.name}`;
+        voterIndicator.classList.remove('hidden');
+        instruction.innerText = "اختر الشخص الذي تعتقد أنه الضايع";
+      } else {
+        voterIndicator.classList.add('hidden');
+        instruction.innerText = "اتفقوا على شخص واحد واضغطوا عليه مباشرة";
+      }
+
+      state.players.forEach(p => {
+        // في التصويت الفردي، لا تظهر زر اللاعب لنفسه
+        if (state.votingMode === 'individual' && state.players[state.voterIndex].id === p.id) return;
+
+        grid.innerHTML += `<button onclick="handleVoteClick(${p.id})" class="p-4 bg-white/5 border border-white/10 rounded-3xl flex flex-col items-center gap-2 active:bg-indigo-500/20 transition-all text-center">
+                    <span class="text-4xl text-center">${p.avatar}</span>
+                    <span class="font-black text-xs text-white text-center">${p.name}</span>
+                </button>`;
+      });
+    }
+
+    function handleVoteClick(accusedId) {
+      if (state.votingMode === 'group') {
+        processVoteResult(accusedId);
+      } else {
+        state.votesAccumulated[accusedId]++;
+        state.voterIndex++;
+        sounds.tick();
+        if (state.voterIndex < state.players.length) {
+          updateVotingGrid();
+        } else {
+          let mostVotedId = null;
+          let maxVotes = -1;
+          for (const id in state.votesAccumulated) {
+            if (state.votesAccumulated[id] > maxVotes) {
+              maxVotes = state.votesAccumulated[id];
+              mostVotedId = parseInt(id);
+            } else if (state.votesAccumulated[id] === maxVotes && maxVotes > 0) {
+              const role = state.currentRoles.find(r => r.id === parseInt(id)).role;
+              if (role === 'out' || role === 'undercover') mostVotedId = parseInt(id);
+            }
+          }
+          processVoteResult(mostVotedId);
+        }
+      }
     }
 
     function setAvatar(playerIdx, avatar) {
@@ -1454,7 +1570,7 @@
       if (hiddenInp) hiddenInp.value = avatar;
     }
 
-    function selectVote(id) {
+    function processVoteResult(id) {
       const isActualOut = state.outPlayerIds.includes(id);
       const isUndercover = (id === state.undercoverPlayerId);
 
