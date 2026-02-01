@@ -120,7 +120,7 @@
                 النقاش</label>
               <span class="text-emerald-400 font-black text-lg" id="val-time-label">3 دقائق</span>
             </div>
-            <input type="range" id="input-time" min="3" max="600" step="60" value="3" oninput="updateSetupInfo()">
+            <input type="range" id="input-time" min="180" max="600" step="60" value="180" oninput="updateSetupInfo()">
           </div>
         </div>
 
@@ -683,9 +683,9 @@
       click: () => playTone(1200, 0.03, 'square', 0.05),
       invalid: () => playTone(220, 0.2, 'sawtooth', 0.2),
       timesUp: () => {
-        playTone(880, 0.1, 'square', 0.2); // High Beep
-        setTimeout(() => playTone(880, 0.1, 'square', 0.2), 150); // High Beep
-        setTimeout(() => playTone(220, 0.6, 'sawtooth', 0.2), 300); // Low failure tone
+        playTone(880, 0.1, 'square', 0.2);
+        setTimeout(() => playTone(880, 0.1, 'square', 0.2), 150);
+        setTimeout(() => playTone(220, 0.6, 'sawtooth', 0.2), 300);
       },
       warning: () => {
         playTone(580, 0.15, 'square', 0.2);
