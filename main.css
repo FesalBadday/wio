@@ -378,3 +378,10 @@ input[type="range"]::-webkit-slider-thumb {
 .custom-checkbox:checked::before {
   transform: translateX(28px);
 }
+
+button {
+  touch-action: manipulation;
+  /* يمنع التكبير ويسرع الاستجابة */
+  -webkit-tap-highlight-color: transparent;
+  /* يزيل الوميض الرمادي المزعج عند الضغط */
+}
