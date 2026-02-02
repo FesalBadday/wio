@@ -443,13 +443,15 @@
             <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right">
               <p class="text-emerald-400 mb-1 text-right">🕵️ المحققون:</p>
               <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+1 نقطة</span> | الخسارة:
-                <span class="text-white text-right">0 نقطة</span></p>
+                <span class="text-white text-right">0 نقطة</span>
+              </p>
             </div>
             <div class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right">
               <p class="text-indigo-400 mb-1 text-right">😶‍🌫️
                 الضايع / 🎭 العميل / 🤫 المموه:</p>
               <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+2 نقطة</span> | الخسارة:
-                <span class="text-white text-right">0 نقطة</span></p>
+                <span class="text-white text-right">0 نقطة</span>
+              </p>
             </div>
             <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 text-right mt-2">
               <p class="text-orange-400 mb-1">🚨 زر "أنا عرفتها!" (للضايع):</p>
@@ -617,9 +619,7 @@
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
       osc.start(); osc.stop(audioCtx.currentTime + duration);
       // داخل دالة reveal أو عند انتهاء الوقت
-      if (navigator.vibrate) {
-        navigator.vibrate(50); // اهتزاز خفيف لمدة 50 جزء من الثانية
-      }
+      if ('vibrate' in navigator) { navigator.vibrate(50); }
     }
 
     const sounds = {
