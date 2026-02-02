@@ -75,9 +75,8 @@
         </div>
 
         <div id="custom-words-ui"
-          class="bg-indigo-500/10 p-5 rounded-3xl border border-indigo-500/20 hidden text-right text-right text-right">
-          <label
-            class="text-indigo-300 font-bold block mb-3 text-right text-sm font-black w-full text-right text-right text-right">أضف
+          class="bg-indigo-500/10 p-5 rounded-3xl border border-indigo-500/20 hidden text-right">
+          <label class="text-indigo-300 font-bold block mb-3 text-sm font-black w-full text-right">أضف
             كلماتك الخاصة للفئة (4 كلمات كحد أدنى):</label>
           <div class="flex gap-2">
             <input type="text" id="custom-word-input"
@@ -103,20 +102,17 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 text-right text-right">
-          <div
-            class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner text-right text-right text-right">
-            <div class="flex justify-between mb-3 flex-row-reverse text-right text-right text-right text-right">
-              <label class="text-slate-300 font-bold text-sm text-right text-right text-right">عدد اللاعبين</label>
+        <div class="grid grid-cols-1 gap-4 text-right">
+          <div class="bg-white/5 p-4 rounded-2xl border border-white/10 shadow-inner text-right">
+            <div class="flex justify-between mb-3 flex-row-reverse text-right">
+              <label class="text-slate-300 font-bold text-sm text-right">عدد اللاعبين</label>
               <span class="text-indigo-400 font-mono font-black text-xl" id="val-players">3</span>
             </div>
             <input type="range" id="input-players" min="3" max="20" value="3" oninput="updateSetupInfo()">
           </div>
-          <div
-            class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner text-right text-right text-right text-right">
-            <div
-              class="flex justify-between mb-3 flex-row-reverse text-right text-right text-right text-right text-right text-right">
-              <label class="text-slate-300 font-bold text-sm text-right text-right text-right text-right">وقت
+          <div class="bg-white/5 p-4 rounded-2xl border border-white/10 shadow-inner text-right">
+            <div class="flex justify-between mb-3 flex-row-reverse text-right">
+              <label class="text-slate-300 font-bold text-sm text-right">وقت
                 النقاش</label>
               <span class="text-emerald-400 font-black text-lg" id="val-time-label">3 دقائق</span>
             </div>
@@ -148,10 +144,10 @@
 
           <div id="double-agent-container"
             class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
-            <div class="text-right text-right text-right text-right text-right">
-              <h4 class="font-bold text-sm text-white font-black text-right text-right text-right text-right">🎭 العميل
+            <div class="text-right">
+              <h4 class="font-bold text-sm text-white font-black text-right">🎭 العميل
                 المزدوج</h4>
-              <p class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right">متاح لـ
+              <p class="text-[10px] text-slate-500 font-bold italic text-right">متاح لـ
                 5 لاعبين فأكثر</p>
             </div>
             <input type="checkbox" id="check-double-agent" class="custom-checkbox">
@@ -159,12 +155,10 @@
 
           <div id="undercover-container"
             class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
-            <div class="text-right text-right text-right text-right text-right text-right">
-              <h4
-                class="font-bold text-sm text-white font-black text-right text-right text-right text-right text-right">
+            <div class="text-right">
+              <h4 class="font-bold text-sm text-white font-black text-right">
                 🕵️ المموه</h4>
-              <p
-                class="text-[10px] text-slate-500 font-bold italic text-right text-right text-right text-right text-right">
+              <p class="text-[10px] text-slate-500 font-bold italic text-right">
                 يملك كلمة مشابهة ويضلل الجميع!</p>
             </div>
             <input type="checkbox" id="check-undercover" class="custom-checkbox">
@@ -181,11 +175,10 @@
     </div>
 
     <!-- Names Screen -->
-    <div id="screen-names" class="glass-panel hidden text-right text-right text-right">
+    <div id="screen-names" class="glass-panel hidden text-right">
       <h2 class="text-2xl sm:text-3xl font-black mb-8 text-center text-white text-right font-black">
         تجهيز فريق المحققين 🔎</h2>
-      <div id="names-container"
-        class="space-y-4 mb-8 max-h-[50vh] overflow-y-auto px-1 text-right text-right text-right text-right"></div>
+      <div id="names-container" class="space-y-4 mb-8 max-h-[50vh] overflow-y-auto px-1 text-right"></div>
       <button onclick="startGame()"
         class="btn-gradient w-full py-6 rounded-3xl font-black text-white text-xl text-center">انطلاق!
         🚀</button>
@@ -298,12 +291,10 @@
         </p>
       </div>
 
-      <div
-        class="mb-10 text-right text-right text-right text-right text-right text-right text-right text-right text-right">
-        <h3
-          class="text-2xl sm:text-3xl font-black mb-6 text-center text-white font-black text-right text-right text-right text-right text-right text-right text-right">
+      <div class="mb-10 text-right">
+        <h3 class="text-2xl sm:text-3xl font-black mb-6 text-center text-white font-black text-right">
           📊 نتائج الجولة والأدوار</h3>
-        <div id="final-leaderboard" class="space-y-3 text-right text-right text-right text-right text-right"></div>
+        <div id="final-leaderboard" class="space-y-3 text-right"></div>
       </div>
 
       <div class="grid grid-cols-1 gap-4 text-center">
@@ -319,16 +310,12 @@
     </div>
 
     <!-- Leaderboard Screen -->
-    <div id="screen-leaderboard"
-      class="glass-panel hidden text-center text-right text-right text-right text-right text-right text-right text-right">
-      <h2
-        class="text-3xl font-black mb-10 text-white text-right font-black text-center text-right text-right text-right text-right text-right text-right">
+    <div id="screen-leaderboard" class="glass-panel hidden text-center text-right">
+      <h2 class="text-3xl font-black mb-10 text-white font-black text-center text-right">
         🏆 أبطال السوالف</h2>
-      <p
-        class="text-slate-500 text-xs mb-4 text-center text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+      <p class="text-slate-500 text-xs mb-4 text-center text-right">
         (اضغط على اسم اللاعب لمشاهدة إحصائياته)</p>
-      <div id="leaderboard-list"
-        class="space-y-4 mb-10 max-h-[60vh] overflow-y-auto px-2 text-right text-center text-right text-right text-right text-right text-right text-right">
+      <div id="leaderboard-list" class="space-y-4 mb-10 max-h-[60vh] overflow-y-auto px-2 text-center text-right">
       </div>
       <div id="leaderboard-buttons" class="flex justify-center gap-4 text-center">
         <button onclick="showScreen('start')" id="btn-close-lb"
@@ -340,33 +327,29 @@
     </div>
 
     <!-- Rules Screen -->
-    <div id="screen-rules"
-      class="glass-panel hidden text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+    <div id="screen-rules" class="glass-panel hidden text-right">
       <h2
-        class="text-3xl sm:text-4xl font-black mb-10 text-indigo-400 border-b-4 border-indigo-500/10 pb-6 text-center font-black text-right text-right text-right text-right text-right text-right">
+        class="text-3xl sm:text-4xl font-black mb-10 text-indigo-400 border-b-4 border-indigo-500/10 pb-6 text-center font-black text-right">
         📜 دليل السالفة الشامل</h2>
 
-      <div class="space-y-6 text-right text-right text-right text-right text-right text-right text-right">
-        <div class="rule-card text-right text-right">
-          <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl text-right text-right text-right text-right text-right text-right text-right">
+      <div class="space-y-6 text-right">
+        <div class="rule-card text-right">
+          <h4 class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl text-right">
             <span class="order-first">❓</span> ما هي هذه اللعبة؟
           </h4>
-          <p
-            class="text-base leading-relaxed text-slate-300 font-semibold italic text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+          <p class="text-base leading-relaxed text-slate-300 font-semibold italic text-right">
             لعبة ذكاء وتمويه جماعية. في كل جولة، توجد "سالفة" يعرفها الجميع إلا <span
-              class="highlight-text font-black text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">شخص
+              class="highlight-text font-black text-white text-right">شخص
               واحد او شخصين (في حال اختيار العميل المزدوج)
             </span> يسمى "الضايع".</p>
         </div>
 
-        <div class="rule-card text-right text-right">
+        <div class="rule-card text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
             <span class="order-first">👥</span> الأدوار في اللعبة
           </h4>
-          <ul
-            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+          <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
             <li class="text-right">🕵️ المحققون: لاعبون يعرفون "الكلمة السرية"، هدفهم كشف الأشخاص الضائعين دون إعطاء
               تلميحات واضحة.</li>
             <li class="text-right">😶‍🌫️ الضايع: لاعب لا يعرف الكلمة، هدفه التظاهر بالمعرفة من خلال إجابات عامة،
@@ -379,18 +362,17 @@
           </ul>
         </div>
 
-        <div class="rule-card text-right text-right">
+        <div class="rule-card text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
             <span class="order-first">🛠️</span> خطوات الجولة
           </h4>
-          <ul
-            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+          <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
             <li class="text-right">1️⃣ اختيار الفئة: يتم اختيار موضوع الجولة (أكلات، دول، مشروبات، إلخ).</li>
             <li class="text-right">2️⃣ توزيع الأدوار: يمر الجوال على اللاعبين، كل شخص يرى "الكلمة" أو يرى "أنت
               الضايع"، "أنت العميل المزدوج" أو "أنت المموه".</li>
             <li class="text-right">3️⃣ الأسئلة: يبدأ اللاعبون بسؤال بعضهم البعض أسئلة ذكية (غير مباشرة). <span
-                class="highlight-text font-black text-white text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">مثال:
+                class="highlight-text font-black text-white text-right">مثال:
                 إذا كانت الكلمة "بيتزا"، اسأل: "هل تحتاج لوقت طويل في الفرن؟ أو هل تؤكل باليد؟"
               </span></li>
             <li class="text-right">4️⃣ التصويت: بعد انتهاء الوقت، يبدأ الجميع بمناقشة من هو "الضايع ويتم التصويت على
@@ -398,13 +380,12 @@
           </ul>
         </div>
 
-        <div class="rule-card text-right text-right">
+        <div class="rule-card text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
             <span class="order-first">🏆</span> شروط الفوز
           </h4>
-          <ul
-            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+          <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
             <li class="text-right">🕵️ المحققون: يفوزون إذا كشفوا الضايع، وفشل في تخمين السالفة.</li>
             <li class="text-right">😶‍🌫️ الضايع: يفوز إذا لم يُكشف أو إذا نجح في تخمين السالفة صح.</li>
             <li class="text-right">🎭 العميل المزدوج: يفوز إذا فاز الضايع بمساعدته سراً.</li>
@@ -413,13 +394,12 @@
           </ul>
         </div>
 
-        <div class="rule-card text-right text-right">
+        <div class="rule-card text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
             <span class="order-first">🎯</span> فرصة التخمين
           </h4>
-          <ul
-            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+          <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
             <li class="text-right">✔️ إذا تم تفعيل الخيار (الوضع الافتراضي): عند كشف الضايع، تظهر له شاشة بـ 4 خيارات،
               وإذا خمن السالفة يفوز.</li>
             <li class="text-right">❌ إذا تم تعطيل الخيار: بمجرد أن يصوت اللاعبون على الضايع، يخسر فوراً ويفوز المحققون
@@ -427,26 +407,24 @@
           </ul>
         </div>
 
-        <div class="rule-card text-right text-right">
+        <div class="rule-card text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
             <span class="order-first">⚖️</span> نظام التصويت
           </h4>
-          <ul
-            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+          <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
             <li class="text-right">🗳️ تصويت جماعي: يتفق الجميع على شخص واحد ويتم اختياره مرة واحدة.</li>
             <li class="text-right">👤 تصويت فردي: يمرر الجهاز بين اللاعبين ليصوت كل شخص سراً، وتحسب النتيجة للأكثر
               تصويتاً.</li>
           </ul>
         </div>
 
-        <div class="rule-card text-right text-right">
+        <div class="rule-card text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
             <span class="order-first">💡</span> نصائح ذهبية
           </h4>
-          <ul
-            class="text-sm space-y-4 font-bold text-slate-300 text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+          <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
             <li class="text-right">1️⃣ إذا كنت محقق: لا تعطِ إجابة واضحة جداً فيفهمها "الضايع"، ولا تكون غامضاً جداً
               فيشك فيك المحققون!</li>
             <li class="text-right">2️⃣ إذا كنت العميل المزدوج أو المموه: حاول أن تكون إجاباتك غريبة بعض الشيء لتجذب
@@ -456,27 +434,22 @@
           </ul>
         </div>
 
-        <div class="rule-card text-right text-right">
+        <div class="rule-card text-right">
           <h4
-            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
+            class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
             <span class="order-first">📊</span> نظام النقاط المطور
           </h4>
-          <div
-            class="text-xs space-y-3 font-bold text-right leading-relaxed text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right text-right">
-            <div
-              class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right text-right text-right text-right">
-              <p class="text-emerald-400 mb-1 text-right text-right text-right text-right text-right">🕵️ المحققون:</p>
-              <p class="text-slate-300 text-right text-right text-right text-right text-right">الفوز: <span
-                  class="text-white text-right text-right text-right">+1 نقطة</span> | الخسارة: <span
-                  class="text-white text-right text-right text-right">0 نقطة</span></p>
+          <div class="text-xs space-y-3 font-bold leading-relaxed text-right">
+            <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right">
+              <p class="text-emerald-400 mb-1 text-right">🕵️ المحققون:</p>
+              <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+1 نقطة</span> | الخسارة:
+                <span class="text-white text-right">0 نقطة</span></p>
             </div>
-            <div
-              class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right text-right text-right text-right text-right">
-              <p class="text-indigo-400 mb-1 text-right text-right text-right text-right text-right text-right">😶‍🌫️
+            <div class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right">
+              <p class="text-indigo-400 mb-1 text-right">😶‍🌫️
                 الضايع / 🎭 العميل / 🤫 المموه:</p>
-              <p class="text-slate-300 text-right text-right text-right text-right text-right text-right">الفوز: <span
-                  class="text-white text-right text-right text-right text-right">+2 نقطة</span> | الخسارة: <span
-                  class="text-white text-right text-right text-right text-right">0 نقطة</span></p>
+              <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+2 نقطة</span> | الخسارة:
+                <span class="text-white text-right">0 نقطة</span></p>
             </div>
             <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 text-right mt-2">
               <p class="text-orange-400 mb-1">🚨 زر "أنا عرفتها!" (للضايع):</p>
@@ -527,47 +500,34 @@
         </div>
       </div>
 
-      <p
-        class="text-slate-400 text-[10px] mb-3 text-right font-bold text-right text-right text-right text-right text-right">
+      <p class="text-slate-400 text-[10px] mb-3 font-bold text-right">
         تفاصيل الأدوار:</p>
-      <div class="grid grid-cols-2 gap-4 mb-8 text-right text-right text-right text-right text-right text-right">
-        <div
-          class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right text-right text-right text-right text-right">
-          <p
-            class="text-[10px] text-emerald-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right">
+      <div class="grid grid-cols-2 gap-4 mb-8 text-right">
+        <div class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right">
+          <p class="text-[10px] text-emerald-400 font-bold mb-1 text-right">
             🕵️ محقق</p>
-          <div
-            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right">
+          <div class="flex justify-between text-xs font-black text-right">
             <span>فوز: <span id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span>
           </div>
         </div>
-        <div
-          class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right text-right text-right text-right text-right text-right">
-          <p
-            class="text-[10px] text-indigo-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right">
+        <div class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right">
+          <p class="text-[10px] text-indigo-400 font-bold mb-1 text-right">
             😶‍🌫️ ضايع</p>
-          <div
-            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right">
+          <div class="flex justify-between text-xs font-black text-right">
             <span>فوز: <span id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span>
           </div>
         </div>
-        <div
-          class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right text-right text-right text-right text-right text-right text-right">
-          <p
-            class="text-[10px] text-orange-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right text-right">
+        <div class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right">
+          <p class="text-[10px] text-orange-400 font-bold mb-1 text-right">
             🎭 عميل</p>
-          <div
-            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right text-right">
+          <div class="flex justify-between text-xs font-black text-right">
             <span>فوز: <span id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span>
           </div>
         </div>
-        <div
-          class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right text-right text-right text-right text-right text-right text-right text-right">
-          <p
-            class="text-[10px] text-yellow-400 font-bold mb-1 text-right text-right text-right text-right text-right text-right text-right text-right">
+        <div class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right">
+          <p class="text-[10px] text-yellow-400 font-bold mb-1 text-right">
             🤫 مموه</p>
-          <div
-            class="flex justify-between text-xs font-black text-right text-right text-right text-right text-right text-right text-right text-right">
+          <div class="flex justify-between text-xs font-black text-right">
             <span>فوز: <span id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span>
           </div>
         </div>
@@ -1850,7 +1810,7 @@
         const statusColorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-100' : 'bg-red-500/20 border-red-500/40 text-red-100';
         const roleLabel = roleNamesMap[roleData.role] || 'محقق';
 
-        list.innerHTML += `<div class="flex items-center justify-between p-4 rounded-2xl border ${statusColorClass} mb-2 shadow-inner"><div class="flex items-center gap-4 text-right text-right"><span class="text-3xl text-center">${p.avatar}</span><div class="flex flex-col text-right text-right"><span class="font-black text-white text-base">${p.name}</span><span class="text-[9px] font-bold uppercase opacity-80">${roleLabel}</span></div></div><span class="bg-black/20 px-4 py-1 rounded-full font-mono text-xs font-black text-center">${p.points}</span></div>`;
+        list.innerHTML += `<div class="flex items-center justify-between p-4 rounded-2xl border ${statusColorClass} mb-2 shadow-inner"><div class="flex items-center gap-4 text-right"><span class="text-3xl text-center">${p.avatar}</span><div class="flex flex-col text-right"><span class="font-black text-white text-base">${p.name}</span><span class="text-[9px] font-bold uppercase opacity-80">${roleLabel}</span></div></div><span class="bg-black/20 px-4 py-1 rounded-full font-mono text-xs font-black text-center">${p.points}</span></div>`;
       });
     }
 
@@ -1862,7 +1822,7 @@
       list.innerHTML = '';
       sorted.forEach((p, idx) => {
         const titleIndex = Math.min(Math.floor(p.points / 2), funnyTitles.length - 1);
-        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 mb-2 shadow-inner hover:bg-white/10 transition-all cursor-pointer text-right text-right"><div class="flex items-center gap-4 text-right text-center"><span class="text-3xl text-center">${p.avatar}</span><div class="flex flex-col text-right text-right"><span class="font-black text-base ${idx === 0 ? 'text-yellow-400' : ''} text-white text-right">${idx + 1}. ${p.name}</span><span class="text-[10px] text-indigo-400 font-bold text-right">${funnyTitles[titleIndex]}</span></div></div><span class="bg-indigo-500/20 px-4 py-1 rounded-full font-mono text-sm font-black text-indigo-200 text-center">${p.points}</span></div>`;
+        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 mb-2 shadow-inner hover:bg-white/10 transition-all cursor-pointer text-right"><div class="flex items-center gap-4 text-right text-center"><span class="text-3xl text-center">${p.avatar}</span><div class="flex flex-col text-right"><span class="font-black text-base ${idx === 0 ? 'text-yellow-400' : ''} text-white text-right">${idx + 1}. ${p.name}</span><span class="text-[10px] text-indigo-400 font-bold text-right">${funnyTitles[titleIndex]}</span></div></div><span class="bg-indigo-500/20 px-4 py-1 rounded-full font-mono text-sm font-black text-indigo-200 text-center">${p.points}</span></div>`;
       });
     }
 
