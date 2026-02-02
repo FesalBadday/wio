@@ -135,6 +135,17 @@
             <input type="checkbox" id="check-guessing" class="custom-checkbox" checked>
           </div>
 
+          <!-- خيار الخيارات الذكية (يظهر فقط عند تفعيل التخمين) -->
+          <div id="panic-mode-container"
+            class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+            <div class="text-right">
+              <h4 class="font-bold text-sm text-white">🧠 خيارات ذكية</h4>
+              <p class="text-[10px] text-slate-500 italic">زر "أنا عرفتها!"</p>
+            </div>
+            <!-- الافتراضي غير مفعل (بدون checked) -->
+            <input type="checkbox" id="check-panic-mode" class="custom-checkbox">
+          </div>
+
           <div id="double-agent-container"
             class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
             <div class="text-right text-right text-right text-right text-right">
@@ -233,6 +244,10 @@
       <p
         class="text-2xl sm:text-3xl text-slate-200 mb-12 font-bold px-4 text-center text-white text-center text-center text-center text-center">
         تناقشوا بذكاء.. لا تكشفوا السالفة للضايع!</p>
+      <!-- زر الهلع (يظهر فقط إذا كانت الخيارات الذكية مفعلة) -->
+      <button id="btn-panic" onclick="triggerPanic()"
+        class="hidden w-full py-4 bg-orange-600/20 border-2 border-orange-500 text-orange-400 rounded-2xl font-black text-xl animate-pulse shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:bg-orange-600/30 transition-all mb-4">🚨
+        أنا عرفتها!</button>
       <div class="grid grid-cols-2 gap-4 text-center text-center text-center text-center text-center">
         <button onclick="endGameEarly()"
           class="py-5 bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-3xl font-black text-lg text-center font-black text-center text-center text-center">تصويت
@@ -260,10 +275,15 @@
       <h2 id="guess-title"
         class="text-3xl sm:text-4xl font-black mb-6 text-red-400 text-center font-black text-center text-center text-center text-center text-center text-center text-center text-center">
         لقد كشفوك! 🎯</h2>
-      <p
-        class="text-slate-300 mb-10 text-xl font-bold leading-relaxed text-center text-white text-center text-center text-center text-center text-center text-center text-center text-center">
-        لديك فرصة أخيرة لتسرق الفوز يا "ضايع"..
-        خمن السالفة من الخيارات التالية!</p>
+      <!-- عداد التخمين الجديد (يظهر فقط في الهلع) -->
+      <div id="guess-timer-container" class="hidden mb-6 flex justify-center w-full">
+        <div
+          class="w-20 h-20 rounded-full border-4 border-orange-500 flex items-center justify-center bg-orange-900/50 shadow-[0_0_25px_rgba(249,115,22,0.4)]">
+          <span id="guess-timer" class="text-3xl font-black text-white tabular-nums">30</span>
+        </div>
+      </div>
+      <p id="guess-subtitle" class="text-slate-300 mb-10 text-xl font-bold leading-relaxed">خمن السالفة من الخيارات
+        التالية!</p>
       <div id="guess-options"
         class="grid grid-cols-1 gap-4 mb-8 text-center text-white text-center text-center text-center text-center text-center text-center text-center text-center">
       </div>
@@ -312,7 +332,7 @@
           class="btn-secondary py-5 rounded-2xl font-bold text-indigo-300 text-lg border border-indigo-500/20 shadow-md text-white text-center font-black text-center text-center text-center">تغيير
           الفئة فقط ⚙️</button>
         <button onclick="showScreen('start')"
-          class="py-3 text-slate-500 underline text-base font-bold text-center text-center text-center text-center text-center">العودة
+          class="py-3 text-slate-500 text-base font-bold text-center text-center text-center text-center text-center">العودة
           للرئيسية</button>
       </div>
     </div>
@@ -477,6 +497,11 @@
               <p class="text-slate-300 text-right text-right text-right text-right text-right text-right">الفوز: <span
                   class="text-white text-right text-right text-right text-right">+2 نقطة</span> | الخسارة: <span
                   class="text-white text-right text-right text-right text-right">0 نقطة</span></p>
+            </div>
+            <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 text-right mt-2">
+              <p class="text-orange-400 mb-1">🚨 زر "أنا عرفتها!" (للضايع):</p>
+              <p class="text-slate-300">تخمين صحيح: <span class="text-white">+4 للضايع / +3 للفريق</span> (فوز ساحق)</p>
+              <p class="text-slate-300">تخمين خاطئ: <span class="text-white">المحققون +2 نقطة</span> (عقاب)</p>
             </div>
           </div>
         </div>
@@ -1279,9 +1304,9 @@
     // --- 1. الحالة العامة (State) ---
     let state = {
       players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
-      revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: true, votingMode: 'group',
-      outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "طعام",
-      customWords: [], isMuted: false, lastWinner: null
+      revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: true,
+      votingMode: 'group', panicMode: false, outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null,
+      selectedCategory: "عشوائي", panicModeEnabled: false, customWords: [], isMuted: false, lastWinner: null
     };
 
     // --- 2. وظائف التحكم والعرض ---
@@ -1329,6 +1354,10 @@
       const grid = document.getElementById(gridId);
       if (!grid) return; grid.innerHTML = '';
       const categoryIcons = { "طعام": "🍔", "أدوات": "🛠️", "ماركات": "🏷️", "حيوانات": "🐾", "تكنولوجيا": "💻", "ألعاب": "🎮", "مشروبات": "☕", "أماكن": "🕋", "دول": "🌍", "عطور": "🧴", "حشرات": "🐛", "كلمات خاصة": "✏️" };
+
+      // إضافة خيار عشوائي في البداية
+      grid.innerHTML += `<div onclick="selectCategory('عشوائي', '${gridId}')" class="category-card ${state.selectedCategory === 'عشوائي' ? 'active' : ''}"><span>🎲</span><span class="text-xs text-white">عشوائي</span></div>`;
+
       Object.keys(wordBank).forEach(cat => {
         if (gridId === 'modal-categories-grid' && cat === "كلمات خاصة" && state.customWords.length < 4) return;
         const isActive = state.selectedCategory === cat;
@@ -1385,6 +1414,7 @@
         document.getElementById('alert-message').innerText = "يجب إدخال 4 كلمات خاصة على الأقل للبدء!";
         document.getElementById('modal-alert').classList.remove('hidden');
         document.getElementById('modal-alert').classList.add('flex');
+        sounds.invalid();
         return;
       }
       initPlayerNames();
@@ -1431,15 +1461,40 @@
       state.undercoverActive = document.getElementById('check-undercover').checked;
       // Get guessing setting
       state.guessingEnabled = document.getElementById('check-guessing').checked;
+      // Get panic mode setting
+      state.panicModeEnabled = document.getElementById('check-panic-mode') ? document.getElementById('check-panic-mode').checked : false;
       setupRoles();
       state.revealIndex = 0;
+      state.panicMode = false;
+
+      // Check visibility of panic button based on settings
+      const panicBtn = document.getElementById('btn-panic');
+      if (panicBtn) {
+        if (state.panicModeEnabled) {
+          panicBtn.classList.remove('hidden');
+        } else {
+          panicBtn.classList.add('hidden');
+        }
+      }
+
       startRevealSequence();
     }
 
     // --- 4. وظائف منطق اللعبة والتصويت ---
 
     function setupRoles() {
-      let pool = wordBank[state.selectedCategory] || wordBank["طعام"];
+      // اختيار فئة فعلية إذا كان الاختيار عشوائي
+      let actualCategory = state.selectedCategory;
+      if (actualCategory === "عشوائي") {
+        let keys = Object.keys(wordBank).filter(k => k !== "كلمات خاصة");
+        if (state.customWords.length >= 4) {
+          keys.push("كلمات خاصة");
+        }
+        actualCategory = keys[Math.floor(Math.random() * keys.length)];
+      }
+      state.currentRoundCategory = actualCategory; // حفظ الفئة الحالية للاستخدام
+
+      let pool = wordBank[state.currentRoundCategory] || wordBank["طعام"];
       if (pool.length === 0) pool = wordBank["طعام"];
       state.secretData = pool[Math.floor(Math.random() * pool.length)];
       let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
@@ -1477,11 +1532,11 @@
         else if (roleData.role === 'agent') { txt.innerText = "أنت العميل المزدوج! احمِ الضايع:"; word.innerText = state.secretData.word; img.innerText = "🎭"; desc.innerText = state.secretData.desc || ""; txt.className = "text-2xl mb-4 text-orange-400 font-bold text-center"; }
         else if (roleData.role === 'undercover') {
           let undercoverObj;
-          if (state.selectedCategory === "كلمات خاصة") { undercoverObj = state.customWords.find(w => w.word !== state.secretData.word); } else {
+          if (state.currentRoundCategory === "كلمات خاصة") { undercoverObj = state.customWords.find(w => w.word !== state.secretData.word); } else {
             // البحث عن الكلمة المتعلقة ككائن كامل داخل التصنيف الحالي
-            undercoverObj = (wordBank[state.selectedCategory] || []).find(w => w.word === state.secretData.related);
+            undercoverObj = (wordBank[state.currentRoundCategory] || []).find(w => w.word === state.secretData.related);
           }
-          let rel = (state.selectedCategory === "كلمات خاصة") ? (state.customWords.filter(w => w.word !== state.secretData.word)[0]?.word || "سالفة قريبة") : (state.secretData.related || "مشابهة");
+          let rel = (state.currentRoundCategory === "كلمات خاصة") ? (state.customWords.filter(w => w.word !== state.secretData.word)[0]?.word || "سالفة قريبة") : (state.secretData.related || "مشابهة");
           let relDesc = undercoverObj ? undercoverObj.desc : "كلمة قريبة تضلل بها المحققين.";
           txt.innerText = "أنت المموه! كلمتك هي:"; word.innerText = rel; img.innerText = "🤫"; desc.innerText = relDesc || ""; txt.className = "text-2xl mb-4 text-yellow-400 font-bold text-center";
         }
@@ -1496,6 +1551,7 @@
       const circumference = 565.48;
       if (progress) { progress.style.strokeDasharray = circumference; progress.style.strokeDashoffset = 0; }
       state.isPaused = false;
+      clearInterval(state.interval);
       state.timer = state.initialTimer;
       state.interval = setInterval(() => {
         if (state.isPaused) return;
@@ -1587,6 +1643,19 @@
       if (hiddenInp) hiddenInp.value = avatar;
     }
 
+    function triggerPanic() {
+      clearInterval(state.interval);
+      state.panicMode = true; // تفعيل وضع الهلع
+
+      // جلب اسم الضايع الحالي من الحالة
+      const outPlayerId = state.outPlayerIds[0];
+      const outPlayer = state.players.find(p => p.id === outPlayerId);
+      const name = outPlayer ? outPlayer.name : "الضايع";
+
+      // في حالة الهلع، نفترض أن الضايع هو من ضغط، لذا ننتقل للتخمين مباشرة
+      startGuessingPhase(name, true);
+    }
+
     function processVoteResult(id) {
       const isActualOut = state.outPlayerIds.includes(id);
       const isUndercover = (id === state.undercoverPlayerId);
@@ -1619,17 +1688,56 @@
       }
     }
 
-    function startGuessingPhase(caughtName) {
+    function startGuessingPhase(caughtName, isPanic = false) {
       const container = document.getElementById('guess-options');
       if (!container) return; container.innerHTML = '';
 
       // تحديث العنوان باسم الضايع
       const titleElement = document.getElementById('guess-title');
+      const subtitleElement = document.getElementById('guess-subtitle');
+
       if (titleElement) {
-        titleElement.innerText = caughtName ? `لقد كشفوك يا ${caughtName}! 🎯` : 'لقد كشفوك! 🎯';
+        if (isPanic) {
+          // Panic Mode
+          titleElement.innerText = `لديك بعض الشجاعة يا ${caughtName}! 😎`;
+          titleElement.className = "text-2xl sm:text-3xl font-black mb-6 text-orange-500";
+          subtitleElement.innerText = "خمن السالفة من الخيارات التالية..";
+        } else {
+          // Caught Mode
+          titleElement.innerText = caughtName ? `لقد كشفوك يا ${caughtName}! 🎯` : 'لقد كشفوك يا ضايع! 🎯';
+          titleElement.className = "text-xl sm:text-2xl font-black mb-4 text-red-400 leading-normal";
+          if (subtitleElement) {
+            subtitleElement.innerText = caughtName ? `لديك فرصة أخيرة لتسرق الفوز يا ${caughtName}!\nخمن السالفة من الخيارات التالية..` : '..خمن السالفة من الخيارات التالية!';
+          }
+        }
       }
 
-      let pool = wordBank[state.selectedCategory] || wordBank["طعام"];
+      // Handle Timer for Panic Mode
+      const timerContainer = document.getElementById('guess-timer-container');
+      const timerEl = document.getElementById('guess-timer');
+
+      if (state.guessInterval) clearInterval(state.guessInterval);
+
+      if (isPanic) {
+        timerContainer.classList.remove('hidden');
+        let timeLeft = 30;
+        timerEl.innerText = timeLeft;
+
+        state.guessInterval = setInterval(() => {
+          timeLeft--;
+          timerEl.innerText = timeLeft;
+          if (timeLeft <= 10 && timeLeft > 0) sounds.tick();
+
+          if (timeLeft <= 0) {
+            clearInterval(state.guessInterval);
+            showFinalResults('group_win', "انتهى الوقت! (عقاب مضاعف) ⏳");
+          }
+        }, 1000);
+      } else {
+        timerContainer.classList.add('hidden');
+      }
+
+      let pool = wordBank[state.currentRoundCategory] || wordBank["طعام"];
 
       // --- الذكاء في التخمين (Smart Distractors) ---
       let potentialDistractors = [];
@@ -1672,6 +1780,10 @@
         while (distinctDistractors.length < 3 && remainder.length > 0) {
           distinctDistractors.push(remainder.pop());
         }
+      } else {
+        // --- عشوائي (Random) ---
+        let distractors = pool.filter(w => w.word !== state.secretData.word);
+        distinctDistractors = distractors.sort(() => 0.5 - Math.random()).slice(0, 3);
       }
 
       // دمج الخيارات النهائية مع السالفة
@@ -1685,8 +1797,20 @@
     }
 
     function checkGuess(word) {
-      if (word === state.secretData.word) showFinalResults('out_win', "تخمين ذكي! الضايع فاز 🧠");
-      else showFinalResults('group_win', "المحققون ينتصرون! ⚖️");
+      if (state.guessInterval) clearInterval(state.guessInterval);
+      if (word === state.secretData.word) {
+        if (state.panicMode) {
+          showFinalResults('out_win', "تخمين أسطوري! (نقاط مضاعفة) 🔥");
+        } else {
+          showFinalResults('out_win', "تخمين صح! الضايع فاز 🧠");
+        }
+      } else {
+        if (state.panicMode) {
+          showFinalResults('group_win', "محاولة فاشلة! (عقاب مضاعف) 🚫");
+        } else {
+          showFinalResults('group_win', "المحققون ينتصرون! ⚖️");
+        }
+      }
     }
 
     // --- 5. وظائف عرض النتائج والإحصائيات ---
@@ -1712,12 +1836,26 @@
         if (!p.stats) p.stats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
         const isOutRole = state.outPlayerIds.includes(p.id) || p.id === state.agentPlayerId || p.id === state.undercoverPlayerId;
 
+        // تحديد قيمة النقاط بناءً على وضع الهلع
+        let pointsIn = 1;
+        let pointsOut = 2;
+
+        if (state.panicMode) {
+          pointsIn = 2; // المحققون يكسبون الضعف إذا فشل الهلع
+          pointsOut = 4; // الضايع يكسب الضعف إذا نجح الهلع
+        }
+
         if (winner === 'group') {
-          if (!isOutRole) { p.points = (p.points || 0) + 1; p.stats.det.w++; }
+          if (!isOutRole) { p.points = (p.points || 0) + pointsIn; p.stats.det.w++; }
           else { if (roleData.role === 'out') p.stats.out.l++; if (roleData.role === 'agent') p.stats.agt.l++; if (roleData.role === 'undercover') p.stats.und.l++; }
         } else {
-          if (isOutRole) { p.points = (p.points || 0) + 2; if (roleData.role === 'out') p.stats.out.w++; if (roleData.role === 'agent') p.stats.agt.w++; if (roleData.role === 'undercover') p.stats.und.w++; }
-          else { p.stats.det.l++; }
+          if (isOutRole) {
+            if (roleData.role === 'out') {
+              p.points = (p.points || 0) + pointsOut;
+            } else {
+              p.points = (p.points || 0) + 3; // العميل والمموه دائماً يحصلون على 3
+            } if (roleData.role === 'out') p.stats.out.w++; if (roleData.role === 'agent') p.stats.agt.w++; if (roleData.role === 'undercover') p.stats.und.w++;
+          } else { p.stats.det.l++; }
         }
         return p;
       });
@@ -1815,7 +1953,7 @@
       if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
     }
 
-    function restartSameGame() { setupRoles(); state.revealIndex = 0; startRevealSequence(); }
+    function restartSameGame() { setupRoles(); state.revealIndex = 0; state.panicMode = false; startRevealSequence(); }
 
     function createConfetti() {
       const container = document.getElementById('confetti-container');

@@ -152,6 +152,10 @@ body {
   padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
 }
 
+.subtitle-class {
+  white-space: pre-line;
+}
+
 /* فئة الوميض الأحمر عند الخطأ */
 body.wrong-flash-active {
   background: #450a0a !important;
