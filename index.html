@@ -1563,14 +1563,14 @@
       state.undercoverPlayerId = (state.undercoverActive && ids.length > 0) ? ids.splice(0, 1)[0] : null;
 
       // تطبيق منطق التحدي الأعمى (35% فرصة)
-      if (state.blindModeActive && Math.random() < 0.35) {
+      if (state.blindModeActive && Math.random() < 0.95) {
         // إرجاع الضايع ليكون محققاً
         state.outPlayerIds = [];
         state.agentPlayerId = null;
         state.undercoverPlayerId = null;
 
         // في حالة "الكل ضايع" (50% من حالات التحدي الأعمى)
-        if (Math.random() < 0.25) {
+        if (Math.random() < 0.65) {
           state.blindRoundType = 'all_out'; // الكل ضايع
           // نعطي الجميع دور "out" لاحقاً
         } else {
