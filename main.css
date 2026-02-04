@@ -385,3 +385,107 @@ button {
   -webkit-tap-highlight-color: transparent;
   /* يزيل الوميض الرمادي المزعج عند الضغط */
 }
+
+/* --- أنماط البطاقة ثلاثية الأبعاد (Card Flip CSS) --- */
+.card-scene {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 320px;
+  height: 420px;
+  margin: 0 auto 2rem auto;
+  cursor: pointer;
+  position: relative;
+  /* ضمان الاستقرار */
+  z-index: 10;
+}
+
+.card-object {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.card-object.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  top: 0;
+  /* مهم جداً: تثبيت الوجه في الأعلى */
+  left: 0;
+  /* مهم جداً: تثبيت الوجه في اليسار */
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.card-face-front {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.card-face-back {
+  background: rgba(30, 41, 59, 0.95);
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  transform: rotateY(180deg);
+  padding: 1.5rem;
+}
+
+/* أنيميشن العوم في الفضاء */
+@keyframes space-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.1;
+  }
+
+  50% {
+    transform: translateY(-15px) rotate(5deg);
+    opacity: 0.4;
+  }
+}
+
+.space-floater {
+  position: absolute;
+  font-weight: 900;
+  animation: space-float 6s ease-in-out infinite;
+  user-select: none;
+}
+
+/* ---------------------------------------------------- */
+
+/* --- أنيميشن تساقط الإيموجي --- */
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.emoji-drop {
+  position: absolute;
+  top: -50px;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------- */

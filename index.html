@@ -33,12 +33,18 @@
 
   <div id="confetti-container"></div>
 
-  <div id="app" class="w-full flex justify-center items-center">
-    <!-- Sound Toggle -->
+  <div id="global-controls" class="fixed top-6 left-6 z-50 flex gap-3">
     <button onclick="toggleMute()" id="mute-toggle"
-      class="fixed top-6 left-6 z-50 p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all">
+      class="p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all active:scale-95">
       🔊
     </button>
+    <button onclick="toggleVibration()" id="vibrate-toggle"
+      class="p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all active:scale-95">
+      📳
+    </button>
+  </div>
+
+  <div id="app" class="w-full flex justify-center items-center p-4">
 
     <!-- Start Screen -->
     <div id="screen-start" class="glass-panel text-center">
@@ -121,6 +127,16 @@
         </div>
 
         <div class="space-y-3">
+          <!-- خيار التحدي الأعمى (Blind Mode) -->
+          <div id="blind-mode-container"
+            class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+            <div class="text-right">
+              <h4 class="font-bold text-sm text-white">🙈 التحدي الأعمى</h4>
+              <p class="text-[10px] text-slate-500 italic">قد لا يكون هناك ضايع في الجولة!</p>
+            </div>
+            <input type="checkbox" id="check-blind-mode" class="custom-checkbox">
+          </div>
+
           <!-- خيار تفعيل التخمين للضايع -->
           <div id="guessing-container"
             class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
@@ -192,15 +208,44 @@
         مرر الجهاز إلى المحقق:</p>
       <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-10 text-indigo-400 text-center font-black">
       </h2>
-      <div id="reveal-box"
-        class="hidden p-8 bg-indigo-500/10 border-4 border-dashed border-indigo-500/20 rounded-3xl mb-10 animate-pulse shadow-inner text-center">
-        <p id="reveal-role-text" class="text-2xl sm:text-3xl font-bold mb-4 text-center"></p>
-        <div id="reveal-img-placeholder" class="text-8xl sm:text-9xl mb-6 text-center">
+      <!-- منطقة البطاقة ثلاثية الأبعاد (3D Card) -->
+      <div class="card-scene" onclick="flipCard()">
+        <div class="card-object" id="role-card">
+          <!-- الوجه الأمامي (5 علامات استفهام عائمة) -->
+          <div class="card-face card-face-front relative">
+            <!-- 1. الوسط (الأكبر) -->
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); z-index: 0;">
+              <span class="font-black text-white"
+                style="font-size: 10rem; display: block; animation: space-float 8s ease-in-out infinite; opacity: 0.1;">?</span>
+            </div>
+
+            <!-- 2. زاوية علوية يسار -->
+            <span class="space-floater text-6xl text-indigo-500/30"
+              style="top: 2rem; left: 2rem; animation-delay: 1s;">?</span>
+
+            <!-- 3. زاوية علوية يمين -->
+            <span class="space-floater text-6xl text-purple-500/30"
+              style="top: 2rem; right: 2rem; animation-delay: 2s;">?</span>
+
+            <!-- 4. زاوية سفلية يسار -->
+            <span class="space-floater text-6xl text-pink-500/30"
+              style="bottom: 6rem; left: 2rem; animation-delay: 3s;">?</span>
+
+            <!-- 5. زاوية سفلية يمين -->
+            <span class="space-floater text-6xl text-emerald-500/30"
+              style="bottom: 6rem; right: 2rem; animation-delay: 4s;">?</span>
+
+            <p class="text-slate-400 mt-auto mb-10 font-bold animate-pulse z-10">اضغط للكشف</p>
+          </div>
+          <!-- الوجه الخلفي (المعلومات) -->
+          <div class="card-face card-face-back flex flex-col items-center justify-center">
+            <p id="reveal-role-text" class="text-xl sm:text-2xl font-bold mb-4"></p>
+            <div id="reveal-img-placeholder" class="text-7xl sm:text-8xl mb-4"></div>
+            <p id="reveal-secret-word"
+              class="text-3xl sm:text-4xl font-black text-white tracking-widest uppercase break-word-custom"></p>
+            <p id="reveal-word-desc" class="text-base sm:text-lg text-slate-400 mt-4 italic font-bold"></p>
+          </div>
         </div>
-        <p id="reveal-secret-word"
-          class="text-4xl sm:text-5xl font-black text-white tracking-widest uppercase break-word-custom text-center">
-        </p>
-        <p id="reveal-word-desc" class="text-lg text-slate-400 mt-4 italic font-bold"></p>
       </div>
       <button id="btn-reveal-action" onclick="toggleReveal()"
         class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white font-black text-center">إظهار
@@ -211,16 +256,16 @@
     <div id="screen-game" class="glass-panel hidden text-center">
       <div class="flex justify-center mb-10 text-center">
         <div class="relative w-56 h-56 sm:w-72 sm:h-72 flex items-center justify-center text-center">
-          <svg class="absolute inset-0 w-full h-full -rotate-90 text-center" viewBox="0 0 200 200">
+          <svg class="absolute inset-0 w-full h-full -rotate-90 text-center" viewbox="0 0 200 200">
             <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
             <circle id="timer-progress" cx="100" cy="100" r="90" fill="none" stroke="url(#timer-grad)" stroke-width="12"
               stroke-dasharray="565.48" stroke-dashoffset="0" stroke-linecap="round"
               class="transition-all duration-1000"></circle>
             <defs>
-              <linearGradient id="timer-grad">
+              <lineargradient id="timer-grad">
                 <stop offset="0%" stop-color="#6366f1" />
                 <stop offset="100%" stop-color="#10b981" />
-              </linearGradient>
+              </lineargradient>
             </defs>
           </svg>
           <div id="game-timer" style="font-size: 4rem;"
@@ -357,8 +402,10 @@
               تخمين الكلمة من سياق الحديث.</li>
             <li class="text-right">🎭 العميل المزدوج: هذا هو الدور الأخطر! هو لاعب يعرف الكلمة، لكنه يربح إذا استطاع
               إقناع الجميع بأنه هو "الضايع" أو إذا تم التصويت عليه بالخطأ. هو يلعب ضد الجميع ليربك الحسابات.</li>
-            <li class="text-right">🤫 المموه: الهدف حماية "الضايع". وظيفته هي إعطاء إجابات مريبة أو غريبة نوعاً ما ليجعل
-              بقية اللاعبين يشكون فيه هو بدلاً من الضايع. إذا تم التصويت على المموه بدلاً من الضايع، ينجح في مهمته.</li>
+            <li class="text-right">🤫 المموه: الهدف حماية "الضايع". وظيفته هي إعطاء إجابات مريبة أو غريبة نوعاً ما
+              ليجعل
+              بقية اللاعبين يشكون فيه هو بدلاً من الضايع. إذا تم التصويت على المموه بدلاً من الضايع، ينجح في مهمته.
+            </li>
           </ul>
         </div>
 
@@ -442,21 +489,30 @@
           <div class="text-xs space-y-3 font-bold leading-relaxed text-right">
             <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right">
               <p class="text-emerald-400 mb-1 text-right">🕵️ المحققون:</p>
-              <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+1 نقطة</span> | الخسارة:
+              <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+1 نقطة</span> |
+                الخسارة:
                 <span class="text-white text-right">0 نقطة</span>
               </p>
             </div>
             <div class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right">
               <p class="text-indigo-400 mb-1 text-right">😶‍🌫️
                 الضايع / 🎭 العميل / 🤫 المموه:</p>
-              <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+2 نقطة</span> | الخسارة:
+              <p class="text-slate-300 text-right">الفوز: <span class="text-white text-right">+2 نقطة</span> |
+                الخسارة:
                 <span class="text-white text-right">0 نقطة</span>
               </p>
             </div>
             <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 text-right mt-2">
               <p class="text-orange-400 mb-1">🚨 زر "أنا عرفتها!" (للضايع):</p>
-              <p class="text-slate-300">تخمين صحيح: <span class="text-white">+4 للضايع / +3 للفريق</span> (فوز ساحق)</p>
+              <p class="text-slate-300">تخمين صحيح: <span class="text-white">+4 للضايع / +3 للفريق</span> (فوز ساحق)
+              </p>
               <p class="text-slate-300">تخمين خاطئ: <span class="text-white">المحققون +2 نقطة</span> (عقاب)</p>
+            </div>
+            <!-- شرح التحدي الأعمى -->
+            <div class="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20 text-right mt-2">
+              <p class="text-purple-400 mb-1">🙈 التحدي الأعمى:</p>
+              <p class="text-slate-300">قد لا يكون هناك ضايع أو الكل ضايع! <span class="text-white">الكل يكسب نقطة
+                  واحدة!</span></p>
             </div>
           </div>
         </div>
@@ -609,6 +665,25 @@
       document.getElementById('modal-alert').classList.add('hidden');
     }
 
+    // Vibration function
+    function triggerVibrate(pattern) {
+      if (state.isVibrationEnabled && navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    // Toggle Vibration function
+    function toggleVibration() {
+      state.isVibrationEnabled = !state.isVibrationEnabled;
+      const btn = document.getElementById('vibrate-toggle');
+      if (state.isVibrationEnabled) {
+        btn.innerText = '📳';
+        triggerVibrate(50); // Feedback
+      } else {
+        btn.innerText = '📴';
+      }
+    }
+
     function playTone(freq, duration, type = 'sine', vol = 0.1) {
       if (typeof state !== 'undefined' && state.isMuted) return;
       const osc = audioCtx.createOscillator();
@@ -618,15 +693,55 @@
       gain.gain.setValueAtTime(vol, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
       osc.start(); osc.stop(audioCtx.currentTime + duration);
-      // داخل دالة reveal أو عند انتهاء الوقت
-      if ('vibrate' in navigator) { navigator.vibrate(50); }
+    }
+
+    // صوت "ووش" لقلب البطاقة
+    function playFlipSound() {
+      if (state.isMuted) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'triangle';
+
+      // انزلاق سريع للتردد من عالٍ لمنخفض
+      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    // صوت مضحك (Funny Sound)
+    function playFunnySound() {
+      if (state.isMuted) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sawtooth';
+
+      // تردد متذبذب (Wobbly)
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2);
+      osc.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4);
+      osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6);
+
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.6);
     }
 
     const sounds = {
-      tick: () => playTone(800, 0.05, 'sine', 0.03),
-      win: () => { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100); setTimeout(() => playTone(783, 0.3), 200); },
-      lose: () => playTone(150, 0.6, 'sawtooth', 0.15),
-      wrong: () => playTone(100, 0.5, 'square', 0.2),
+      tick: () => { playTone(800, 0.05, 'sine', 0.03); triggerVibrate(15); },
+      win: () => { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100); setTimeout(() => playTone(783, 0.3), 200); triggerVibrate([100, 50, 100, 50, 100]); },
+      lose: () => { playTone(150, 0.6, 'sawtooth', 0.15); triggerVibrate([200, 100, 200]); },
+      wrong: () => { playTone(100, 0.5, 'square', 0.2); triggerVibrate(300); },
+      flip: () => { playFlipSound(); triggerVibrate(40); },
+      funny: () => { playFunnySound(); triggerVibrate([50, 50, 50, 50, 50]); },
       click: () => playTone(1200, 0.03, 'square', 0.05),
       invalid: () => playTone(220, 0.2, 'sawtooth', 0.2),
       timesUp: () => {
@@ -1225,8 +1340,8 @@
 
     // --- 1. الحالة العامة (State) ---
     let state = {
-      players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
-      revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: true,
+      players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null, blindModeActive: false,
+      blindRoundType: null, revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: true,
       votingMode: 'group', panicMode: false, outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null,
       selectedCategory: "عشوائي", panicModeEnabled: false, customWords: [], isMuted: false, lastWinner: null
     };
@@ -1243,8 +1358,12 @@
       // --- إصلاح مشكلة الصوت ---
       if (audioCtx.state === 'suspended') { audioCtx.resume(); }
       document.querySelectorAll('#app > div').forEach(div => div.classList.add('hidden'));
-      const s = document.getElementById(`screen-${screenId}`);
-      if (s) s.classList.remove('hidden');
+      const target = document.getElementById(`screen-${screenId}`);
+      if (target) {
+        target.classList.remove('hidden');
+        target.scrollTop = 0; // The Fix: Scroll to top
+        window.scrollTo(0, 0); // Safety net
+      }
       if (screenId === 'setup') renderCategories('categories-grid');
       if (screenId === 'leaderboard') { updateLeaderboardUI('leaderboard-list'); checkResetButtonVisibility(); }
       if (screenId === 'final') updateFinalResultsUI();
@@ -1399,6 +1518,9 @@
       state.guessingEnabled = document.getElementById('check-guessing').checked;
       // Get panic mode setting
       state.panicModeEnabled = document.getElementById('check-panic-mode') ? document.getElementById('check-panic-mode').checked : false;
+      // Get blind mode
+      state.blindModeActive = document.getElementById('check-blind-mode') ? document.getElementById('check-blind-mode').checked : false;
+
       setupRoles();
       state.revealIndex = 0;
       state.panicMode = false;
@@ -1430,56 +1552,138 @@
       }
       state.currentRoundCategory = actualCategory; // حفظ الفئة الحالية للاستخدام
 
-      let pool = wordBank[state.currentRoundCategory] || wordBank["طعام"];
-      if (pool.length === 0) pool = wordBank["طعام"];
+      let pool = wordBank[actualCategory] || wordBank["طعام"];
       state.secretData = pool[Math.floor(Math.random() * pool.length)];
       let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
-      const numOut = state.players.length > 8 ? 2 : 1;
-      state.outPlayerIds = ids.splice(0, numOut);
+
+      // المنطق الافتراضي
+      let outID = ids.splice(0, 1)[0];
+      state.outPlayerIds = [outID];
       state.agentPlayerId = (state.doubleAgentActive && ids.length > 0) ? ids.splice(0, 1)[0] : null;
       state.undercoverPlayerId = (state.undercoverActive && ids.length > 0) ? ids.splice(0, 1)[0] : null;
+
+      // تطبيق منطق التحدي الأعمى (35% فرصة)
+      if (state.blindModeActive && Math.random() < 0.35) {
+        // إرجاع الضايع ليكون محققاً
+        state.outPlayerIds = [];
+        state.agentPlayerId = null;
+        state.undercoverPlayerId = null;
+
+        // في حالة "الكل ضايع" (50% من حالات التحدي الأعمى)
+        if (Math.random() < 0.25) {
+          state.blindRoundType = 'all_out'; // الكل ضايع
+          // نعطي الجميع دور "out" لاحقاً
+        } else {
+          state.blindRoundType = 'all_in'; // الكل محقق
+        }
+      } else {
+        state.blindRoundType = null;
+      }
+
       state.currentRoles = state.players.map(p => {
-        let r = 'in';
-        if (state.outPlayerIds.includes(p.id)) r = 'out';
-        else if (p.id === state.agentPlayerId) r = 'agent';
-        else if (p.id === state.undercoverPlayerId) r = 'undercover';
-        return { id: p.id, role: r };
+        let role = 'in';
+        if (state.blindRoundType === 'all_out') {
+          role = 'out';
+        } else if (state.blindRoundType === 'all_in') {
+          role = 'in';
+        } else {
+          if (p.id === (state.outPlayerIds.length > 0 ? state.outPlayerIds[0] : -1)) role = 'out';
+          else if (p.id === state.agentPlayerId) role = 'agent';
+          else if (p.id === state.undercoverPlayerId) role = 'undercover';
+        }
+        return { id: p.id, role: role };
       });
     }
 
     function startRevealSequence() {
-      if (state.revealIndex >= state.players.length) { showScreen('game'); startTimer(); return; }
+      if (state.revealIndex >= state.players.length) return showScreen('game'), startTimer();
       const p = state.players[state.revealIndex];
       document.getElementById('reveal-player-name').innerText = `${p.avatar} ${p.name}`;
-      document.getElementById('reveal-box').classList.add('hidden');
+      // Reset card
+      const cardObj = document.getElementById('role-card');
+      if (cardObj) cardObj.classList.remove('is-flipped');
+
       document.getElementById('btn-reveal-action').innerText = 'إظهار السالفة';
+      document.getElementById('btn-reveal-action').onclick = toggleReveal;
+
+      // Populate back of card with hidden data
+      populateCardBack(p);
+
       showScreen('reveal');
     }
 
-    function toggleReveal() {
-      const box = document.getElementById('reveal-box');
-      if (box && box.classList.contains('hidden')) {
-        const roleData = state.currentRoles.find(r => r.id === state.players[state.revealIndex].id);
-        const txt = document.getElementById('reveal-role-text');
-        const word = document.getElementById('reveal-secret-word');
-        const img = document.getElementById('reveal-img-placeholder');
-        const desc = document.getElementById('reveal-word-desc');
-        if (roleData.role === 'in') { txt.innerText = "أنت تعرف السالفة!"; word.innerText = state.secretData.word; img.innerText = state.secretData.emoji; desc.innerText = state.secretData.desc || ""; txt.className = "text-2xl mb-4 text-emerald-400 font-bold text-center"; }
-        else if (roleData.role === 'agent') { txt.innerText = "أنت العميل المزدوج! احمِ الضايع:"; word.innerText = state.secretData.word; img.innerText = "🎭"; desc.innerText = state.secretData.desc || ""; txt.className = "text-2xl mb-4 text-orange-400 font-bold text-center"; }
-        else if (roleData.role === 'undercover') {
-          let undercoverObj;
-          if (state.currentRoundCategory === "كلمات خاصة") { undercoverObj = state.customWords.find(w => w.word !== state.secretData.word); } else {
-            // البحث عن الكلمة المتعلقة ككائن كامل داخل التصنيف الحالي
-            undercoverObj = (wordBank[state.currentRoundCategory] || []).find(w => w.word === state.secretData.related);
-          }
-          let rel = (state.currentRoundCategory === "كلمات خاصة") ? (state.customWords.filter(w => w.word !== state.secretData.word)[0]?.word || "سالفة قريبة") : (state.secretData.related || "مشابهة");
-          //let relDesc = undercoverObj ? undercoverObj.desc : "كلمة قريبة تضلل بها المحققين.";
-          let relDesc = (undercoverObj && undercoverObj.desc) ? undercoverObj.desc : "حاول تضليل المحققين بكلمة قريبة!";
-          txt.innerText = "أنت المموه! كلمتك هي:"; word.innerText = rel; img.innerText = "🤫"; desc.innerText = relDesc || ""; txt.className = "text-2xl mb-4 text-yellow-400 font-bold text-center";
+    function populateCardBack(player) {
+      const roleData = state.currentRoles.find(r => r.id === player.id);
+      const txt = document.getElementById('reveal-role-text');
+      const word = document.getElementById('reveal-secret-word');
+      const img = document.getElementById('reveal-img-placeholder');
+      const descPlaceholder = document.getElementById('reveal-word-desc');
+
+      if (roleData.role === 'in') {
+        txt.innerText = "أنت تعرف السالفة!"; word.innerText = state.secretData.word;
+        img.innerText = state.secretData.emoji; descPlaceholder.innerText = state.secretData.desc || "";
+        txt.className = "text-xl font-bold mb-4 text-emerald-400";
+      }
+      else if (roleData.role === 'agent') {
+        txt.innerText = "أنت العميل المزدوج! احمِ الضايع:"; word.innerText = state.secretData.word;
+        img.innerText = "🎭"; descPlaceholder.innerText = state.secretData.desc || "";
+        txt.className = "text-xl font-bold mb-4 text-orange-400";
+      }
+      else if (roleData.role === 'undercover') {
+        let undercoverObj;
+        if (state.currentRoundCategory === "كلمات خاصة") {
+          undercoverObj = state.customWords.find(w => w.word !== state.secretData.word);
+        } else {
+          undercoverObj = (wordBank[state.currentRoundCategory] || []).find(w => w.word === state.secretData.related);
         }
-        else { txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; desc.innerText = "؟؟؟؟؟"; txt.className = "text-2xl mb-4 text-red-500 font-bold text-center"; }
-        box.classList.remove('hidden'); document.getElementById('btn-reveal-action').innerText = 'فهمت، التالي';
-      } else { state.revealIndex++; startRevealSequence(); }
+        let relWord = undercoverObj ? undercoverObj.word : (state.secretData.related || "سالفة قريبة");
+        let relDesc = undercoverObj ? undercoverObj.desc : "كلمة قريبة تضلل بها المحققين.";
+        txt.innerText = "أنت المموه! كلمتك هي:"; word.innerText = relWord;
+        img.innerText = "🤫"; descPlaceholder.innerText = relDesc;
+        txt.className = "text-xl font-bold mb-4 text-yellow-400";
+      }
+      else {
+        txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; descPlaceholder.innerText = "؟؟؟؟؟";
+        txt.className = "text-xl font-bold mb-4 text-red-500";
+      }
+    }
+
+    // New function to handle card flip
+    function flipCard() {
+      const cardObj = document.getElementById('role-card');
+      const btn = document.getElementById('btn-reveal-action');
+
+      if (!cardObj.classList.contains('is-flipped')) {
+        // Flip it
+        cardObj.classList.add('is-flipped');
+        sounds.flip(); // Play sound
+        btn.innerText = "التالي";
+      } else {
+        // Already flipped, so clicking card acts like clicking next
+        // But typically user clicks the button. We can allow card click to advance too?
+        // Let's keep card click just for flipping/re-checking, button for next.
+      }
+    }
+
+    function toggleReveal() {
+      const cardObj = document.getElementById('role-card');
+      const btn = document.getElementById('btn-reveal-action');
+
+      if (!cardObj.classList.contains('is-flipped')) {
+        // Flip
+        cardObj.classList.add('is-flipped');
+        sounds.flip();
+        btn.innerText = "التالي";
+      } else {
+        // Next player - with delay fix for glitch
+        cardObj.classList.remove('is-flipped');
+        sounds.flip();
+
+        setTimeout(() => {
+          state.revealIndex++;
+          startRevealSequence();
+        }, 250);
+      }
     }
 
     function startTimer() {
@@ -1500,9 +1704,6 @@
         if (state.timer <= 0) { clearInterval(state.interval); startVoting(); }
       }, 1000);
     }
-
-    function pauseTimer() { state.isPaused = !state.isPaused; document.getElementById('btn-pause').innerText = state.isPaused ? "استئناف" : "إيقاف مؤقت"; }
-    function endGameEarly() { clearInterval(state.interval); startVoting(); }
 
     function startVoting() {
       state.voterIndex = 0;
@@ -1584,16 +1785,39 @@
       clearInterval(state.interval);
       state.panicMode = true; // تفعيل وضع الهلع
 
-      // جلب اسم الضايع الحالي من الحالة
-      const outPlayerId = state.outPlayerIds[0];
-      const outPlayer = state.players.find(p => p.id === outPlayerId);
-      const name = outPlayer ? outPlayer.name : "الضايع";
+      // جلب اسم الضايع الحالي
+      const outPlayerId = state.outPlayerIds.length > 0 ? state.outPlayerIds[0] : null;
+      let name = "الضايع";
 
-      // في حالة الهلع، نفترض أن الضايع هو من ضغط، لذا ننتقل للتخمين مباشرة
+      if (outPlayerId !== null) {
+        const outPlayer = state.players.find(p => p.id === outPlayerId);
+        name = outPlayer ? outPlayer.name : "الضايع";
+      } else if (state.blindRoundType === 'all_out') {
+        name = "الكل";
+      }
+
       startGuessingPhase(name, true);
     }
 
     function processVoteResult(id) {
+      // التحقق من "التحدي الأعمى" أولاً
+      if (state.blindRoundType) {
+        const accusedPlayer = state.players.find(p => p.id === id);
+        const name = accusedPlayer ? accusedPlayer.name : "";
+
+        let msg = "";
+        if (state.blindRoundType === 'all_in') {
+          msg = `مقلب! 🤣 ${name} بريء والكل بريء! ما كان فيه ضايع!`;
+        } else {
+          msg = `كارثة! 🤡 ${name} ضايع والكل ضايع! محد يعرف السالفة!`;
+        }
+
+        // تشغيل الصوت المضحك
+        sounds.funny();
+        showFinalResults('blind_win', msg);
+        return;
+      }
+
       const isActualOut = state.outPlayerIds.includes(id);
       const isUndercover = (id === state.undercoverPlayerId);
 
@@ -1754,45 +1978,74 @@
 
     function showFinalResults(type, title) {
       state.lastWinner = type === 'group_win' ? 'group' : 'out';
+
+      if (type === 'blind_win') {
+        document.getElementById('final-status-emoji').innerText = '🤡';
+        // في الفوز الأعمى، الجميع يحصل على نقطة واحدة (جائزة ترضية)
+        state.lastWinner = 'blind';
+        // لا وميض أحمر
+      } else {
+        document.getElementById('final-status-emoji').innerText = type === 'group_win' ? '🏆' : '😈';
+      }
+
       document.getElementById('final-result-title').innerText = title;
-      document.getElementById('final-status-emoji').innerText = type === 'group_win' ? '🏆' : '😈';
       document.getElementById('final-secret-word').innerText = state.secretData.word;
       document.getElementById('final-word-emoji').innerText = state.secretData.emoji;
       document.getElementById('topic-description').innerText = state.secretData.desc || "";
 
-      if (type === 'group_win') { sounds.win(); createConfetti(); } else { sounds.lose(); }
+      if (type === 'group_win') { sounds.win(); createConfetti(); }
+      else if (type === 'blind_win') { createConfetti(true); } // Confetti with clowns - Sound played before
+      else { sounds.lose(); }
+
       awardPoints(state.lastWinner);
       showScreen('final');
     }
 
     function awardPoints(winner) {
       let saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+
+      const roleToStatKey = {
+        'in': 'det',
+        'out': 'out',
+        'agent': 'agt',
+        'undercover': 'und'
+      };
+
       saved = saved.map((p) => {
         const roleData = state.currentRoles.find(r => r.id === p.id);
         if (!roleData) return p;
+
+        // تهيئة الإحصائيات إذا لم تكن موجودة
         if (!p.stats) p.stats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
-        const isOutRole = state.outPlayerIds.includes(p.id) || p.id === state.agentPlayerId || p.id === state.undercoverPlayerId;
 
-        // تحديد قيمة النقاط بناءً على وضع الهلع
-        let pointsIn = 1;
-        let pointsOut = 2;
+        const statKey = roleToStatKey[roleData.role];
+        const isOutSide = (roleData.role === 'out' || roleData.role === 'agent' || roleData.role === 'undercover');
 
-        if (state.panicMode) {
-          pointsIn = 2; // المحققون يكسبون الضعف إذا فشل الهلع
-          pointsOut = 4; // الضايع يكسب الضعف إذا نجح الهلع
+        if (winner === 'blind') {
+          p.points += 1;
+          if (statKey && p.stats[statKey]) {
+            p.stats[statKey].w++;
+          }
         }
+        else if (winner === 'group') {
+          if (!isOutSide) {
+            p.points += (state.panicMode ? 2 : 1);
+            p.stats.det.w++;
+          } else {
+            if (statKey) p.stats[statKey].l++;
+          }
+        }
+        else if (winner === 'out' || winner === 'out_win') {
+          if (isOutSide) {
+            let pts = 2;
+            if (roleData.role === 'out' && state.panicMode) pts = 4;
+            p.points += pts;
 
-        if (winner === 'group') {
-          if (!isOutRole) { p.points = (p.points || 0) + pointsIn; p.stats.det.w++; }
-          else { if (roleData.role === 'out') p.stats.out.l++; if (roleData.role === 'agent') p.stats.agt.l++; if (roleData.role === 'undercover') p.stats.und.l++; }
-        } else {
-          if (isOutRole) {
-            if (roleData.role === 'out') {
-              p.points = (p.points || 0) + pointsOut;
-            } else {
-              p.points = (p.points || 0) + 3; // العميل والمموه دائماً يحصلون على 3
-            } if (roleData.role === 'out') p.stats.out.w++; if (roleData.role === 'agent') p.stats.agt.w++; if (roleData.role === 'undercover') p.stats.und.w++;
-          } else { p.stats.det.l++; }
+            if (statKey) p.stats[statKey].w++;
+          }
+          else {
+            p.stats.det.l++;
+          }
         }
         return p;
       });
@@ -1802,15 +2055,22 @@
 
     function updateFinalResultsUI() {
       const list = document.getElementById('final-leaderboard');
-      if (!list) return; list.innerHTML = '';
+      if (!list) return;
+      list.innerHTML = '';
       state.players.forEach(p => {
         const roleData = state.currentRoles.find(r => r.id === p.id);
+        if (!roleData) return;
         const isOutSide = (roleData.role === 'out' || roleData.role === 'agent' || roleData.role === 'undercover');
-        const didWin = (state.lastWinner === 'group' && !isOutSide) || (state.lastWinner === 'out' && isOutSide);
-        const statusColorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-100' : 'bg-red-500/20 border-red-500/40 text-red-100';
+
+        let didWin = false;
+        if (state.lastWinner === 'group' && !isOutSide) didWin = true;
+        if ((state.lastWinner === 'out' || state.lastWinner === 'out_win') && isOutSide) didWin = true;
+        if (state.lastWinner === 'blind') didWin = true; // الجميع فائز في الوضع الأعمى
+
+        const colorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-100' : 'bg-red-500/20 border-red-500/40 text-red-100';
         const roleLabel = roleNamesMap[roleData.role] || 'محقق';
 
-        list.innerHTML += `<div class="flex items-center justify-between p-4 rounded-2xl border ${statusColorClass} mb-2 shadow-inner"><div class="flex items-center gap-4 text-right"><span class="text-3xl text-center">${p.avatar}</span><div class="flex flex-col text-right"><span class="font-black text-white text-base">${p.name}</span><span class="text-[9px] font-bold uppercase opacity-80">${roleLabel}</span></div></div><span class="bg-black/20 px-4 py-1 rounded-full font-mono text-xs font-black text-center">${p.points}</span></div>`;
+        list.innerHTML += `<div class="flex items-center justify-between p-3 rounded-2xl border ${colorClass} mb-2 shadow-inner text-right"><div class="flex items-center gap-3"><span class="text-2xl">${p.avatar}</span><div class="text-right"><p class="font-black text-white text-sm text-right">${p.name}</p><p class="text-[8px] uppercase opacity-60 text-white text-right">${roleLabel}</p></div></div><span class="font-mono text-xs font-black text-white">${p.points}</span></div>`;
       });
     }
 
@@ -1868,7 +2128,7 @@
       const resetData = saved.map(p => ({ ...p, points: 0, stats: { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } } }));
       localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(resetData));
       state.players = resetData;
-      closeModal(); // تم إصلاحها لعدم إخفاء زر الصوت
+      closeModal();
       updateLeaderboardUI('leaderboard-list');
       checkResetButtonVisibility();
     }
@@ -1890,21 +2150,57 @@
       if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
     }
 
-    function restartSameGame() { setupRoles(); state.revealIndex = 0; state.panicMode = false; startRevealSequence(); }
+    function restartSameGame() {
+      state.timer = state.initialTimer;
+      setupRoles();
+      state.revealIndex = 0;
+      state.panicMode = false;
+      startRevealSequence();
+    }
 
-    function createConfetti() {
+    function pauseTimer() { state.isPaused = !state.isPaused; document.getElementById('btn-pause').innerText = state.isPaused ? "استئناف" : "إيقاف مؤقت"; }
+    function endGameEarly() { clearInterval(state.interval); startVoting(); }
+
+    function createConfetti(isClown = false) {
       const container = document.getElementById('confetti-container');
       if (!container) return;
+      // Clear previous confetti
+      container.innerHTML = '';
+
       const colors = ['#6366f1', '#10b981', '#ef4444', '#fbbf24', '#f472b6'];
-      for (let i = 0; i < 120; i++) {
-        const c = document.createElement('div'); c.className = 'confetti-piece';
-        const size = Math.random() * 12 + 6; c.style.width = `${size}px`; c.style.height = `${size}px`;
-        c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        c.style.left = `${Math.random() * 100}vw`; c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      const clowns = ['🤡', '🤣', '🤪', '🎪', '🙈'];
+
+      // زيادة العدد للمهرجين
+      const count = isClown ? 180 : 120;
+
+      for (let i = 0; i < count; i++) {
+        const c = document.createElement('div');
+        c.style.left = Math.random() * 100 + 'vw';
+
+        if (isClown) {
+          c.className = 'emoji-drop text-4xl';
+          c.innerText = clowns[Math.floor(Math.random() * clowns.length)];
+        } else {
+          c.className = 'confetti-piece';
+          c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          // Use standard confetti animation for non-clowns
+          c.style.top = '-20px';
+          c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(100vh) rotate(720deg)`, opacity: 0 }], { duration: 2000 + Math.random() * 2000 });
+        }
+
         container.appendChild(c);
-        c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(110vh) rotate(1080deg) translateX(${(Math.random() - 0.5) * 400}px)`, opacity: 0 }], { duration: 3000 + Math.random() * 2000, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
-        setTimeout(() => c.remove(), 5000);
+
+        if (isClown) {
+          // Set random animation duration for CSS animation
+          c.style.animationDuration = (2 + Math.random() * 3) + 's';
+          c.style.animationDelay = (Math.random() * 2) + 's';
+        }
       }
+
+      // Remove after 5 seconds
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 7000);
     }
 
     // --- 6. تهيئة التطبيق عند التحميل ---
