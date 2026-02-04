@@ -119,10 +119,22 @@
 }
 
 :root {
+  /* الوضع الليلي (الافتراضي) */
+  --bg-gradient-start: #1e293b;
+  --bg-gradient-end: #0f172a;
+  --text-main: #f8fafc;
+  /* أبيض */
+  --text-muted: #94a3b8;
+  /* رصاصي فاتح */
+  --glass-bg: rgba(30, 41, 59, 0.95);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --btn-sec-bg: transparent;
+  --btn-sec-text: #fff;
+  --btn-sec-border: rgba(255, 255, 255, 0.1);
+
   --primary: #6366f1;
-  --accent: #10b981;
-  --danger: #ef4444;
-  --bg-dark: #0f172a;
 }
 
 /* إخفاء شريط التمرير لمظهر التطبيقات */
@@ -136,11 +148,34 @@
   display: none;
 }
 
+body.light-mode {
+  /* الوضع النهاري - تم تعديل التباين والحدود */
+  --bg-gradient-start: #f1f5f9;
+  --bg-gradient-end: #e2e8f0;
+  --text-main: #0f172a;
+  /* كحلي غامق جداً للقراءة */
+  --text-muted: #475569;
+  /* رصاصي غامق */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  /* خلفية زجاجية أفتح */
+
+  /* --- التعديل هنا: زيادة وضوح الحدود --- */
+  --glass-border: rgba(0, 0, 0, 0.15);
+  /* حدود أغمق للنافذة الرئيسية */
+  --card-bg: rgba(255, 255, 255, 0.6);
+  --card-border: rgba(0, 0, 0, 0.15);
+  /* حدود أغمق للبطاقات */
+  --btn-sec-bg: rgba(255, 255, 255, 1);
+  --btn-sec-text: #334155;
+  --btn-sec-border: rgba(0, 0, 0, 0.2);
+  /* حدود أغمق للأزرار الثانوية */
+}
+
 body {
   font-family: 'Cairo', sans-serif;
-  background-color: var(--bg-dark);
-  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-  color: #f8fafc;
+  background-color: var(--bg-gradient-end);
+  background: radial-gradient(circle at center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  color: var(--text-main);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -148,8 +183,25 @@ body {
   margin: 0;
   overflow: hidden;
   touch-action: manipulation;
-  transition: all 0.3s ease;
+  transition: background 0.5s ease, color 0.3s ease;
   padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
+}
+
+.text-theme-main {
+  color: var(--text-main) !important;
+}
+
+.text-theme-muted {
+  color: var(--text-muted) !important;
+}
+
+.bg-card-theme {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+
+.border-theme {
+  border-color: var(--glass-border);
 }
 
 .subtitle-class {
@@ -211,12 +263,12 @@ body.wrong-flash-active {
 }
 
 .glass-panel {
-  /* background: rgba(30, 41, 59, 0.85);
+  background: var(--glass-bg);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
   border-radius: 2.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
   max-height: 94vh;
   width: 100%;
   max-width: 550px;
@@ -224,7 +276,7 @@ body.wrong-flash-active {
   position: relative;
   padding: 1.5rem;
   z-index: 10;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-gradient {
@@ -242,13 +294,15 @@ body.wrong-flash-active {
   border: 2px solid transparent;
   padding: 1rem 0.5rem;
   border-radius: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--card-bg);
   text-align: center;
   font-weight: bold;
   display: flex;
   flex-direction: column;
   gap: 5px;
   align-items: center;
+  color: var(--text-main);
+  border: 1px solid var(--card-border);
 }
 
 .category-card.active {
@@ -431,14 +485,14 @@ button {
 }
 
 .card-face-front {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  position: relative;
+  background: linear-gradient(135deg, var(--bg-gradient-end) 0%, var(--bg-gradient-start) 100%);
+  border: 2px solid var(--glass-border);
 }
 
 .card-face-back {
-  background: rgba(30, 41, 59, 0.95);
-  border: 2px solid rgba(99, 102, 241, 0.3);
+  background: var(--glass-bg);
+  /* الآن تأخذ لون الخلفية الزجاجية حسب الثيم */
+  border: 4px solid rgba(99, 102, 241, 0.3);
   transform: rotateY(180deg);
   padding: 1.5rem;
 }

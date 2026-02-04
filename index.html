@@ -10,7 +10,7 @@
 
   <link rel="stylesheet" href="main.css">
 
-  <script src="tailwind.min.js"></script>
+  <script src="tailwind.min.js" defer></script>
 
   <link rel="manifest" href="manifest.json">
   <script>
@@ -26,22 +26,43 @@
 
   <div id="orientation-overlay">
     <div class="text-6xl mb-6 animate-bounce text-center">📱</div>
-    <h2 class="text-2xl font-black text-white mb-4 text-center">يرجى تدوير الجهاز للوضع العامودي</h2>
+    <h2 class="text-2xl font-black mb-4 text-center">يرجى تدوير الجهاز للوضع العامودي</h2>
     <p class="text-slate-400 font-bold text-center">اللعبة مصممة للعمل في الوضع العامودي لضمان
       أفضل تجربة</p>
   </div>
 
   <div id="confetti-container"></div>
 
-  <div id="global-controls" class="fixed top-6 left-6 z-50 flex gap-3">
-    <button onclick="toggleMute()" id="mute-toggle"
-      class="p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all active:scale-95">
-      🔊
+  <!-- زر الإعدادات الموحد -->
+  <div id="global-controls" class="fixed top-6 left-6 z-50">
+    <button onclick="openSettingsModal()"
+      class="p-3 bg-card-theme rounded-full border border-theme text-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 text-theme-main">
+      ⚙️
     </button>
-    <button onclick="toggleVibration()" id="vibrate-toggle"
-      class="p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all active:scale-95">
-      📳
-    </button>
+  </div>
+
+  <!-- Settings -->
+  <div id="modal-settings"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <h3 class="text-2xl font-black mb-8 text-theme-main">الإعدادات العامة ⚙️</h3>
+      <div class="space-y-4">
+        <button onclick="toggleMute()" id="btn-toggle-mute"
+          class="w-full py-4 bg-white/5 rounded-2xl border border-white/10 text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>الصوت</span> <span id="lbl-mute">🔊</span>
+        </button>
+        <button onclick="toggleVibration()" id="btn-toggle-vibe"
+          class="w-full py-4 bg-white/5 rounded-2xl border border-white/10 text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>الاهتزاز</span> <span id="lbl-vibe">📳</span>
+        </button>
+        <button onclick="toggleTheme()" id="btn-toggle-theme"
+          class="w-full py-4 bg-white/5 rounded-2xl border border-white/10 text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>المظهر</span> <span id="lbl-theme">🌙</span>
+        </button>
+      </div>
+      <button onclick="closeSettingsModal()"
+        class="w-full py-4 mt-8 btn-gradient rounded-3xl font-black text-xl">إغلاق</button>
+    </div>
   </div>
 
   <div id="app" class="w-full flex justify-center items-center p-4">
@@ -57,11 +78,11 @@
         اللعبة الرسمية لكشف "الضايع" بينكم!</p>
       <div class="space-y-4 text-center">
         <button onclick="showScreen('setup')"
-          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black text-white text-center">بدء
+          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black text-center">بدء
           التحدي</button>
         <div class="grid grid-cols-2 gap-4 text-center">
           <button onclick="showScreen('leaderboard')"
-            class="btn-secondary py-4 rounded-2xl font-bold border border-white/10 text-white shadow-sm text-center">🏆
+            class="btn-secondary py-4 rounded-2xl font-bold border border-white/10 shadow-sm text-center">🏆
             الصدارة</button>
           <button onclick="showScreen('rules')"
             class="btn-secondary py-4 rounded-2xl font-bold text-indigo-400 border border-indigo-400/20 shadow-sm text-center">📖
@@ -72,7 +93,7 @@
 
     <!-- Setup Screen -->
     <div id="screen-setup" class="glass-panel hidden text-right">
-      <h2 class="text-2xl sm:text-3xl font-black mb-6 text-white font-black text-center">⚙️
+      <h2 class="text-2xl sm:text-3xl font-black mb-6 font-black text-center">⚙️
         إعدادات الجلسة</h2>
       <div class="space-y-6">
         <div>
@@ -104,7 +125,7 @@
             <button id="btn-vote-group" onclick="setVotingMode('group')"
               class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg">جماعي</button>
             <button id="btn-vote-individual" onclick="setVotingMode('individual')"
-              class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">فردي</button>
+              class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">فردي</button>
           </div>
         </div>
 
@@ -134,7 +155,7 @@
               <h4 class="font-bold text-sm text-white">🙈 التحدي الأعمى</h4>
               <p class="text-[10px] text-slate-500 italic">قد لا يكون هناك ضايع في الجولة!</p>
             </div>
-            <input type="checkbox" id="check-blind-mode" class="custom-checkbox">
+            <input type="checkbox" id="check-blind-mode" class="custom-checkbox" onchange="updateSetupInfo()">
           </div>
 
           <!-- خيار تفعيل التخمين للضايع -->
@@ -642,14 +663,28 @@
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function formatTimeLabel(seconds) {
-      if (seconds === 30) return "30 ثانية";
-      if (seconds === 60) return "دقيقة واحدة";
-      if (seconds === 120) return "دقيقتان";
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return secs === 0 ? `${mins} دقائق` : `${mins} دقيقة و${secs} ثانية`;
+    let isMuted = false;
+    let isVibrationEnabled = true;
+    let isDarkMode = true;
+
+    // Settings
+    function openSettingsModal() { document.getElementById('modal-settings').classList.remove('hidden'); document.getElementById('modal-settings').classList.add('flex'); updateSettingsUI(); }
+    function closeSettingsModal() { document.getElementById('modal-settings').classList.add('hidden'); document.getElementById('modal-settings').classList.remove('flex'); }
+    function toggleMute() { isMuted = !isMuted; updateSettingsUI(); }
+    function toggleVibration() { isVibrationEnabled = !isVibrationEnabled; if (isVibrationEnabled) triggerVibrate(50); updateSettingsUI(); }
+    function toggleTheme() { isDarkMode = !isDarkMode; document.body.classList.toggle('light-mode', !isDarkMode); updateSettingsUI(); }
+    function updateSettingsUI() {
+      document.getElementById('lbl-mute').innerText = isMuted ? '🔇' : '🔊';
+      document.getElementById('lbl-vibe').innerText = isVibrationEnabled ? '📳' : '📴';
+      document.getElementById('lbl-theme').innerText = isDarkMode ? '🌙' : '☀️';
     }
+
+    // Helpers
+    function formatTimeLabel(s) { const m = Math.floor(s / 60); const sc = s % 60; return sc === 0 ? `${m} دقائق` : `${m} دقيقة و${sc} ثانية`; }
+    function triggerVibrate(p) { if (isVibrationEnabled && navigator.vibrate) navigator.vibrate(p); }
+    function playTone(f, d, t = 'sine', v = 0.1) { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
+    function playFlipSound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'triangle'; o.frequency.setValueAtTime(400, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); o.start(); o.stop(audioCtx.currentTime + 0.2); }
+    function playFunnySound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth'; o.frequency.setValueAtTime(300, audioCtx.currentTime); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2); o.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6); o.start(); o.stop(audioCtx.currentTime + 0.6); }
 
     // دالة إغلاق النوافذ (تم إصلاحها لعدم إخفاء زر الصوت)
     function closeModal() {
@@ -663,76 +698,6 @@
 
     function closeAlert() {
       document.getElementById('modal-alert').classList.add('hidden');
-    }
-
-    // Vibration function
-    function triggerVibrate(pattern) {
-      if (state.isVibrationEnabled && navigator.vibrate) {
-        navigator.vibrate(pattern);
-      }
-    }
-
-    // Toggle Vibration function
-    function toggleVibration() {
-      state.isVibrationEnabled = !state.isVibrationEnabled;
-      const btn = document.getElementById('vibrate-toggle');
-      if (state.isVibrationEnabled) {
-        btn.innerText = '📳';
-        triggerVibrate(50); // Feedback
-      } else {
-        btn.innerText = '📴';
-      }
-    }
-
-    function playTone(freq, duration, type = 'sine', vol = 0.1) {
-      if (typeof state !== 'undefined' && state.isMuted) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-      osc.start(); osc.stop(audioCtx.currentTime + duration);
-    }
-
-    // صوت "ووش" لقلب البطاقة
-    function playFlipSound() {
-      if (state.isMuted) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.type = 'triangle';
-
-      // انزلاق سريع للتردد من عالٍ لمنخفض
-      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
-
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
-    }
-
-    // صوت مضحك (Funny Sound)
-    function playFunnySound() {
-      if (state.isMuted) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.type = 'sawtooth';
-
-      // تردد متذبذب (Wobbly)
-      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-      osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2);
-      osc.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4);
-      osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6);
-
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.6);
     }
 
     const sounds = {
@@ -1346,14 +1311,6 @@
       selectedCategory: "عشوائي", panicModeEnabled: false, customWords: [], isMuted: false, lastWinner: null
     };
 
-    // --- 2. وظائف التحكم والعرض ---
-
-    function toggleMute() {
-      state.isMuted = !state.isMuted;
-      const btn = document.getElementById('mute-toggle');
-      if (btn) btn.innerText = state.isMuted ? '🔇' : '🔊';
-    }
-
     function showScreen(screenId) {
       // --- إصلاح مشكلة الصوت ---
       if (audioCtx.state === 'suspended') { audioCtx.resume(); }
@@ -1385,10 +1342,10 @@
 
       if (mode === 'group') {
         groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
-        indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+        indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
       } else {
         indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
-        groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+        groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
       }
       sounds.tick();
     }
@@ -1449,6 +1406,22 @@
         agentContainer.classList.toggle('opacity-30', !avail);
         agentContainer.classList.toggle('pointer-events-none', !avail);
         if (!avail) document.getElementById('check-double-agent').checked = false;
+      }
+      togglePanicSettings();
+    }
+
+    function togglePanicSettings() {
+      const blindCheckbox = document.getElementById('check-blind-mode');
+      const panicContainer = document.getElementById('panic-mode-container');
+      const panicCheckbox = document.getElementById('check-panic-mode');
+
+      if (blindCheckbox.checked) {
+        panicContainer.classList.add('opacity-30');
+        panicContainer.classList.add('pointer-events-none');
+        if (panicCheckbox) panicCheckbox.checked = false;
+      } else {
+        panicContainer.classList.remove('opacity-30');
+        panicContainer.classList.remove('pointer-events-none');
       }
     }
 
@@ -1528,7 +1501,7 @@
       // Check visibility of panic button based on settings
       const panicBtn = document.getElementById('btn-panic');
       if (panicBtn) {
-        if (state.panicModeEnabled) {
+        if (state.panicModeEnabled && !state.blindModeActive) {
           panicBtn.classList.remove('hidden');
         } else {
           panicBtn.classList.add('hidden');
@@ -1563,14 +1536,14 @@
       state.undercoverPlayerId = (state.undercoverActive && ids.length > 0) ? ids.splice(0, 1)[0] : null;
 
       // تطبيق منطق التحدي الأعمى (35% فرصة)
-      if (state.blindModeActive && Math.random() < 0.95) {
+      if (state.blindModeActive && Math.random() < 0.35) {
         // إرجاع الضايع ليكون محققاً
         state.outPlayerIds = [];
         state.agentPlayerId = null;
         state.undercoverPlayerId = null;
 
         // في حالة "الكل ضايع" (50% من حالات التحدي الأعمى)
-        if (Math.random() < 0.65) {
+        if (Math.random() < 0.25) {
           state.blindRoundType = 'all_out'; // الكل ضايع
           // نعطي الجميع دور "out" لاحقاً
         } else {

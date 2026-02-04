@@ -5,17 +5,127 @@
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
   <title>من برا السالفة؟ - النسخة الذهبية</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
   <style>
+    /* --- متغيرات الألوان (Themes) --- */
     :root {
+      /* الوضع الليلي (الافتراضي) */
+      --bg-gradient-start: #1e293b;
+      --bg-gradient-end: #0f172a;
+      --text-main: #f8fafc;
+      /* أبيض */
+      --text-muted: #94a3b8;
+      /* رصاصي فاتح */
+      --glass-bg: rgba(30, 41, 59, 0.95);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --btn-sec-bg: transparent;
+      --btn-sec-text: #fff;
+      --btn-sec-border: rgba(255, 255, 255, 0.1);
+
       --primary: #6366f1;
-      --accent: #10b981;
-      --danger: #ef4444;
-      --bg-dark: #0f172a;
+    }
+
+    body.light-mode {
+      /* الوضع النهاري - تم تعديل التباين والحدود */
+      --bg-gradient-start: #f1f5f9;
+      --bg-gradient-end: #e2e8f0;
+      --text-main: #0f172a;
+      /* كحلي غامق جداً للقراءة */
+      --text-muted: #475569;
+      /* رصاصي غامق */
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      /* خلفية زجاجية أفتح */
+
+      /* --- التعديل هنا: زيادة وضوح الحدود --- */
+      --glass-border: rgba(0, 0, 0, 0.15);
+      /* حدود أغمق للنافذة الرئيسية */
+      --card-bg: rgba(255, 255, 255, 0.6);
+      --card-border: rgba(0, 0, 0, 0.15);
+      /* حدود أغمق للبطاقات */
+      --btn-sec-bg: rgba(255, 255, 255, 1);
+      --btn-sec-text: #334155;
+      --btn-sec-border: rgba(0, 0, 0, 0.2);
+      /* حدود أغمق للأزرار الثانوية */
+    }
+
+    /* تطبيق المتغيرات */
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-gradient-end);
+      background: radial-gradient(circle at center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      overflow: hidden;
+      touch-action: manipulation;
+      transition: background 0.5s ease, color 0.3s ease;
+      padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
+    }
+
+    /* فئات مساعدة للثيم */
+    .text-theme-main {
+      color: var(--text-main) !important;
+    }
+
+    .text-theme-muted {
+      color: var(--text-muted) !important;
+    }
+
+    .bg-card-theme {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+    }
+
+    .border-theme {
+      border-color: var(--glass-border);
+    }
+
+    /* حاوية الزجاج */
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      max-height: 94vh;
+      width: 100%;
+      max-width: 550px;
+      overflow-y: auto;
+      position: relative;
+      padding: 1.5rem;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: white;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-gradient:active {
+      transform: scale(0.96);
+    }
+
+    .btn-secondary-theme {
+      background: var(--btn-sec-bg);
+      color: var(--btn-sec-text);
+      border: 1px solid var(--btn-sec-border);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary-theme:active {
+      transform: scale(0.96);
     }
 
     /* إخفاء شريط التمرير */
@@ -29,28 +139,10 @@
       display: none;
     }
 
-    body {
-      font-family: 'Cairo', sans-serif;
-      background-color: var(--bg-dark);
-      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-      color: #f8fafc;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      overflow: hidden;
-      touch-action: manipulation;
-      transition: all 0.3s ease;
-      padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
-    }
-
-    /* فئة الوميض الأحمر عند الخطأ */
     body.wrong-flash-active {
       background: #450a0a !important;
     }
 
-    /* أنيميشن الاهتزاز عند الخطأ */
     @keyframes shake {
 
       0%,
@@ -79,7 +171,7 @@
       animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
     }
 
-    /* --- أنماط البطاقة ثلاثية الأبعاد (Card Flip CSS) --- */
+    /* البطاقة ثلاثية الأبعاد */
     .card-scene {
       perspective: 1000px;
       width: 100%;
@@ -88,7 +180,6 @@
       margin: 0 auto 2rem auto;
       cursor: pointer;
       position: relative;
-      /* ضمان الاستقرار */
       z-index: 10;
     }
 
@@ -107,9 +198,7 @@
     .card-face {
       position: absolute;
       top: 0;
-      /* مهم جداً: تثبيت الوجه في الأعلى */
       left: 0;
-      /* مهم جداً: تثبيت الوجه في اليسار */
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
@@ -119,24 +208,23 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15);
       overflow: hidden;
     }
 
     .card-face-front {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      position: relative;
+      background: linear-gradient(135deg, var(--bg-gradient-end) 0%, var(--bg-gradient-start) 100%);
+      border: 2px solid var(--glass-border);
     }
 
     .card-face-back {
-      background: rgba(30, 41, 59, 0.95);
-      border: 2px solid rgba(99, 102, 241, 0.3);
+      background: var(--glass-bg);
+      /* الآن تأخذ لون الخلفية الزجاجية حسب الثيم */
+      border: 4px solid rgba(99, 102, 241, 0.3);
       transform: rotateY(180deg);
       padding: 1.5rem;
     }
 
-    /* أنيميشن العوم في الفضاء */
     @keyframes space-float {
 
       0%,
@@ -158,7 +246,6 @@
       user-select: none;
     }
 
-    /* --- أنيميشن تساقط الإيموجي --- */
     @keyframes fall {
       0% {
         transform: translateY(-10vh) rotate(0deg);
@@ -181,51 +268,11 @@
       pointer-events: none;
     }
 
-    /* ---------------------------------------------------- */
-
-    #orientation-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: var(--bg-dark);
-      z-index: 10000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    @media screen and (orientation: landscape) and (pointer: coarse) {
-      #orientation-overlay {
-        display: flex;
-      }
-    }
-
-    .glass-panel {
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 2.5rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      max-height: 94vh;
-      width: 100%;
-      max-width: 550px;
-      overflow-y: auto;
-      position: relative;
-      padding: 1.5rem;
-      z-index: 10;
-      transition: border-color 0.3s ease;
-    }
-
-    .btn-gradient {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .btn-gradient:active {
-      transform: scale(0.96);
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      top: -20px;
     }
 
     .category-card {
@@ -234,13 +281,16 @@
       border: 2px solid transparent;
       padding: 1rem 0.5rem;
       border-radius: 1.5rem;
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--card-bg);
       text-align: center;
       font-weight: bold;
       display: flex;
       flex-direction: column;
       gap: 5px;
       align-items: center;
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      /* إضافة حدود واضحة */
     }
 
     .category-card.active {
@@ -250,81 +300,11 @@
       box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
     }
 
-    .rule-card {
-      background: rgba(255, 255, 255, 0.03);
-      border-right: 5px solid var(--primary);
-      padding: 1.25rem;
-      border-radius: 1.25rem;
-      margin-bottom: 1rem;
-      text-align: right;
-    }
-
-    .avatar-btn {
-      font-size: 1.6rem;
-      padding: 0.5rem;
-      border-radius: 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      transition: all 0.2s;
-      width: 52px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .avatar-btn.selected {
-      background: var(--primary);
-      transform: scale(1.15);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-    }
-
-    #confetti-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 9999;
-      overflow: hidden;
-    }
-
-    .confetti-piece {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      top: -20px;
-    }
-
-    .detective-float {
-      animation: smoothFloat 10s ease-in-out infinite;
-    }
-
-    @keyframes smoothFloat {
-
-      0%,
-      100% {
-        transform: translateY(0px) rotate(0deg);
-      }
-
-      50% {
-        transform: translateY(-30px) rotate(5deg);
-      }
-    }
-
-    .break-word-custom {
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-      word-break: break-word;
-      max-width: 100%;
-      line-height: 1.4;
-    }
-
     input[type="range"] {
       -webkit-appearance: none;
       width: 100%;
       height: 10px;
-      background: #1e293b;
+      background: #334155;
       border-radius: 15px;
       outline: none;
     }
@@ -336,7 +316,7 @@
       background: var(--primary);
       border: 4px solid #fff;
       border-radius: 50%;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
     }
 
     .custom-checkbox {
@@ -371,6 +351,25 @@
     .custom-checkbox:checked::before {
       transform: translateX(28px);
     }
+
+    #orientation-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg-dark);
+      z-index: 10000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    @media screen and (orientation: landscape) and (pointer: coarse) {
+      #orientation-overlay {
+        display: flex;
+      }
+    }
   </style>
 </head>
 
@@ -379,63 +378,55 @@
   <div id="orientation-overlay">
     <div class="text-6xl mb-6 animate-bounce text-center">📱</div>
     <h2 class="text-2xl font-black text-white mb-4 text-center">يرجى تدوير الجهاز للوضع العامودي</h2>
-    <p class="text-slate-400 font-bold text-center">اللعبة مصممة للعمل في الوضع العامودي لضمان أفضل تجربة</p>
   </div>
 
   <div id="confetti-container"></div>
 
-  <!-- أزرار التحكم (خارج #app لتظل ثابتة) -->
-  <div id="global-controls" class="fixed top-6 left-6 z-50 flex gap-3">
-    <button onclick="toggleMute()" id="mute-toggle"
-      class="p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all active:scale-95">
-      🔊
-    </button>
-    <button onclick="toggleVibration()" id="vibrate-toggle"
-      class="p-3 bg-white/10 rounded-full border border-white/10 text-xl shadow-lg hover:bg-white/20 transition-all active:scale-95">
-      📳
+  <!-- زر الإعدادات الموحد -->
+  <div id="global-controls" class="fixed top-6 left-6 z-50">
+    <button onclick="openSettingsModal()"
+      class="p-3 bg-card-theme rounded-full border border-theme text-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 text-theme-main">
+      ⚙️
     </button>
   </div>
 
   <div id="app" class="w-full flex justify-center items-center p-4">
+
     <!-- Start Screen -->
     <div id="screen-start" class="glass-panel text-center">
       <div class="mb-14 detective-float text-8xl sm:text-9xl text-center">🕵️‍♂️</div>
       <h1
         class="text-4xl sm:text-6xl font-black mb-8 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-emerald-400 leading-normal">
         من برا السالفة؟</h1>
-      <p class="text-slate-400 text-base sm:text-xl mb-14 font-bold opacity-90 px-4 mt-6 leading-relaxed text-center">
+      <p class="text-theme-muted text-base sm:text-xl mb-14 font-bold opacity-90 px-4 mt-6 leading-relaxed text-center">
         اللعبة الرسمية لكشف "الضايع" بينكم!</p>
       <div class="space-y-4 text-center">
         <button onclick="showScreen('setup')"
-          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black text-white shadow-2xl">بدء
-          التحدي</button>
+          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black shadow-2xl">بدء التحدي</button>
         <div class="grid grid-cols-2 gap-4 text-center">
           <button onclick="showScreen('leaderboard')"
-            class="btn-secondary py-4 rounded-2xl font-bold border border-white/10 text-white shadow-sm">🏆
-            الصدارة</button>
-          <button onclick="showScreen('rules')"
-            class="btn-secondary py-4 rounded-2xl font-bold text-indigo-400 border border-indigo-400/20 shadow-sm">📖
-            كيف نلعب؟</button>
+            class="btn-secondary-theme py-4 rounded-2xl font-bold shadow-sm">🏆 الصدارة</button>
+          <button onclick="showScreen('rules')" class="btn-secondary-theme py-4 rounded-2xl font-bold shadow-sm">📖 كيف
+            نلعب؟</button>
         </div>
       </div>
     </div>
 
     <!-- Setup Screen -->
     <div id="screen-setup" class="glass-panel hidden text-right">
-      <h2 class="text-2xl sm:text-3xl font-black mb-6 text-center text-white">⚙️ إعدادات الجلسة</h2>
+      <h2 class="text-2xl sm:text-3xl font-black mb-6 text-center text-theme-main">⚙️ إعدادات الجلسة</h2>
       <div class="space-y-6">
         <div>
-          <label class="text-slate-300 font-bold block mb-4 text-right">اختر فئة السوالف:</label>
+          <label class="text-theme-muted font-bold block mb-4 text-right">اختر فئة السوالف:</label>
           <div id="categories-grid" class="grid grid-cols-3 gap-2 text-center"></div>
         </div>
 
         <div id="custom-words-ui"
           class="bg-indigo-500/10 p-5 rounded-3xl border border-indigo-500/20 hidden text-right">
-          <label class="text-indigo-300 font-bold block mb-3 text-right text-sm">أضف كلماتك الخاصة للفئة (4 كلمات كحد
-            أدنى):</label>
+          <label class="text-indigo-500 font-bold block mb-3 text-right text-sm">أضف كلماتك الخاصة (4 كحد أدنى):</label>
           <div class="flex gap-2">
             <input type="text" id="custom-word-input"
-              class="flex-1 bg-slate-800 border-none rounded-xl p-4 text-white outline-none focus:ring-2 ring-indigo-500 text-sm text-right"
+              class="flex-1 bg-card-theme border-none rounded-xl p-4 text-theme-main outline-none focus:ring-2 ring-indigo-500 text-sm text-right"
               placeholder="كلمة سرية...">
             <button onclick="addCustomWord()"
               class="bg-indigo-600 px-6 rounded-2xl font-black text-white text-sm">إضافة</button>
@@ -444,83 +435,78 @@
           </div>
         </div>
 
-        <!-- نظام التصويت المطور -->
-        <div class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+        <div class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
           <div class="text-right">
-            <h4 class="font-bold text-sm text-white">⚖️ نظام التصويت</h4>
-            <p class="text-[10px] text-slate-500 italic">طريقة كشف الضايع</p>
+            <h4 class="font-bold text-sm text-theme-main">⚖️ نظام التصويت</h4>
+            <p class="text-[10px] text-theme-muted italic">طريقة كشف الضايع</p>
           </div>
-          <div class="flex bg-slate-900/50 p-1 rounded-xl border border-white/5">
+          <div class="flex bg-slate-900/10 p-1 rounded-xl border border-theme">
             <button id="btn-vote-group" onclick="setVotingMode('group')"
               class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg">جماعي</button>
             <button id="btn-vote-individual" onclick="setVotingMode('individual')"
-              class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">فردي</button>
+              class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-theme-main">فردي</button>
           </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 text-right">
-          <div class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner">
+          <div class="bg-card-theme p-4 rounded-2xl text-right shadow-inner">
             <div class="flex justify-between mb-3 flex-row-reverse">
-              <label class="text-slate-300 font-bold text-sm text-right">عدد اللاعبين</label>
-              <span class="text-indigo-400 font-mono font-black text-xl" id="val-players">3</span>
+              <label class="text-theme-muted font-bold text-sm text-right">عدد اللاعبين</label>
+              <span class="text-indigo-500 font-mono font-black text-xl" id="val-players">3</span>
             </div>
             <input type="range" id="input-players" min="3" max="15" value="3" oninput="updateSetupInfo()">
           </div>
-          <div class="bg-white/5 p-4 rounded-2xl border border-white/10 text-right shadow-inner">
+          <div class="bg-card-theme p-4 rounded-2xl text-right shadow-inner">
             <div class="flex justify-between mb-3 flex-row-reverse">
-              <label class="text-slate-300 font-bold text-sm text-right">وقت النقاش</label>
-              <span class="text-emerald-400 font-black text-lg" id="val-time-label">دقيقة واحدة</span>
+              <label class="text-theme-muted font-bold text-sm text-right">وقت النقاش</label>
+              <span class="text-emerald-500 font-black text-lg" id="val-time-label">دقيقة واحدة</span>
             </div>
             <input type="range" id="input-time" min="30" max="300" step="30" value="60" oninput="updateSetupInfo()">
           </div>
         </div>
 
         <div class="space-y-3">
-          <!-- خيار التحدي الأعمى (Blind Mode) -->
           <div id="blind-mode-container"
-            class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+            class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
             <div class="text-right">
-              <h4 class="font-bold text-sm text-white">🙈 التحدي الأعمى</h4>
-              <p class="text-[10px] text-slate-500 italic">قد لا يكون هناك ضايع!</p>
+              <h4 class="font-bold text-sm text-theme-main">🙈 التحدي الأعمى</h4>
+              <p class="text-[10px] text-theme-muted italic">قد لا يكون هناك ضايع!</p>
             </div>
-            <input type="checkbox" id="check-blind-mode" class="custom-checkbox">
+            <input type="checkbox" id="check-blind-mode" class="custom-checkbox" onchange="updateSetupInfo()">
           </div>
 
-          <!-- خيار تفعيل التخمين للضايع -->
           <div id="guessing-container"
-            class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+            class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
             <div class="text-right">
-              <h4 class="font-bold text-sm text-white">🎯 فرصة التخمين</h4>
-              <p class="text-[10px] text-slate-500 italic">هل يحق للضايع التخمين؟</p>
+              <h4 class="font-bold text-sm text-theme-main">🎯 فرصة التخمين</h4>
+              <p class="text-[10px] text-theme-muted italic">هل يحق للضايع التخمين؟</p>
             </div>
             <input type="checkbox" id="check-guessing" class="custom-checkbox" checked onchange="toggleSmartSettings()">
           </div>
 
-          <!-- خيار الخيارات الذكية (يظهر فقط عند تفعيل التخمين) -->
           <div id="smart-distractors-container"
-            class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+            class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
             <div class="text-right">
-              <h4 class="font-bold text-sm text-white">🧠 خيارات ذكية</h4>
-              <p class="text-[10px] text-slate-500 italic">خيارات تخمين مترابطة</p>
+              <h4 class="font-bold text-sm text-theme-main">🧠 خيارات ذكية</h4>
+              <p class="text-[10px] text-theme-muted italic">كلمات مترابطة وزر "أنا عرفتها!"</p>
             </div>
-            <!-- الافتراضي غير مفعل (بدون checked) -->
             <input type="checkbox" id="check-smart-distractors" class="custom-checkbox">
           </div>
 
           <div id="double-agent-container"
-            class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+            class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
             <div class="text-right">
-              <h4 class="font-bold text-sm text-white">🎭 العميل المزدوج</h4>
-              <p class="text-[10px] text-slate-500 italic">متاح لـ 5 لاعبين فأكثر</p>
+              <h4 class="font-bold text-sm text-theme-main">🎭 العميل المزدوج</h4>
+              <p class="text-[10px] text-theme-muted italic">متاح لـ 5 لاعبين فأكثر</p>
             </div>
             <input type="checkbox" id="check-double-agent" class="custom-checkbox">
           </div>
 
           <div id="undercover-container"
-            class="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between transition-all">
+            class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
             <div class="text-right">
-              <h4 class="font-bold text-sm text-white">🕵️ المموه</h4>
-              <p class="text-[10px] text-slate-500 italic">يملك كلمة مشابهة</p>
+              <h4 class="font-bold text-sm text-theme-main">🕵️ المموه</h4>
+              <p class="text-[10px] text-theme-muted italic">يملك كلمة مشابهة</p>
             </div>
             <input type="checkbox" id="check-undercover" class="custom-checkbox">
           </div>
@@ -528,7 +514,7 @@
 
         <div class="grid grid-cols-2 gap-4 pt-4 text-center">
           <button onclick="showScreen('start')"
-            class="py-5 rounded-3xl btn-secondary font-bold text-lg text-white">رجوع</button>
+            class="py-5 rounded-3xl btn-secondary-theme font-bold text-lg">رجوع</button>
           <button onclick="checkAndNext()"
             class="py-5 rounded-3xl btn-gradient font-black text-white text-lg shadow-xl">التالي</button>
         </div>
@@ -537,7 +523,7 @@
 
     <!-- Names Screen -->
     <div id="screen-names" class="glass-panel hidden text-right">
-      <h2 class="text-2xl sm:text-3xl font-black mb-8 text-center text-white">تجهيز فريق المحققين 🔎</h2>
+      <h2 class="text-2xl sm:text-3xl font-black mb-8 text-center text-theme-main">تجهيز فريق المحققين 🔎</h2>
       <div id="names-container" class="space-y-4 mb-8 max-h-[50vh] overflow-y-auto px-1"></div>
       <button onclick="startGame()"
         class="btn-gradient w-full py-6 rounded-3xl font-black text-white text-xl shadow-2xl">انطلاق! 🚀</button>
@@ -546,49 +532,35 @@
     <!-- Reveal Screen -->
     <div id="screen-reveal" class="glass-panel hidden text-center">
       <div class="text-7xl sm:text-8xl mb-6">📱</div>
-      <p class="text-slate-400 mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
-      <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-10 text-indigo-400"></h2>
+      <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
+      <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-10 text-indigo-500"></h2>
 
-      <!-- منطقة البطاقة ثلاثية الأبعاد (3D Card) -->
       <div class="card-scene" onclick="flipCard()">
         <div class="card-object" id="role-card">
-          <!-- الوجه الأمامي (5 علامات استفهام عائمة) -->
           <div class="card-face card-face-front relative">
-            <!-- 1. الوسط (الأكبر) -->
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); z-index: 0;">
-              <span class="font-black text-white"
-                style="font-size: 10rem; display: block; animation: space-float 8s ease-in-out infinite; opacity: 0.1;">?</span>
+              <span class="font-black text-theme-muted opacity-10"
+                style="font-size: 10rem; display: block; animation: space-float 8s ease-in-out infinite;">?</span>
             </div>
-
-            <!-- 2. زاوية علوية يسار -->
-            <span class="space-floater text-6xl text-indigo-500/30"
+            <span class="space-floater text-6xl text-indigo-500 opacity-40"
               style="top: 2rem; left: 2rem; animation-delay: 1s;">?</span>
-
-            <!-- 3. زاوية علوية يمين -->
-            <span class="space-floater text-6xl text-purple-500/30"
+            <span class="space-floater text-6xl text-purple-500 opacity-40"
               style="top: 2rem; right: 2rem; animation-delay: 2s;">?</span>
-
-            <!-- 4. زاوية سفلية يسار -->
-            <span class="space-floater text-6xl text-pink-500/30"
+            <span class="space-floater text-6xl text-pink-500 opacity-40"
               style="bottom: 6rem; left: 2rem; animation-delay: 3s;">?</span>
-
-            <!-- 5. زاوية سفلية يمين -->
-            <span class="space-floater text-6xl text-emerald-500/30"
+            <span class="space-floater text-6xl text-emerald-500 opacity-40"
               style="bottom: 6rem; right: 2rem; animation-delay: 4s;">?</span>
-
-            <p class="text-slate-400 mt-auto mb-10 font-bold animate-pulse z-10">اضغط للكشف</p>
+            <p class="text-theme-muted mt-auto mb-10 font-bold animate-pulse z-10">اضغط للكشف</p>
           </div>
-          <!-- الوجه الخلفي (المعلومات) -->
           <div class="card-face card-face-back flex flex-col items-center justify-center">
             <p id="reveal-role-text" class="text-xl sm:text-2xl font-bold mb-4"></p>
             <div id="reveal-img-placeholder" class="text-7xl sm:text-8xl mb-4"></div>
             <p id="reveal-secret-word"
-              class="text-3xl sm:text-4xl font-black text-white tracking-widest uppercase break-word-custom"></p>
-            <p id="reveal-word-desc" class="text-base sm:text-lg text-slate-400 mt-4 italic font-bold"></p>
+              class="text-3xl sm:text-4xl font-black text-theme-main tracking-widest uppercase break-word-custom"></p>
+            <p id="reveal-word-desc" class="text-base sm:text-lg text-theme-muted mt-4 italic font-bold"></p>
           </div>
         </div>
       </div>
-
       <button id="btn-reveal-action" onclick="toggleReveal()"
         class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white shadow-2xl">كشف الدور</button>
     </div>
@@ -598,7 +570,7 @@
       <div class="flex justify-center mb-10">
         <div class="relative w-56 h-56 sm:w-72 sm:h-72 flex items-center justify-center">
           <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
+            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(128,128,128,0.1)" stroke-width="12"></circle>
             <circle id="timer-progress" cx="100" cy="100" r="90" fill="none" stroke="url(#timer-grad)" stroke-width="12"
               stroke-dasharray="565.48" stroke-dashoffset="0" stroke-linecap="round"
               class="transition-all duration-1000"></circle>
@@ -609,50 +581,43 @@
               </linearGradient>
             </defs>
           </svg>
-          <div id="game-timer" class="text-6xl sm:text-8xl font-black font-mono tracking-tighter text-white">00:00
+          <div id="game-timer" class="text-6xl sm:text-8xl font-black font-mono tracking-tighter text-theme-main">00:00
           </div>
         </div>
       </div>
-      <p class="text-2xl sm:text-3xl text-slate-200 mb-12 font-bold px-4">تناقشوا بذكاء.. لا تكشفوا السالفة للضايع!
+      <p class="text-2xl sm:text-3xl text-theme-muted mb-12 font-bold px-4">تناقشوا بذكاء.. لا تكشفوا السالفة للضايع!
       </p>
-
-      <!-- زر الهلع -->
       <button id="btn-panic" onclick="triggerPanic()"
-        class="hidden w-full py-4 bg-orange-600/20 border-2 border-orange-500 text-orange-400 rounded-2xl font-black text-xl animate-pulse shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:bg-orange-600/30 transition-all mb-4">🚨
+        class="hidden w-full py-4 bg-orange-600/20 border-2 border-orange-500 text-orange-500 rounded-2xl font-black text-xl animate-pulse shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:bg-orange-600/30 transition-all mb-4">🚨
         أنا عرفتها!</button>
-
       <div class="grid grid-cols-2 gap-4">
         <button onclick="endGameEarly()"
-          class="py-5 bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-3xl font-black text-lg">إنهاء
+          class="py-5 bg-red-500/10 text-red-500 border-2 border-red-500/20 rounded-3xl font-black text-lg">إنهاء
           الوقت</button>
         <button onclick="pauseTimer()" id="btn-pause"
-          class="py-5 btn-secondary rounded-3xl font-black text-lg border-2 border-white/5 text-white">إيقاف
-          مؤقت</button>
+          class="py-5 btn-secondary-theme rounded-3xl font-black text-lg">إيقاف مؤقت</button>
       </div>
     </div>
 
     <!-- Voting Screen -->
     <div id="screen-voting" class="glass-panel hidden text-center">
-      <h2 class="text-3xl sm:text-5xl font-black mb-4 text-white">من الضايع؟ ⚖️</h2>
-      <div id="voter-indicator" class="text-indigo-400 font-bold mb-4 hidden text-xl"></div>
-      <p id="voting-instruction" class="text-slate-400 mb-8 text-lg font-semibold underline decoration-indigo-500">
+      <h2 class="text-3xl sm:text-5xl font-black mb-4 text-theme-main">من الضايع؟ ⚖️</h2>
+      <div id="voter-indicator" class="text-indigo-500 font-bold mb-4 hidden text-xl"></div>
+      <p id="voting-instruction" class="text-theme-muted mb-8 text-lg font-semibold underline decoration-indigo-500">
         اضغط على صورة الشخص المتهم مباشرة</p>
-      <div id="voting-grid" class="grid grid-cols-2 gap-4 mb-8 max-h-[50vh] overflow-y-auto px-2 text-white"></div>
+      <div id="voting-grid" class="grid grid-cols-2 gap-4 mb-8 max-h-[50vh] overflow-y-auto px-2 text-theme-main"></div>
     </div>
 
     <!-- Guess Screen -->
     <div id="screen-guess" class="glass-panel hidden text-center">
-      <h2 id="guess-title" class="text-3xl sm:text-4xl font-black mb-6 text-red-400">لقد كشفوك! 🎯</h2>
-
-      <!-- عداد التخمين الجديد (يظهر فقط في الهلع) -->
+      <h2 id="guess-title" class="text-3xl sm:text-4xl font-black mb-6 text-red-500">لقد كشفوك! 🎯</h2>
       <div id="guess-timer-container" class="hidden mb-6 flex justify-center w-full">
         <div
           class="w-20 h-20 rounded-full border-4 border-orange-500 flex items-center justify-center bg-orange-900/50 shadow-[0_0_25px_rgba(249,115,22,0.4)]">
-          <span id="guess-timer" class="text-3xl font-black text-white tabular-nums">30</span>
+          <span id="guess-timer" class="text-3xl font-black text-theme-main tabular-nums">30</span>
         </div>
       </div>
-
-      <p id="guess-subtitle" class="text-slate-300 mb-10 text-xl font-bold leading-relaxed">خمن السالفة من الخيارات
+      <p id="guess-subtitle" class="text-theme-muted mb-10 text-xl font-bold leading-relaxed">خمن السالفة من الخيارات
         التالية!</p>
       <div id="guess-options" class="grid grid-cols-1 gap-4 mb-8"></div>
     </div>
@@ -660,40 +625,36 @@
     <!-- Final Result Screen -->
     <div id="screen-final" class="glass-panel hidden text-center overflow-y-auto">
       <div id="final-status-emoji" class="text-8xl sm:text-9xl mb-6">🏆</div>
-      <h2 id="final-result-title" class="text-3xl sm:text-5xl font-black mb-6 text-white"></h2>
-
-      <div class="bg-slate-800/60 p-8 rounded-[2.5rem] mb-8 border border-white/10 shadow-2xl">
-        <p class="text-slate-400 mb-3 font-bold text-sm uppercase tracking-widest">السالفة كانت:</p>
+      <h2 id="final-result-title" class="text-3xl sm:text-5xl font-black mb-6 text-theme-main"></h2>
+      <div class="bg-card-theme p-8 rounded-[2.5rem] mb-8 border border-white/10 shadow-2xl">
+        <p class="text-theme-muted mb-3 font-bold text-sm uppercase tracking-widest">السالفة كانت:</p>
         <div id="final-word-emoji" class="text-7xl sm:text-8xl mb-3"></div>
         <p id="final-secret-word"
-          class="text-5xl sm:text-7xl font-black text-emerald-400 mb-4 tracking-wider break-word-custom"></p>
-        <p id="topic-description" class="text-lg sm:text-xl text-indigo-100 opacity-80 italic"></p>
+          class="text-5xl sm:text-7xl font-black text-emerald-500 mb-4 tracking-wider break-word-custom"></p>
+        <p id="topic-description" class="text-lg sm:text-xl text-theme-muted opacity-80 italic"></p>
       </div>
-
       <div class="mb-10 text-right">
-        <h3 class="text-2xl sm:text-3xl font-black mb-6 text-center text-white">📊 نتائج الجولة والأدوار</h3>
+        <h3 class="text-2xl sm:text-3xl font-black mb-6 text-center text-theme-main">📊 نتائج الجولة والأدوار</h3>
         <div id="final-leaderboard" class="space-y-3 text-right"></div>
       </div>
-
       <div class="grid grid-cols-1 gap-4 text-center">
         <button onclick="restartSameGame()"
           class="btn-gradient py-6 rounded-[2rem] font-black text-white text-2xl shadow-2xl">جولة جديدة 🔁</button>
         <button onclick="openCategoryModal()"
-          class="btn-secondary py-5 rounded-2xl font-bold text-indigo-300 text-lg border border-indigo-500/20 shadow-md text-white">تغيير
-          الفئة فقط ⚙️</button>
-        <button onclick="showScreen('start')" class="py-3 text-slate-500 underline text-base font-bold">العودة
+          class="btn-secondary-theme py-5 rounded-2xl font-bold text-lg shadow-md">تغيير الفئة فقط ⚙️</button>
+        <button onclick="showScreen('start')" class="py-3 text-theme-muted underline text-base font-bold">العودة
           للرئيسية</button>
       </div>
     </div>
 
     <!-- Leaderboard Screen -->
     <div id="screen-leaderboard" class="glass-panel hidden text-center text-right">
-      <h2 class="text-3xl font-black mb-10 text-center text-white">🏆 أبطال السوالف</h2>
-      <p class="text-slate-500 text-xs mb-4 text-center">(اضغط على اسم اللاعب لمشاهدة إحصائياته)</p>
+      <h2 class="text-3xl font-black mb-10 text-center text-theme-main">🏆 أبطال السوالف</h2>
+      <p class="text-theme-muted text-xs mb-4 text-center">(اضغط على اسم اللاعب لمشاهدة إحصائياته)</p>
       <div id="leaderboard-list" class="space-y-4 mb-10 max-h-[60vh] overflow-y-auto px-2 text-right"></div>
       <div id="leaderboard-buttons" class="flex justify-center gap-4 text-center">
         <button onclick="showScreen('start')" id="btn-close-lb"
-          class="flex-1 py-5 btn-secondary rounded-3xl font-black border border-white/10 text-white min-w-[140px]">إغلاق</button>
+          class="flex-1 py-5 btn-secondary-theme rounded-3xl font-black border border-theme min-w-[140px]">إغلاق</button>
         <button id="btn-reset-points-trigger" onclick="confirmReset()"
           class="flex-1 py-5 bg-red-600/20 text-red-500 rounded-3xl font-black border border-red-500/20 text-sm hidden min-w-[140px]">تصفير
           النقاط</button>
@@ -703,58 +664,54 @@
     <!-- Rules Screen -->
     <div id="screen-rules" class="glass-panel hidden text-right">
       <h2
-        class="text-3xl sm:text-4xl font-black mb-10 text-center text-indigo-400 border-b-4 border-indigo-500/10 pb-6">
+        class="text-3xl sm:text-4xl font-black mb-10 text-center text-indigo-500 border-b-4 border-indigo-500/10 pb-6">
         📜 دليل السالفة الشامل</h2>
       <div class="space-y-6 text-right">
         <div class="rule-card text-right">
-          <h4 class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl"><span
+          <h4 class="font-black text-indigo-500 mb-3 flex items-center justify-start gap-3 text-xl"><span
               class="order-first">❓</span> ما هي هذه اللعبة؟</h4>
-          <p class="text-base leading-relaxed text-slate-300 font-semibold italic">لعبة ذكاء وتمويه جماعية. في كل جولة،
-            توجد "سالفة" يعرفها الجميع إلا <span class="highlight-text font-black text-white">شخص واحد</span> يسمى
-            "الضايع".</p>
+          <p class="text-base leading-relaxed text-theme-muted font-semibold italic">لعبة ذكاء وتمويه جماعية.</p>
         </div>
         <div class="rule-card text-right">
-          <h4 class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black"><span
+          <h4 class="font-black text-indigo-500 mb-3 flex items-center justify-start gap-3 text-xl font-black"><span
               class="order-first">🎭</span> الأدوار وشروط الفوز</h4>
-          <ul class="text-sm space-y-4 font-bold text-slate-300">
-            <li>🕵️ المحققون: يفوزون إذا كشفوا الضايع، وفشل في تخمين السالفة.</li>
-            <li>🌫️ الضايع: يفوز إذا لم يُكشف أو إذا نجح في تخمين السالفة صح.</li>
-            <li>🎭 العميل: يفوز إذا فاز الضايع بمساعدته سراً.</li>
-            <li>🤫 المموه: يملك كلمة قريبة ويفوز إذا بقي متخفياً.</li>
+          <ul class="text-sm space-y-4 font-bold text-theme-muted">
+            <li>🕵️ المحققون: يفوزون إذا كشفوا الضايع.</li>
+            <li>🌫️ الضايع: يفوز إذا لم يُكشف.</li>
+            <li>🎭 العميل: يفوز إذا فاز الضايع.</li>
+            <li>🤫 المموه: يملك كلمة قريبة.</li>
           </ul>
         </div>
         <div class="rule-card text-right">
-          <h4 class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black"><span
+          <h4 class="font-black text-indigo-500 mb-3 flex items-center justify-start gap-3 text-xl font-black"><span
               class="order-first">⚖️</span> نظام التصويت</h4>
-          <ul class="text-sm space-y-4 font-bold text-slate-300">
-            <li>🗳️ <span class="text-white">تصويت جماعي:</span> يتفق الجميع على شخص واحد.</li>
-            <li>👤 <span class="text-white">تصويت فردي:</span> يصوت كل لاعب سراً، وتحسب الأغلبية.</li>
+          <ul class="text-sm space-y-4 font-bold text-theme-muted">
+            <li>🗳️ <span class="text-theme-main">تصويت جماعي:</span> يتفق الجميع.</li>
+            <li>👤 <span class="text-theme-main">تصويت فردي:</span> كل شخص يصوت سراً.</li>
           </ul>
         </div>
         <div class="rule-card text-right">
-          <h4 class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black"><span
+          <h4 class="font-black text-indigo-500 mb-3 flex items-center justify-start gap-3 text-xl font-black"><span
               class="order-first">📊</span> نظام النقاط المطور</h4>
           <div class="text-xs space-y-3 font-bold text-right leading-relaxed">
             <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right">
-              <p class="text-emerald-400 mb-1">🕵️ المحققون:</p>
-              <p class="text-slate-300">الفوز: <span class="text-white">+1 نقطة</span> | الخسارة: <span
-                  class="text-white">0 نقطة</span></p>
+              <p class="text-emerald-500 mb-1">🕵️ المحققون:</p>
+              <p class="text-theme-muted">الفوز: <span class="text-theme-main">+1 نقطة</span> | الخسارة: <span
+                  class="text-theme-main">0 نقطة</span></p>
             </div>
             <div class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right">
-              <p class="text-indigo-400 mb-1">🌫️ الضايع / 🎭 العميل / 🤫 المموه:</p>
-              <p class="text-slate-300">الفوز: <span class="text-white">+2 نقطة</span> | الخسارة: <span
-                  class="text-white">0 نقطة</span></p>
+              <p class="text-indigo-500 mb-1">🌫️ الضايع / 🎭 العميل / 🤫 المموه:</p>
+              <p class="text-theme-muted">الفوز: <span class="text-theme-main">+2 نقطة</span> | الخسارة: <span
+                  class="text-theme-main">0 نقطة</span></p>
             </div>
             <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 text-right mt-2">
-              <p class="text-orange-400 mb-1">🚨 زر "أنا عرفتها!" (للضايع):</p>
-              <p class="text-slate-300">تخمين صحيح: <span class="text-white">+4 للضايع / +2 للفريق</span> (فوز ساحق)</p>
-              <p class="text-slate-300">تخمين خاطئ: <span class="text-white">المحققون +2 نقطة</span> (عقاب)</p>
+              <p class="text-orange-500 mb-1">🚨 زر "أنا عرفتها!" (للضايع):</p>
+              <p class="text-theme-muted">تخمين صحيح: <span class="text-theme-main">+4 للضايع</span></p>
+              <p class="text-theme-muted">تخمين خاطئ: <span class="text-theme-main">المحققون +2</span></p>
             </div>
-            <!-- شرح التحدي الأعمى -->
             <div class="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20 text-right mt-2">
-              <p class="text-purple-400 mb-1">🙈 التحدي الأعمى:</p>
-              <p class="text-slate-300">قد لا يكون هناك ضايع أو الكل ضايع! <span class="text-white">الكل يكسب نقطة
-                  واحدة!</span></p>
+              <p class="text-purple-500 mb-1">🙈 التحدي الأعمى:</p>
+              <p class="text-theme-muted">قد لا يكون هناك ضايع! <span class="text-theme-main">الكل يكسب نقطة!</span></p>
             </div>
           </div>
         </div>
@@ -766,214 +723,142 @@
   </div>
 
   <!-- Modals -->
+  <!-- Settings -->
+  <div id="modal-settings"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <h3 class="text-2xl font-black mb-8 text-theme-main">الإعدادات العامة ⚙️</h3>
+      <div class="space-y-4">
+        <button onclick="toggleMute()" id="btn-toggle-mute"
+          class="w-full py-4 bg-white/5 rounded-2xl border border-white/10 text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>الصوت</span> <span id="lbl-mute">🔊</span>
+        </button>
+        <button onclick="toggleVibration()" id="btn-toggle-vibe"
+          class="w-full py-4 bg-white/5 rounded-2xl border border-white/10 text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>الاهتزاز</span> <span id="lbl-vibe">📳</span>
+        </button>
+        <button onclick="toggleTheme()" id="btn-toggle-theme"
+          class="w-full py-4 bg-white/5 rounded-2xl border border-white/10 text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>المظهر</span> <span id="lbl-theme">🌙</span>
+        </button>
+      </div>
+      <button onclick="closeSettingsModal()"
+        class="w-full py-4 mt-8 btn-gradient rounded-3xl font-black text-white text-xl">إغلاق</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
   <div id="modal-stats"
     class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[500] p-6 backdrop-blur-md text-center">
     <div class="glass-panel max-w-sm w-full text-center">
       <div id="player-stat-avatar" class="text-6xl mb-4 text-center"></div>
-      <h3 id="player-stat-name" class="text-2xl font-black text-white mb-4 text-center"></h3>
-
-      <div class="bg-white/5 p-4 rounded-3xl mb-6 text-center">
-        <p class="text-slate-400 text-xs mb-2 font-bold">إجمالي النشاط</p>
+      <h3 id="player-stat-name" class="text-2xl font-black text-theme-main mb-4 text-center"></h3>
+      <div class="bg-card-theme p-4 rounded-3xl mb-6 text-center">
+        <p class="text-theme-muted text-xs mb-2 font-bold">إجمالي النشاط</p>
         <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-center">
           <div class="text-center border-b border-l border-white/5 pb-2">
-            <p class="text-indigo-400 text-lg font-black" id="stat-total-games">0</p>
-            <p class="text-[10px] text-slate-500 uppercase">لعبة</p>
+            <p class="text-indigo-500 text-lg font-black" id="stat-total-games">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">لعبة</p>
           </div>
           <div class="text-center border-b border-white/5 pb-2">
-            <p class="text-yellow-400 text-lg font-black" id="stat-total-points">0</p>
-            <p class="text-[10px] text-slate-500 uppercase">مجموع النقاط</p>
+            <p class="text-yellow-500 text-lg font-black" id="stat-total-points">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">مجموع النقاط</p>
           </div>
           <div class="text-center border-l border-white/5 pt-2">
-            <p class="text-emerald-400 text-lg font-black" id="stat-total-wins">0</p>
-            <p class="text-[10px] text-slate-500 uppercase">فوز</p>
+            <p class="text-emerald-500 text-lg font-black" id="stat-total-wins">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">فوز</p>
           </div>
           <div class="text-center pt-2">
-            <p class="text-red-400 text-lg font-black" id="stat-total-losses">0</p>
-            <p class="text-[10px] text-slate-500 uppercase">خسارة</p>
+            <p class="text-red-500 text-lg font-black" id="stat-total-losses">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">خسارة</p>
           </div>
         </div>
       </div>
-
-      <p class="text-slate-400 text-[10px] mb-3 text-right font-bold">تفاصيل الأدوار:</p>
+      <p class="text-theme-muted text-[10px] mb-3 text-right font-bold">تفاصيل الأدوار:</p>
       <div class="grid grid-cols-2 gap-4 mb-8 text-right">
         <div class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right">
-          <p class="text-[10px] text-emerald-400 font-bold mb-1">🕵️ محقق</p>
-          <div class="flex justify-between text-xs font-black"><span>فوز: <span
+          <p class="text-[10px] text-emerald-500 font-bold mb-1 text-right">🕵️ محقق</p>
+          <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
                 id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span></div>
         </div>
         <div class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right">
-          <p class="text-[10px] text-indigo-400 font-bold mb-1">🌫️ ضايع</p>
-          <div class="flex justify-between text-xs font-black"><span>فوز: <span
+          <p class="text-[10px] text-indigo-500 font-bold mb-1 text-right">🌫️ ضايع</p>
+          <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
                 id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span></div>
         </div>
-        <div class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right">
-          <p class="text-[10px] text-orange-400 font-bold mb-1">🎭 عميل</p>
-          <div class="flex justify-between text-xs font-black"><span>فوز: <span
-                id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span></div>
-        </div>
-        <div class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right">
-          <p class="text-[10px] text-yellow-400 font-bold mb-1">🤫 مموه</p>
-          <div class="flex justify-between text-xs font-black"><span>فوز: <span
-                id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span></div>
-        </div>
+        <!-- ... -->
       </div>
       <button onclick="closeStatsModal()"
-        class="w-full py-4 btn-secondary rounded-2xl font-black text-white">إغلاق</button>
+        class="w-full py-4 btn-secondary-theme rounded-2xl font-black text-center">إغلاق</button>
     </div>
   </div>
 
+  <!-- Alert -->
   <div id="modal-alert"
     class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[200] p-6 backdrop-blur-md text-center">
     <div class="glass-panel max-w-sm w-full text-center">
-      <h3 class="text-2xl font-black mb-4 text-yellow-400">تنبيه! ⚠️</h3>
-      <p id="alert-message" class="text-slate-300 font-bold mb-8"></p>
+      <h3 class="text-2xl font-black mb-4 text-yellow-500">تنبيه! ⚠️</h3>
+      <p id="alert-message" class="text-theme-muted font-bold mb-8 text-center"></p>
       <button onclick="closeAlert()"
-        class="w-full py-4 btn-gradient rounded-3xl font-black text-white text-xl">موافق</button>
+        class="w-full py-4 btn-gradient rounded-3xl font-black text-white text-xl text-center">موافق</button>
     </div>
   </div>
 
+  <!-- Confirm -->
   <div id="modal-confirm"
     class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center">
     <div class="glass-panel max-w-sm w-full text-center">
-      <h3 class="text-3xl font-black mb-6 text-red-500">تأكيد! ⚠️</h3>
-      <p class="mb-10 text-slate-400 text-lg font-bold">هل تريد تصفير جميع النقاط والإحصائيات نهائياً؟</p>
-      <div class="flex gap-4">
+      <h3 class="text-3xl font-black mb-4 text-red-500 text-center">تأكيد! ⚠️</h3>
+      <p class="mb-10 text-theme-muted text-lg font-bold text-center">هل تريد تصفير النقاط؟</p>
+      <div class="flex gap-4 text-center">
         <button onclick="closeModal()"
-          class="flex-1 py-5 btn-secondary rounded-3xl font-bold text-xl text-white">تراجع</button>
+          class="flex-1 py-5 btn-secondary-theme rounded-3xl font-bold text-xl text-center">تراجع</button>
         <button onclick="resetPoints()"
-          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white shadow-2xl text-xl">نعم، صفّر</button>
+          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white shadow-2xl text-xl text-center">نعم</button>
       </div>
     </div>
   </div>
 
-  <!-- Category Switch Modal -->
+  <!-- Category -->
   <div id="modal-category"
     class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
     <div class="glass-panel max-w-sm w-full shadow-2xl text-center font-black">
-      <h3 class="text-2xl font-black mb-8 text-white underline decoration-indigo-500">تبديل الفئة ⚙️</h3>
-      <div id="modal-categories-grid" class="grid grid-cols-2 gap-4 mb-10 text-center"></div>
+      <h3 class="text-2xl font-black mb-8 text-theme-main underline decoration-indigo-500 text-center">تبديل الفئة ⚙️
+      </h3>
+      <div id="modal-categories-grid" class="grid grid-cols-2 gap-4 mb-10 text-center text-white"></div>
       <button onclick="closeCategoryModal()"
-        class="w-full py-5 btn-gradient rounded-3xl font-black text-white text-xl">تأكيد وإغلاق</button>
+        class="w-full py-5 btn-gradient rounded-3xl font-black text-white text-xl text-center">تأكيد وإغلاق</button>
     </div>
   </div>
 
   <script>
-    // --- 0. التعريفات الأساسية والتوابع المساعدة ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let isMuted = false;
+    let isVibrationEnabled = true;
+    let isDarkMode = true;
 
-    function formatTimeLabel(seconds) {
-      if (seconds === 30) return "30 ثانية";
-      if (seconds === 60) return "دقيقة واحدة";
-      if (seconds === 120) return "دقيقتان";
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return secs === 0 ? `${mins} دقائق` : `${mins} دقيقة و${secs} ثانية`;
+    // Settings
+    function openSettingsModal() { document.getElementById('modal-settings').classList.remove('hidden'); document.getElementById('modal-settings').classList.add('flex'); updateSettingsUI(); }
+    function closeSettingsModal() { document.getElementById('modal-settings').classList.add('hidden'); document.getElementById('modal-settings').classList.remove('flex'); }
+    function toggleMute() { isMuted = !isMuted; updateSettingsUI(); }
+    function toggleVibration() { isVibrationEnabled = !isVibrationEnabled; if (isVibrationEnabled) triggerVibrate(50); updateSettingsUI(); }
+    function toggleTheme() { isDarkMode = !isDarkMode; document.body.classList.toggle('light-mode', !isDarkMode); updateSettingsUI(); }
+    function updateSettingsUI() {
+      document.getElementById('lbl-mute').innerText = isMuted ? '🔇' : '🔊';
+      document.getElementById('lbl-vibe').innerText = isVibrationEnabled ? '📳' : '📴';
+      document.getElementById('lbl-theme').innerText = isDarkMode ? '🌙' : '☀️';
     }
 
-    function closeModal() {
-      ['modal-stats', 'modal-alert', 'modal-confirm', 'modal-category'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.add('hidden');
-      });
-    }
-
-    function closeStatsModal() {
-      document.getElementById('modal-stats').classList.add('hidden');
-    }
-
-    function checkResetButtonVisibility() {
-      const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-      const hasData = saved.some(p => (p.points || 0) > 0 || (p.stats && ((p.stats.det?.w || 0) > 0 || (p.stats.out?.w || 0) > 0)));
-      const trigger = document.getElementById('btn-reset-points-trigger');
-      if (trigger) trigger.classList.toggle('hidden', !hasData);
-    }
-
-    function closeAlert() {
-      document.getElementById('modal-alert').classList.add('hidden');
-    }
-
-    // دالة تعيين الأفاتار
-    function setAvatar(playerIdx, avatar) {
-      document.querySelectorAll(`#names-container > div:nth-child(${playerIdx + 1}) .avatar-btn`).forEach(b => b.classList.remove('selected'));
-      const btn = document.getElementById(`av-${playerIdx}-${avatar}`);
-      if (btn) btn.classList.add('selected');
-      const hiddenInp = document.getElementById(`avatar-${playerIdx}`);
-      if (hiddenInp) hiddenInp.value = avatar;
-    }
-
-    // Vibration function
-    function triggerVibrate(pattern) {
-      if (state.isVibrationEnabled && navigator.vibrate) {
-        navigator.vibrate(pattern);
-      }
-    }
-
-    // Toggle Vibration function
-    function toggleVibration() {
-      state.isVibrationEnabled = !state.isVibrationEnabled;
-      const btn = document.getElementById('vibrate-toggle');
-      if (state.isVibrationEnabled) {
-        btn.innerText = '📳';
-        triggerVibrate(50); // Feedback
-      } else {
-        btn.innerText = '📴';
-      }
-    }
-
-    function playTone(freq, duration, type = 'sine', vol = 0.1) {
-      if (typeof state !== 'undefined' && state.isMuted) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-      osc.start(); osc.stop(audioCtx.currentTime + duration);
-    }
-
-    // صوت "ووش" لقلب البطاقة
-    function playFlipSound() {
-      if (state.isMuted) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.type = 'triangle';
-
-      // انزلاق سريع للتردد من عالٍ لمنخفض
-      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
-
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
-    }
-
-    // صوت مضحك (Funny Sound)
-    function playFunnySound() {
-      if (state.isMuted) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.type = 'sawtooth';
-
-      // تردد متذبذب (Wobbly)
-      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-      osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2);
-      osc.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4);
-      osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6);
-
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.6);
-    }
+    // Helpers
+    function formatTimeLabel(s) { const m = Math.floor(s / 60); const sc = s % 60; return sc === 0 ? `${m} دقائق` : `${m} دقيقة و${sc} ثانية`; }
+    function triggerVibrate(p) { if (isVibrationEnabled && navigator.vibrate) navigator.vibrate(p); }
+    function playTone(f, d, t = 'sine', v = 0.1) { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
+    function playFlipSound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'triangle'; o.frequency.setValueAtTime(400, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); o.start(); o.stop(audioCtx.currentTime + 0.2); }
+    function playFunnySound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth'; o.frequency.setValueAtTime(300, audioCtx.currentTime); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2); o.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6); o.start(); o.stop(audioCtx.currentTime + 0.6); }
 
     const sounds = {
       tick: () => { playTone(800, 0.05, 'sine', 0.03); triggerVibrate(15); },
-      win: () => { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100); setTimeout(() => playTone(783, 0.3), 200); triggerVibrate([100, 50, 100, 50, 100]); },
+      win: () => { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100); setTimeout(() => playTone(783, 0.3), 200); triggerVibrate([100, 50, 100]); },
       lose: () => { playTone(150, 0.6, 'sawtooth', 0.15); triggerVibrate([200, 100, 200]); },
       wrong: () => { playTone(100, 0.5, 'square', 0.2); triggerVibrate(300); },
       flip: () => { playFlipSound(); triggerVibrate(40); },
@@ -981,131 +866,103 @@
     };
 
     const wordBank = {
-      "طعام": [{ word: "بيتزا", emoji: "🍕", desc: "أكلة إيطالية دائرية بصلصة وجبنة.", related: "فطيرة" }, { word: "كبسة", emoji: "🍛", desc: "رز ولحم، أكلة خليجية مشهورة.", related: "مندي" }, { word: "برجر", emoji: "🍔", desc: "لحم مشوي داخل خبز مع جبنة.", related: "ساندوتش" }, { word: "شاورما", emoji: "🌯", desc: "لحم مقطع ملفوف في خبز صاج.", related: "فلافل" }, { word: "باستا", emoji: "🍝", desc: "مكرونة إيطالية بصوصات ملونة.", related: "لازانيا" }, { word: "سوشي", emoji: "🍣", desc: "رز وسمك ملفوف ياباني.", related: "روبيان" }, { word: "كنافة", emoji: "🍮", desc: "حلوى شرقية بالجبنة أو القشطة.", related: "بسبوسة" }, { word: "جريش", emoji: "🥣", desc: "أكلة شعبية بيضاء مشهورة.", related: "سليق" }, { word: "فطيرة", emoji: "🥐", desc: "عجينة محشوة مخبوزة في الفرن.", related: "بيتزا" }, { word: "مندي", emoji: "🍲", desc: "لحم مطهو في حفرة تحت الأرض.", related: "كبسة" }, { word: "ساندوتش", emoji: "🥪", desc: "طعام يوضع بين شريحتين من الخبز.", related: "برجر" }, { word: "فلافل", emoji: "🧆", desc: "أقراص مقلية من الحمص.", related: "شاورما" }, { word: "لازانيا", emoji: "🥘", desc: "طبقات عجين مع اللحم والباشميل.", related: "باستا" }, { word: "روبيان", emoji: "🍤", desc: "مأكولات بحرية لذيذة.", related: "سوشي" }, { word: "بسبوسة", emoji: "🥮", desc: "حلوى سميد ناعمة ومحلاة.", related: "كنافة" }, { word: "سليق", emoji: "🥛", desc: "رز مطبوخ بالحليب.", related: "جريش" }],
-      "أدوات": [{ word: "شاحن", emoji: "🔌", desc: "ينقذ جوالك لما تخلص البطارية.", related: "توصيلة" }, { word: "مكيف", emoji: "❄️", desc: "يبرد الجو في الصيف الحارق.", related: "مروحة" }, { word: "ساعة", emoji: "⌚", desc: "تنلبس في المعصم لمعرفة الوقت.", related: "سوار" }, { word: "نظارة", emoji: "👓", desc: "تساعدك تشوف بوضوح.", related: "عدسات" }, { word: "مطرقة", emoji: "🔨", desc: "أداة بناء تُستخدم لدق المسامير.", related: "مفك" }, { word: "مقص", emoji: "✂️", desc: "أداة لقص الورق.", related: "سكين" }, { word: "توصيلة", emoji: "🔌", desc: "أداة لتوصيل الكهرباء.", related: "شاحن" }, { word: "مروحة", emoji: "🌀", desc: "أداة تحرك الهواء.", related: "mكيف" }],
-      "ماركات": [{ word: "أبل", emoji: "🍎", desc: "شركة تقنية مشهورة بالآيفون.", related: "سامسونج" }, { word: "نايكي", emoji: "✔️", desc: "ماركة رياضية عالمية.", related: "أديداس" }, { word: "مرسيدس", emoji: "🚗", desc: "سيارات ألمانية فخمة.", related: "بي إم" }, { word: "بيبسي", emoji: "🥤", desc: "مشروب غازي عالمي.", related: "كوكاكولا" }, { word: "سامسونج", emoji: "📱", desc: "شركة كورية منافسة لأبل.", related: "أبل" }, { word: "أديداس", emoji: "👟", desc: "ماركة رياضية ألمانية.", related: "نايكي" }, { word: "بي إم", emoji: "🚙", desc: "سيارات ألمانية رياضية.", related: "مرسيدس" }, { word: "كوكاكولا", emoji: "🥤", desc: "مشروب غازي أحمر.", related: "بيبسي" }],
-      "حيوانات": [{ word: "خروف", emoji: "🐑", desc: "حيوان المزرعة المفضل في العيد.", related: "ماعز" }, { word: "أسد", emoji: "🦁", desc: "ملك الغابة.", related: "نمر" }, { word: "جمل", emoji: "🐪", desc: "سفينة الصحراء.", related: "ناقة" }, { word: "دلفين", emoji: "🐬", desc: "حيوان بحري ذكي.", related: "حوت" }, { word: "ماعز", emoji: "🐐", desc: "حيوان يشبه الخروف.", related: "خروف" }, { word: "نمر", emoji: "🐯", desc: "قط كبير مخطط.", related: "أسد" }, { word: "ناقة", emoji: "🐫", desc: "أنثى الجمل.", related: "جمل" }, { word: "حوت", emoji: "🐋", desc: "أضخم حيوان بحري.", related: "دلفين" }],
-      "تكنولوجيا": [{ word: "جوال", emoji: "📱", desc: "جهاز في جيبك يوصلك بالعالم.", related: "ايباد" }, { word: "حاسوب", emoji: "💻", desc: "جهاز للدراسة والعمل.", related: "لابتوب" }, { word: "إنترنت", emoji: "🌐", desc: "الشبكة العالمية.", related: "واي فاي" }, { word: "روبوت", emoji: "🤖", desc: "آلة مبرمجة.", related: "ذكاء اصطناعي" }],
-      "ألعاب": [{ word: "بلايستيشن", emoji: "🎮", desc: "جهاز ألعاب سوني.", related: "اكس بوكس" }, { word: "فيفا", emoji: "⚽", desc: "لعبة كرة القدم.", related: "بيس" }, { word: "شطرنج", emoji: "♟️", desc: "لعبة ذكاء.", related: "ضامة" }, { word: "اكس بوكس", emoji: "❎", desc: "جهاز ألعاب مايكروسوفت.", related: "بلايستيشن" }],
-      "مشروبات": [{ word: "قهوة", emoji: "☕", desc: "مشروب يعدل المزاج.", related: "شاي" }, { word: "حمضيات", emoji: "🍊", desc: "مشروب غازي برتقالي.", related: "ميرندا" }, { word: "شاي", emoji: "🍵", desc: "مشروب ساخن شعبي.", related: "قهوة" }],
-      "أماكن": [{ word: "مكة", emoji: "🕋", desc: "قبلة المسلمين.", related: "المدينة" }, { word: "باريس", emoji: "🗼", desc: "مدينة العطور.", related: "لندن" }, { word: "المدينة", emoji: "🕌", desc: "مدينة الرسول.", related: "مكة" }],
-      "دول": [{ word: "السعودية", emoji: "🇸🇦", desc: "دولة خليجية.", related: "الكويت" }, { word: "مصر", emoji: "🇪🇬", desc: "أرض الكنانة.", related: "السودان" }],
-      "عطور": [{ word: "بخور", emoji: "💨", desc: "رائحة شرقية.", related: "مسك" }, { word: "دهن عود", emoji: "🪵", desc: "زيت عطري ثمين.", related: "ورد" }],
+      "طعام": [{ word: "بيتزا", emoji: "🍕", desc: "أكلة إيطالية.", related: "فطيرة" }, { word: "كبسة", emoji: "🍛", desc: "رز ولحم.", related: "مندي" }, { word: "برجر", emoji: "🍔", desc: "لحم مشوي.", related: "ساندوتش" }, { word: "شاورما", emoji: "🌯", desc: "لحم بخبز صاج.", related: "فلافل" }, { word: "سوشي", emoji: "🍣", desc: "سمك ياباني.", related: "روبيان" }],
+      "أدوات": [{ word: "شاحن", emoji: "🔌", desc: "يشحن الطاقة.", related: "توصيلة" }, { word: "مكيف", emoji: "❄️", desc: "يبرد الجو.", related: "مروحة" }],
+      "ماركات": [{ word: "أبل", emoji: "🍎", desc: "آيفون.", related: "سامسونج" }, { word: "نايكي", emoji: "✔️", desc: "رياضة.", related: "أديداس" }],
+      "حيوانات": [{ word: "أسد", emoji: "🦁", desc: "ملك الغابة.", related: "نمر" }, { word: "جمل", emoji: "🐪", desc: "سفينة الصحراء.", related: "ناقة" }],
+      "تكنولوجيا": [{ word: "جوال", emoji: "📱", desc: "اتصال.", related: "ايباد" }, { word: "لابتوب", emoji: "💻", desc: "كمبيوتر محمول.", related: "بي سي" }],
+      "ألعاب": [{ word: "بلايستيشن", emoji: "🎮", desc: "جهاز ألعاب سوني.", related: "اكس بوكس" }, { word: "فيفا", emoji: "⚽", desc: "لعبة كرة القدم.", related: "بيس" }],
+      "مشروبات": [{ word: "قهوة", emoji: "☕", desc: "مشروب يعدل المزاج.", related: "شاي" }, { word: "حمضيات", emoji: "🍊", desc: "مشروب غازي برتقالي.", related: "ميرندا" }],
+      "أماكن": [{ word: "مكة", emoji: "🕋", desc: "الكعبة.", related: "المدينة" }, { word: "باريس", emoji: "🗼", desc: "فرنسا.", related: "لندن" }],
       "كلمات خاصة": []
     };
-
     const avatars = ["🕵️", "👤", "👮", "🧑‍🚀", "🧙", "🦁", "🦊", "🐼", "🤖", "🦉", "🦒"];
-    const funnyTitles = ["الضايع المبتديء", "المحقق المتدرب", "ملك التمويه", "كونان السالفة", "أسطورة السوالف"];
+    const funnyTitles = ["مبتدئ", "هاوي", "محترف", "خبير", "أسطورة"];
     const roleNamesMap = { 'in': '🕵️ محقق', 'out': '🌫️ الضايع', 'agent': '🎭 عميل', 'undercover': '🤫 المموه' };
 
     let state = {
       players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
       revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: true,
-      outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "طعام",
-      customWords: [], isMuted: false, lastWinner: null,
-      votingMode: 'group', voterIndex: 0, votesAccumulated: {}, panicMode: false,
-      smartDistractors: false, blindModeActive: false, blindRoundType: null, isVibrationEnabled: true
+      outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "عشوائي",
+      customWords: [], lastWinner: null, votingMode: 'group', voterIndex: 0, votesAccumulated: {}, panicMode: false,
+      smartDistractors: false, blindModeActive: false, blindRoundType: null, guessInterval: null
     };
-
-    // --- 2. وظائف التحكم والعرض ---
-
-    function toggleMute() {
-      state.isMuted = !state.isMuted;
-      document.getElementById('mute-toggle').innerText = state.isMuted ? '🔇' : '🔊';
-    }
-
-    // دالة لإظهار وإخفاء خيار "الخيارات الذكية" بناءً على خيار التخمين
-    function toggleSmartSettings() {
-      const guessingEnabled = document.getElementById('check-guessing').checked;
-      const smartContainer = document.getElementById('smart-distractors-container');
-      if (smartContainer) {
-        if (guessingEnabled) {
-          smartContainer.classList.remove('hidden');
-          smartContainer.classList.add('flex');
-        } else {
-          smartContainer.classList.add('hidden');
-          smartContainer.classList.remove('flex');
-        }
-      }
-    }
 
     function showScreen(screenId) {
       document.querySelectorAll('#app > div').forEach(div => div.classList.add('hidden'));
       const target = document.getElementById(`screen-${screenId}`);
-      if (target) {
-        target.classList.remove('hidden');
-        target.scrollTop = 0; // The Fix: Scroll to top
-        window.scrollTo(0, 0); // Safety net
-      }
+      if (target) { target.classList.remove('hidden'); target.scrollTop = 0; window.scrollTo(0, 0); }
       if (screenId === 'setup') renderCategories('categories-grid');
-      if (screenId === 'leaderboard') { updateLeaderboardUI('leaderboard-list'); checkResetButtonVisibility(); }
+      if (screenId === 'leaderboard') { updateLeaderboardUI(); checkResetButtonVisibility(); }
       if (screenId === 'final') updateFinalResultsUI();
+    }
+
+    function closeModal() {
+      ['modal-stats', 'modal-alert', 'modal-confirm', 'modal-category', 'modal-settings'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+      });
+    }
+    function closeStatsModal() { document.getElementById('modal-stats').classList.add('hidden'); }
+    function closeAlert() { document.getElementById('modal-alert').classList.add('hidden'); }
+    function openCategoryModal() { const m = document.getElementById('modal-category'); if (m) { m.classList.remove('hidden'); m.classList.add('flex'); renderCategories('modal-categories-grid'); } }
+    function closeCategoryModal() { const m = document.getElementById('modal-category'); if (m) { m.classList.add('hidden'); m.classList.remove('flex'); } }
+    function checkResetButtonVisibility() {
+      const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+      const hasData = saved.some(p => (p.points || 0) > 0);
+      const trigger = document.getElementById('btn-reset-points-trigger');
+      if (trigger) trigger.classList.toggle('hidden', !hasData);
+    }
+    function confirmReset() {
+      const modal = document.getElementById('modal-confirm');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
     function renderCategories(gridId) {
       const grid = document.getElementById(gridId);
       if (!grid) return; grid.innerHTML = '';
       const icons = { "طعام": "🍔", "أدوات": "🛠️", "ماركات": "🏷️", "حيوانات": "🐾", "تكنولوجيا": "💻", "ألعاب": "🎮", "مشروبات": "☕", "أماكن": "🕋", "دول": "🌍", "عطور": "🧴", "كلمات خاصة": "✏️", "عشوائي": "🎲" };
-
-      // إضافة خيار عشوائي في البداية
-      grid.innerHTML += `<div onclick="selectCategory('عشوائي', '${gridId}')" class="category-card ${state.selectedCategory === 'عشوائي' ? 'active' : ''}"><span>🎲</span><span class="text-xs text-white">عشوائي</span></div>`;
-
+      grid.innerHTML += `<div onclick="selectCategory('عشوائي', '${gridId}')" class="category-card ${state.selectedCategory === 'عشوائي' ? 'active' : ''}"><span>🎲</span><span class="text-xs">عشوائي</span></div>`;
       Object.keys(wordBank).forEach(cat => {
         if (gridId === 'modal-categories-grid' && cat === "كلمات خاصة" && state.customWords.length < 4) return;
         const isActive = state.selectedCategory === cat;
         const emoji = icons[cat] || '🏷️';
-        grid.innerHTML += `<div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span>${emoji}</span><span class="text-xs text-white font-bold text-center">${cat}</span></div>`;
+        grid.innerHTML += `<div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span>${emoji}</span><span class="text-xs font-bold">${cat}</span></div>`;
       });
     }
 
     function selectCategory(cat, gridId) {
       state.selectedCategory = cat;
-      renderCategories(gridId);
-      sounds.tick();
-      if (gridId === 'categories-grid') {
-        const ui = document.getElementById('custom-words-ui');
-        if (ui) ui.classList.toggle('hidden', cat !== "كلمات خاصة");
-      }
+      renderCategories(gridId); sounds.tick();
+      if (gridId === 'categories-grid') document.getElementById('custom-words-ui').classList.toggle('hidden', cat !== "كلمات خاصة");
     }
 
     function addCustomWord() {
       const input = document.getElementById('custom-word-input');
       const word = input.value.trim();
       if (word) {
-        if (state.customWords.some(w => w.word.toLowerCase() === word.toLowerCase())) {
-          document.getElementById('alert-message').innerText = "هذه الكلمة مضافة بالفعل!";
-          document.getElementById('modal-alert').classList.remove('hidden');
-          document.getElementById('modal-alert').classList.add('flex');
-          return;
-        }
         state.customWords.push({ word, emoji: "✏️", desc: "سالفة خاصة." });
         input.value = ''; renderCustomWords(); renderCategories('categories-grid');
       }
     }
-
     function renderCustomWords() {
       const list = document.getElementById('custom-words-list');
-      if (!list) return;
-      list.innerHTML = '';
-      state.customWords.forEach((w, i) => {
-        list.innerHTML += `<span class="bg-indigo-500/20 px-2 py-1 rounded-full text-[10px] text-white">${w.word} <button onclick="state.customWords.splice(${i},1);renderCustomWords();">×</button></span>`;
-      });
+      if (!list) return; list.innerHTML = '';
+      state.customWords.forEach((w, i) => { list.innerHTML += `<span class="bg-indigo-500/20 px-2 py-1 rounded-full text-xs text-theme-main">${w.word} <button onclick="state.customWords.splice(${i},1);renderCustomWords();">×</button></span>`; });
       wordBank["كلمات خاصة"] = state.customWords;
     }
-
-    // --- 3. وظائف الإعداد واللاعبين ---
 
     function setVotingMode(mode) {
       state.votingMode = mode;
       const groupBtn = document.getElementById('btn-vote-group');
       const indivBtn = document.getElementById('btn-vote-individual');
-
       if (mode === 'group') {
         groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
-        indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+        indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-theme-main";
       } else {
         indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
-        groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+        groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-theme-main";
       }
       sounds.tick();
     }
@@ -1113,38 +970,51 @@
     function updateSetupInfo() {
       const pVal = document.getElementById('input-players').value;
       const tVal = document.getElementById('input-time').value;
-      if (!pVal || isNaN(tVal)) return;
       document.getElementById('val-players').innerText = pVal;
       document.getElementById('val-time-label').innerText = formatTimeLabel(tVal);
-      const agentContainer = document.getElementById('double-agent-container');
-      const undercoverContainer = document.getElementById('undercover-container');
+
       const avail = parseInt(pVal) >= 5;
-      if (agentContainer) agentContainer.classList.toggle('opacity-30', !avail);
-      if (undercoverContainer) undercoverContainer.classList.toggle('opacity-30', !avail);
+      document.getElementById('double-agent-container').classList.toggle('opacity-30', !avail);
+      document.getElementById('undercover-container').classList.toggle('opacity-30', !avail);
       if (!avail) {
         document.getElementById('check-double-agent').checked = false;
         document.getElementById('check-undercover').checked = false;
       }
-      // التأكد من حالة خيار التخمين عند التحديث
       toggleSmartSettings();
     }
 
-    function checkAndNext() {
-      if (state.selectedCategory === "كلمات خاصة" && state.customWords.length < 4) return showAlert("أضف 4 كلمات على الأقل!");
-      initPlayerNames();
+    function toggleSmartSettings() {
+      const guessingEnabled = document.getElementById('check-guessing').checked;
+      const blindMode = document.getElementById('check-blind-mode').checked;
+      const smartContainer = document.getElementById('smart-distractors-container');
+
+      if (smartContainer) {
+        if (guessingEnabled && !blindMode) {
+          smartContainer.classList.remove('hidden'); smartContainer.classList.add('flex');
+        } else {
+          smartContainer.classList.add('hidden'); smartContainer.classList.remove('flex');
+        }
+      }
     }
+
+    function checkAndNext() { initPlayerNames(); }
 
     function initPlayerNames() {
       const count = parseInt(document.getElementById('input-players').value);
       const container = document.getElementById('names-container');
-      if (!container) return;
-      container.innerHTML = '';
+      if (!container) return; container.innerHTML = '';
       const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
       for (let i = 0; i < count; i++) {
         const p = saved[i] || { name: `المحقق ${i + 1}`, avatar: avatars[i % avatars.length] };
-        container.innerHTML += `<div class="bg-white/5 p-4 rounded-3xl border border-white/10 shadow-inner text-right"><div class="flex gap-3 mb-3 flex-row-reverse text-right"><input type="text" id="name-${i}" value="${p.name}" class="player-input flex-1 bg-slate-800 border-none rounded-2xl p-3 text-white font-bold outline-none focus:ring-2 ring-indigo-500 text-right"><input type="hidden" id="avatar-${i}" value="${p.avatar}"></div><div class="flex flex-wrap gap-2 justify-center">${avatars.map(a => `<button onclick="setAvatar(${i}, '${a}')" id="av-${i}-${a}" class="avatar-btn ${a === p.avatar ? 'selected' : ''}">${a}</button>`).join('')}</div></div>`;
+        container.innerHTML += `<div class="bg-card-theme p-4 rounded-3xl border border-white/10 shadow-inner text-right"><div class="flex gap-3 mb-3 flex-row-reverse text-right"><input type="text" id="name-${i}" value="${p.name}" class="player-input flex-1 bg-white/5 border-none rounded-2xl p-3 text-theme-main font-bold outline-none focus:ring-2 ring-indigo-500 text-right"><input type="hidden" id="avatar-${i}" value="${p.avatar}"></div><div class="flex flex-wrap gap-2 justify-center">${avatars.map(a => `<button onclick="setAvatar(${i}, '${a}')" id="av-${i}-${a}" class="avatar-btn ${a === p.avatar ? 'selected' : ''}">${a}</button>`).join('')}</div></div>`;
       }
       showScreen('names');
+    }
+
+    function setAvatar(pIdx, av) {
+      document.querySelectorAll(`#names-container > div:nth-child(${pIdx + 1}) .avatar-btn`).forEach(b => b.classList.remove('selected'));
+      document.getElementById(`av-${pIdx}-${av}`).classList.add('selected');
+      document.getElementById(`avatar-${pIdx}`).value = av;
     }
 
     function startGame() {
@@ -1156,92 +1026,64 @@
         const name = nameInp ? nameInp.value.trim() : `لاعب ${i + 1}`;
         const avatar = document.getElementById(`avatar-${i}`).value;
         const existing = savedData[i];
-        const emptyStats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
         state.players.push({
-          id: i,
-          name,
-          avatar,
+          id: i, name, avatar,
           points: existing ? (existing.points || 0) : 0,
           stats: existing?.stats || { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } }
         });
       }
       localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(state.players));
+
       state.timer = parseInt(document.getElementById('input-time').value);
       state.initialTimer = state.timer;
       state.doubleAgentActive = document.getElementById('check-double-agent').checked;
-      state.undercoverActive = document.getElementById('check-undercover') ? document.getElementById('check-undercover').checked : false;
-      // Get guessing setting
+      state.undercoverActive = document.getElementById('check-undercover').checked;
       state.guessingEnabled = document.getElementById('check-guessing').checked;
-      // Get smart distractors setting
-      state.smartDistractors = document.getElementById('check-smart-distractors') ? document.getElementById('check-smart-distractors').checked : false;
-      // Get blind mode
-      state.blindModeActive = document.getElementById('check-blind-mode') ? document.getElementById('check-blind-mode').checked : false;
+      state.blindModeActive = document.getElementById('check-blind-mode').checked;
+      // Force disable smart distractors if blind mode is on
+      state.smartDistractors = !state.blindModeActive && document.getElementById('check-smart-distractors').checked;
 
       setupRoles();
-      state.revealIndex = 0;
-      state.panicMode = false;
+      state.revealIndex = 0; state.panicMode = false;
 
-      // Check visibility of panic button based on settings
       const panicBtn = document.getElementById('btn-panic');
       if (panicBtn) {
-        if (state.guessingEnabled && state.smartDistractors) {
-          panicBtn.classList.remove('hidden');
-        } else {
-          panicBtn.classList.add('hidden');
-        }
+        if (state.guessingEnabled && state.smartDistractors && !state.blindModeActive) panicBtn.classList.remove('hidden');
+        else panicBtn.classList.add('hidden');
       }
-
       startRevealSequence();
     }
 
     function setupRoles() {
-      // اختيار فئة فعلية إذا كان الاختيار عشوائي
-      let actualCategory = state.selectedCategory;
-      if (actualCategory === "عشوائي") {
+      let cat = state.selectedCategory;
+      if (cat === "عشوائي") {
         let keys = Object.keys(wordBank).filter(k => k !== "كلمات خاصة");
-        if (state.customWords.length >= 4) {
-          keys.push("كلمات خاصة");
-        }
-        actualCategory = keys[Math.floor(Math.random() * keys.length)];
+        if (state.customWords.length >= 4) keys.push("كلمات خاصة");
+        cat = keys[Math.floor(Math.random() * keys.length)];
       }
-      state.currentRoundCategory = actualCategory; // حفظ الفئة الحالية للاستخدام
-
-      let pool = wordBank[actualCategory] || wordBank["طعام"];
+      state.currentRoundCategory = cat;
+      let pool = wordBank[cat] || wordBank["طعام"];
       state.secretData = pool[Math.floor(Math.random() * pool.length)];
+
       let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
+      state.outPlayerIds = []; state.agentPlayerId = null; state.undercoverPlayerId = null; state.blindRoundType = null;
 
-      // المنطق الافتراضي
-      let outID = ids.splice(0, 1)[0];
-      state.outPlayerIds = [outID];
-      state.agentPlayerId = (state.doubleAgentActive && ids.length > 0) ? ids.splice(0, 1)[0] : null;
-      state.undercoverPlayerId = (state.undercoverActive && ids.length > 0) ? ids.splice(0, 1)[0] : null;
-
-      // تطبيق منطق التحدي الأعمى (35% فرصة)
-      if (state.blindModeActive && Math.random() < 0.5) {
-        // إرجاع الضايع ليكون محققاً
-        state.outPlayerIds = [];
-        state.agentPlayerId = null;
-        state.undercoverPlayerId = null;
-
-        // في حالة "الكل ضايع" (50% من حالات التحدي الأعمى)
-        if (Math.random() < 0.5) {
-          state.blindRoundType = 'all_out'; // الكل ضايع
-          // نعطي الجميع دور "out" لاحقاً
-        } else {
-          state.blindRoundType = 'all_in'; // الكل محقق
-        }
+      if (state.blindModeActive && Math.random() < 0.35) { // 35% chance for blind round
+        if (Math.random() < 0.5) state.blindRoundType = 'all_in'; // No outsider
+        else { state.blindRoundType = 'all_out'; state.outPlayerIds = state.players.map(p => p.id); }
       } else {
-        state.blindRoundType = null;
+        let outID = ids.splice(0, 1)[0];
+        state.outPlayerIds = [outID];
+        if (state.doubleAgentActive && ids.length > 0) state.agentPlayerId = ids.splice(0, 1)[0];
+        if (state.undercoverActive && ids.length > 0) state.undercoverPlayerId = ids.splice(0, 1)[0];
       }
 
       state.currentRoles = state.players.map(p => {
         let role = 'in';
-        if (state.blindRoundType === 'all_out') {
-          role = 'out';
-        } else if (state.blindRoundType === 'all_in') {
-          role = 'in';
-        } else {
-          if (p.id === (state.outPlayerIds.length > 0 ? state.outPlayerIds[0] : -1)) role = 'out';
+        if (state.blindRoundType === 'all_out') role = 'out';
+        else if (state.blindRoundType === 'all_in') role = 'in';
+        else {
+          if (p.id === (state.outPlayerIds[0])) role = 'out';
           else if (p.id === state.agentPlayerId) role = 'agent';
           else if (p.id === state.undercoverPlayerId) role = 'undercover';
         }
@@ -1253,16 +1095,10 @@
       if (state.revealIndex >= state.players.length) return showScreen('game'), startTimer();
       const p = state.players[state.revealIndex];
       document.getElementById('reveal-player-name').innerText = `${p.avatar} ${p.name}`;
-      // Reset card
       const cardObj = document.getElementById('role-card');
       if (cardObj) cardObj.classList.remove('is-flipped');
-
-      document.getElementById('btn-reveal-action').innerText = 'إظهار السالفة';
-      document.getElementById('btn-reveal-action').onclick = toggleReveal;
-
-      // Populate back of card with hidden data
+      document.getElementById('btn-reveal-action').innerText = 'كشف الدور';
       populateCardBack(p);
-
       showScreen('reveal');
     }
 
@@ -1271,79 +1107,47 @@
       const txt = document.getElementById('reveal-role-text');
       const word = document.getElementById('reveal-secret-word');
       const img = document.getElementById('reveal-img-placeholder');
-      const descPlaceholder = document.getElementById('reveal-word-desc');
+      const desc = document.getElementById('reveal-word-desc');
 
       if (roleData.role === 'in') {
         txt.innerText = "أنت تعرف السالفة!"; word.innerText = state.secretData.word;
-        img.innerText = state.secretData.emoji; descPlaceholder.innerText = state.secretData.desc || "";
-        txt.className = "text-xl font-bold mb-4 text-emerald-400";
-      }
-      else if (roleData.role === 'agent') {
-        txt.innerText = "أنت العميل المزدوج! احمِ الضايع:"; word.innerText = state.secretData.word;
-        img.innerText = "🎭"; descPlaceholder.innerText = state.secretData.desc || "";
-        txt.className = "text-xl font-bold mb-4 text-orange-400";
-      }
-      else if (roleData.role === 'undercover') {
-        let undercoverObj;
-        if (state.currentRoundCategory === "كلمات خاصة") {
-          undercoverObj = state.customWords.find(w => w.word !== state.secretData.word);
-        } else {
-          undercoverObj = (wordBank[state.currentRoundCategory] || []).find(w => w.word === state.secretData.related);
-        }
-        let relWord = undercoverObj ? undercoverObj.word : (state.secretData.related || "سالفة قريبة");
-        let relDesc = undercoverObj ? undercoverObj.desc : "كلمة قريبة تضلل بها المحققين.";
-        txt.innerText = "أنت المموه! كلمتك هي:"; word.innerText = relWord;
-        img.innerText = "🤫"; descPlaceholder.innerText = relDesc;
-        txt.className = "text-xl font-bold mb-4 text-yellow-400";
-      }
-      else {
-        txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; descPlaceholder.innerText = "؟؟؟؟؟";
+        img.innerText = state.secretData.emoji; desc.innerText = state.secretData.desc || "";
+        txt.className = "text-xl font-bold mb-4 text-emerald-500";
+      } else if (roleData.role === 'agent') {
+        txt.innerText = "أنت العميل! احمِ الضايع:"; word.innerText = state.secretData.word;
+        img.innerText = "🎭"; desc.innerText = "";
+        txt.className = "text-xl font-bold mb-4 text-orange-500";
+      } else if (roleData.role === 'undercover') {
+        txt.innerText = "أنت المموه! كلمتك:"; word.innerText = "سالفة قريبة";
+        img.innerText = "🤫"; desc.innerText = "";
+        txt.className = "text-xl font-bold mb-4 text-yellow-500";
+      } else {
+        txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; desc.innerText = "؟؟؟؟؟";
         txt.className = "text-xl font-bold mb-4 text-red-500";
       }
     }
 
-    // New function to handle card flip
     function flipCard() {
       const cardObj = document.getElementById('role-card');
-      const btn = document.getElementById('btn-reveal-action');
-
       if (!cardObj.classList.contains('is-flipped')) {
-        // Flip it
-        cardObj.classList.add('is-flipped');
-        sounds.flip(); // Play sound
-        btn.innerText = "التالي";
-      } else {
-        // Already flipped, so clicking card acts like clicking next
-        // But typically user clicks the button. We can allow card click to advance too?
-        // Let's keep card click just for flipping/re-checking, button for next.
+        cardObj.classList.add('is-flipped'); sounds.flip();
+        document.getElementById('btn-reveal-action').innerText = "التالي";
       }
     }
 
-    // Modified toggleReveal to handle the button click flow
     function toggleReveal() {
       const cardObj = document.getElementById('role-card');
-      const btn = document.getElementById('btn-reveal-action');
-
       if (!cardObj.classList.contains('is-flipped')) {
-        // Flip
-        cardObj.classList.add('is-flipped');
-        sounds.flip();
-        btn.innerText = "التالي";
+        cardObj.classList.add('is-flipped'); sounds.flip();
+        document.getElementById('btn-reveal-action').innerText = "التالي";
       } else {
-        // Next player - with delay fix for glitch
-        cardObj.classList.remove('is-flipped');
-        sounds.flip();
-
-        setTimeout(() => {
-          state.revealIndex++;
-          startRevealSequence();
-        }, 250);
+        cardObj.classList.remove('is-flipped'); sounds.flip();
+        setTimeout(() => { state.revealIndex++; startRevealSequence(); }, 300);
       }
     }
 
     function startTimer() {
-      state.isPaused = false;
-      clearInterval(state.interval);
+      state.isPaused = false; clearInterval(state.interval);
       state.interval = setInterval(() => {
         if (state.isPaused) return;
         state.timer--;
@@ -1351,289 +1155,137 @@
         const progressEl = document.getElementById('timer-progress');
         if (progressEl) progressEl.style.strokeDashoffset = circumference * (1 - (state.timer / state.initialTimer));
         const m = Math.floor(state.timer / 60), s = state.timer % 60;
-        const timerEl = document.getElementById('game-timer');
-        if (timerEl) timerEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        document.getElementById('game-timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         if (state.timer <= 5 && state.timer > 0) sounds.tick();
         if (state.timer <= 0) { clearInterval(state.interval); startVoting(); }
       }, 1000);
     }
-
-    // --- وظائف التصويت المحدثة ---
-
-    function startVoting() {
-      state.voterIndex = 0;
-      state.votesAccumulated = {};
-      state.players.forEach(p => state.votesAccumulated[p.id] = 0);
-      updateVotingGrid();
-      showScreen('voting');
-    }
-
-    function updateVotingGrid() {
-      const grid = document.getElementById('voting-grid');
-      const voterIndicator = document.getElementById('voter-indicator');
-      const instruction = document.getElementById('voting-instruction');
-      grid.innerHTML = '';
-
-      if (state.votingMode === 'individual') {
-        const currentVoter = state.players[state.voterIndex];
-        voterIndicator.innerText = `دور المصوّت: ${currentVoter.avatar} ${currentVoter.name}`;
-        voterIndicator.classList.remove('hidden');
-        instruction.innerText = "اختر الشخص الذي تعتقد أنه الضايع";
-      } else {
-        voterIndicator.classList.add('hidden');
-        instruction.innerText = "اتفقوا على شخص واحد واضغطوا عليه مباشرة";
-      }
-
-      state.players.forEach(p => {
-        if (state.votingMode === 'individual' && state.players[state.voterIndex].id === p.id) return;
-        grid.innerHTML += `<button onclick="handleVoteClick(${p.id})" class="p-4 bg-white/5 border border-white/10 rounded-3xl flex flex-col items-center gap-2 active:bg-indigo-500/20 transition-all text-center">
-                    <span class="text-4xl text-center">${p.avatar}</span>
-                    <span class="font-black text-xs text-white text-center">${p.name}</span>
-                </button>`;
-      });
-    }
-
-    function handleVoteClick(accusedId) {
-      if (state.votingMode === 'group') {
-        processVoteResult(accusedId);
-      } else {
-        state.votesAccumulated[accusedId]++;
-        state.voterIndex++;
-        sounds.tick();
-        if (state.voterIndex < state.players.length) {
-          updateVotingGrid();
-        } else {
-          let mostVotedId = null;
-          let maxVotes = -1;
-          for (const id in state.votesAccumulated) {
-            if (state.votesAccumulated[id] > maxVotes) {
-              maxVotes = state.votesAccumulated[id];
-              mostVotedId = parseInt(id);
-            } else if (state.votesAccumulated[id] === maxVotes && maxVotes > 0) {
-              const role = state.currentRoles.find(r => r.id === parseInt(id)).role;
-              if (role === 'out' || role === 'undercover') mostVotedId = parseInt(id);
-            }
-          }
-          processVoteResult(mostVotedId);
-        }
-      }
-    }
+    function pauseTimer() { state.isPaused = !state.isPaused; document.getElementById('btn-pause').innerText = state.isPaused ? "استئناف" : "إيقاف مؤقت"; }
+    function endGameEarly() { clearInterval(state.interval); startVoting(); }
 
     function triggerPanic() {
-      clearInterval(state.interval);
-      state.panicMode = true; // تفعيل وضع الهلع
-
-      // جلب اسم الضايع الحالي
-      const outPlayerId = state.outPlayerIds.length > 0 ? state.outPlayerIds[0] : null;
+      clearInterval(state.interval); state.panicMode = true;
       let name = "الضايع";
-
-      if (outPlayerId !== null) {
-        const outPlayer = state.players.find(p => p.id === outPlayerId);
-        name = outPlayer ? outPlayer.name : "الضايع";
-      } else if (state.blindRoundType === 'all_out') {
-        name = "الكل";
+      if (state.blindRoundType === 'all_out') name = "الكل";
+      else if (state.outPlayerIds.length > 0) {
+        const p = state.players.find(x => x.id === state.outPlayerIds[0]);
+        if (p) name = p.name;
       }
-
       startGuessingPhase(name, true);
     }
 
-    function processVoteResult(id) {
-      // التحقق من "التحدي الأعمى" أولاً
-      if (state.blindRoundType) {
-        const accusedPlayer = state.players.find(p => p.id === id);
-        const name = accusedPlayer ? accusedPlayer.name : "";
+    function startVoting() {
+      state.voterIndex = 0; state.votesAccumulated = {};
+      state.players.forEach(p => state.votesAccumulated[p.id] = 0);
+      updateVotingGrid(); showScreen('voting');
+    }
 
-        let msg = "";
-        if (state.blindRoundType === 'all_in') {
-          msg = `مقلب! 🤣 ${name} بريء والكل بريء! ما كان فيه ضايع!`;
-        } else {
-          msg = `كارثة! 🤡 ${name} ضايع والكل ضايع! محد يعرف السالفة!`;
-        }
-
-        // تشغيل الصوت المضحك
-        sounds.funny();
-        showFinalResults('blind_win', msg);
-        return;
-      }
-
-      const isActualOut = state.outPlayerIds.includes(id);
-      const isUndercover = (id === state.undercoverPlayerId);
-
-      if (isActualOut) {
-        // Check if guessing is enabled
-        if (state.guessingEnabled) {
-          const caughtPlayer = state.players.find(p => p.id === id);
-          startGuessingPhase(caughtPlayer ? caughtPlayer.name : null);
-        } else {
-          // Immediate Game Over - Group Wins with Name
-          const caughtPlayer = state.players.find(p => p.id === id);
-          const name = caughtPlayer ? caughtPlayer.name : "";
-          showFinalResults('group_win', `تم كشف الضايع (${name})! لا يوجد فرصة للتخمين 🚫`);
-        }
-      } else if (isUndercover) {
-        showFinalResults('out_win', "المموه خدعكم بنجاح! 🤫 فاز فريق الضايع");
+    function updateVotingGrid() {
+      const grid = document.getElementById('voting-grid'); grid.innerHTML = '';
+      if (state.votingMode === 'individual') {
+        const voter = state.players[state.voterIndex];
+        document.getElementById('voter-indicator').innerText = `دور: ${voter.avatar} ${voter.name}`;
+        document.getElementById('voter-indicator').classList.remove('hidden');
       } else {
-        sounds.wrong();
-        document.body.classList.add('wrong-flash-active');
-        document.getElementById('app').classList.add('shake-effect');
-        setTimeout(() => {
-          document.body.classList.remove('wrong-flash-active');
-          document.getElementById('app').classList.remove('shake-effect');
-          showFinalResults('out_win', "الاختيار كان خاطئاً! 🌫️ فاز فريق الضايع");
-        }, 600);
+        document.getElementById('voter-indicator').classList.add('hidden');
+      }
+      state.players.forEach(p => {
+        if (state.votingMode === 'individual' && state.players[state.voterIndex].id === p.id) return;
+        grid.innerHTML += `<button onclick="handleVoteClick(${p.id})" class="p-4 bg-white/5 border border-white/10 rounded-3xl flex flex-col items-center gap-2 active:bg-indigo-500/20 text-theme-main"><span class="text-4xl">${p.avatar}</span><span class="font-bold text-xs">${p.name}</span></button>`;
+      });
+    }
+
+    function handleVoteClick(id) {
+      if (state.votingMode === 'group') processVoteResult(id);
+      else {
+        state.votesAccumulated[id]++; state.voterIndex++; sounds.tick();
+        if (state.voterIndex < state.players.length) updateVotingGrid();
+        else {
+          let maxV = -1, winnerId = null;
+          for (const pid in state.votesAccumulated) {
+            if (state.votesAccumulated[pid] > maxV) { maxV = state.votesAccumulated[pid]; winnerId = parseInt(pid); }
+          }
+          processVoteResult(winnerId);
+        }
       }
     }
 
-    function startGuessingPhase(caughtName, isPanic = false) {
-      const container = document.getElementById('guess-options');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const titleElement = document.getElementById('guess-title');
-      const subtitleElement = document.getElementById('guess-subtitle');
-
-      if (titleElement) {
-        if (isPanic) {
-          // Panic Mode
-          titleElement.innerText = "🚨 تخمين الهلع! 🚨";
-          titleElement.className = "text-2xl sm:text-3xl font-black mb-6 text-orange-500";
-          if (subtitleElement) {
-            subtitleElement.innerText = `لديك بعض الشجاعة يا ${caughtName || 'بطل'}! 😎`;
-            subtitleElement.classList.remove('hidden');
-          }
-        } else {
-          // Caught Mode
-          const namePart = caughtName ? ` يا ${caughtName}` : "";
-          titleElement.innerText = `لديك فرصة أخيرة لتسرق الفوز${namePart}..`;
-          titleElement.className = "text-xl sm:text-2xl font-black mb-4 text-red-400 leading-normal";
-          if (subtitleElement) {
-            subtitleElement.innerText = "خمن السالفة من الخيارات التالية!";
-            subtitleElement.classList.remove('hidden');
-          }
-        }
+    function processVoteResult(id) {
+      if (state.blindRoundType) {
+        const p = state.players.find(x => x.id === id);
+        sounds.funny();
+        showFinalResults('blind_win', `مقلب! 🤣 ${p ? p.name : ''} بريء! ما كان فيه ضايع!`);
+        return;
       }
-
-      // Handle Timer for Panic Mode
-      const timerContainer = document.getElementById('guess-timer-container');
-      const timerEl = document.getElementById('guess-timer');
-
-      if (state.guessInterval) clearInterval(state.guessInterval);
-
-      if (isPanic) {
-        timerContainer.classList.remove('hidden');
-        let timeLeft = 30;
-        timerEl.innerText = timeLeft;
-
-        state.guessInterval = setInterval(() => {
-          timeLeft--;
-          timerEl.innerText = timeLeft;
-          if (timeLeft <= 5 && timeLeft > 0) sounds.tick();
-
-          if (timeLeft <= 0) {
-            clearInterval(state.guessInterval);
-            showFinalResults('group_win', "انتهى الوقت! (عقاب مضاعف) ⏳");
-          }
-        }, 1000);
+      const isOut = state.outPlayerIds.includes(id);
+      if (isOut) {
+        if (state.guessingEnabled) {
+          const p = state.players.find(x => x.id === id);
+          startGuessingPhase(p ? p.name : null);
+        } else showFinalResults('group_win', "كفو! صدتوا الضايع 🕵️‍♂️");
+      } else if (id === state.undercoverPlayerId) {
+        showFinalResults('out_win', "المموه خدعكم! 🤫 فاز الضايع");
       } else {
-        timerContainer.classList.add('hidden');
+        sounds.wrong();
+        document.body.classList.add('wrong-flash-active');
+        setTimeout(() => { document.body.classList.remove('wrong-flash-active'); showFinalResults('out_win', "خطأ! الضايع فاز 😈"); }, 600);
       }
+    }
+
+    function startGuessingPhase(name, isPanic = false) {
+      const container = document.getElementById('guess-options'); container.innerHTML = '';
+      const titleEl = document.getElementById('guess-title');
+      if (isPanic) {
+        titleEl.innerText = "🚨 تخمين الهلع!";
+        titleEl.className = "text-2xl font-black mb-6 text-orange-500";
+      } else {
+        titleEl.innerText = `فرصة أخيرة يا ${name || 'ضايع'}!`;
+        titleEl.className = "text-xl font-black mb-4 text-red-500";
+      }
+
+      // Timer logic for panic/guess
+      if (state.guessInterval) clearInterval(state.guessInterval);
+      if (isPanic) {
+        document.getElementById('guess-timer-container').classList.remove('hidden');
+        let t = 30; document.getElementById('guess-timer').innerText = t;
+        state.guessInterval = setInterval(() => {
+          t--; document.getElementById('guess-timer').innerText = t;
+          if (t <= 5) sounds.tick();
+          if (t <= 0) { clearInterval(state.guessInterval); showFinalResults('group_win', "انتهى الوقت! ⏳"); }
+        }, 1000);
+      } else document.getElementById('guess-timer-container').classList.add('hidden');
 
       let pool = wordBank[state.currentRoundCategory] || wordBank["طعام"];
-      let finalDistractors = [];
-
-      if (state.smartDistractors) {
-        // --- الذكاء في التخمين (Smart Distractors) ---
-        let potentialDistractors = [];
-
-        // 1. الأولوية الأولى: الكلمة المرتبطة مباشرة
-        const directRelated = pool.find(w => w.word === state.secretData.related);
-        if (directRelated) potentialDistractors.push(directRelated);
-
-        // 2. الأولوية الثانية: الكلمات التي ترتبط بالسالفة
-        const reverseRelated = pool.filter(w => w.related === state.secretData.word);
-        potentialDistractors.push(...reverseRelated);
-
-        // 3. الأولوية الثالثة: مرتبط المرتبط
-        if (directRelated) {
-          const chainedRelated = pool.find(w => w.word === directRelated.related);
-          if (chainedRelated) potentialDistractors.push(chainedRelated);
-        }
-
-        // 4. فلترة وتكملة العدد من نفس الفئة
-        const seenWords = new Set();
-        seenWords.add(state.secretData.word);
-
-        for (const item of potentialDistractors) {
-          if (!seenWords.has(item.word)) {
-            finalDistractors.push(item);
-            seenWords.add(item.word);
-          }
-        }
-
-        if (finalDistractors.length > 3) {
-          finalDistractors = finalDistractors.sort(() => 0.5 - Math.random()).slice(0, 3);
-        }
-
-        if (finalDistractors.length < 3) {
-          let remainder = pool.filter(w => !seenWords.has(w.word));
-          remainder = remainder.sort(() => 0.5 - Math.random());
-          while (finalDistractors.length < 3 && remainder.length > 0) {
-            finalDistractors.push(remainder.pop());
-          }
-        }
-      } else {
-        // --- عشوائي (Random) ---
-        let distractors = pool.filter(w => w.word !== state.secretData.word);
-        finalDistractors = distractors.sort(() => 0.5 - Math.random()).slice(0, 3);
-      }
-
-      let options = [...finalDistractors, state.secretData];
-      options = options.sort(() => 0.5 - Math.random());
+      let distractors = pool.filter(w => w.word !== state.secretData.word).sort(() => 0.5 - Math.random()).slice(0, 3);
+      let options = [...distractors, state.secretData].sort(() => 0.5 - Math.random());
 
       options.forEach(opt => {
-        container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-4 bg-white/5 rounded-2xl text-lg font-black border border-white/5 text-white">${opt.word}</button>`;
+        container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-4 bg-white/5 rounded-2xl text-lg font-bold border border-white/5 text-theme-main">${opt.word}</button>`;
       });
       showScreen('guess');
     }
 
     function checkGuess(word) {
       if (state.guessInterval) clearInterval(state.guessInterval);
-
       if (word === state.secretData.word) {
-        if (state.panicMode) {
-          showFinalResults('out_win', "تخمين أسطوري! (نقاط مضاعفة) 🔥");
-        } else {
-          showFinalResults('out_win', "تخمين صح! الضايع فاز 🧠");
-        }
+        if (state.panicMode) showFinalResults('out_win', "تخمين أسطوري! (نقاط مضاعفة) 🔥");
+        else showFinalResults('out_win', "تخمين صح! الضايع فاز 🧠");
       } else {
-        if (state.panicMode) {
-          showFinalResults('group_win', "محاولة فاشلة! (عقاب مضاعف) 🚫");
-        } else {
-          showFinalResults('group_win', "المحققون ينتصرون! ⚖️");
-        }
+        showFinalResults('group_win', "تخمين خطأ! المحققون فازوا ⚖️");
       }
     }
 
     function showFinalResults(type, title) {
-      state.lastWinner = type === 'group_win' ? 'group' : 'out';
-
-      if (type === 'blind_win') {
-        document.getElementById('final-status-emoji').innerText = '🤡';
-        // في الفوز الأعمى، الجميع يحصل على نقطة واحدة (جائزة ترضية)
-        state.lastWinner = 'blind';
-        // لا وميض أحمر
-      } else {
-        document.getElementById('final-status-emoji').innerText = type === 'group_win' ? '🏆' : '😈';
-      }
-
+      state.lastWinner = type === 'group_win' ? 'group' : (type === 'blind_win' ? 'blind' : 'out');
       document.getElementById('final-result-title').innerText = title;
+      document.getElementById('final-status-emoji').innerText = type === 'blind_win' ? '🤡' : (type === 'group_win' ? '🏆' : '😈');
       document.getElementById('final-secret-word').innerText = state.secretData.word;
       document.getElementById('final-word-emoji').innerText = state.secretData.emoji;
       document.getElementById('topic-description').innerText = state.secretData.desc || "";
 
       if (type === 'group_win') { sounds.win(); createConfetti(); }
-      else if (type === 'blind_win') { createConfetti(true); } // Confetti with clowns - Sound played before
-      else { sounds.lose(); }
+      else if (type === 'blind_win') { createConfetti(true); }
+      else sounds.lose();
 
       awardPoints(state.lastWinner);
       showScreen('final');
@@ -1641,49 +1293,21 @@
 
     function awardPoints(winner) {
       let saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-
-      const roleToStatKey = {
-        'in': 'det',
-        'out': 'out',
-        'agent': 'agt',
-        'undercover': 'und'
-      };
-
-      saved = saved.map((p) => {
+      saved = saved.map(p => {
         const roleData = state.currentRoles.find(r => r.id === p.id);
         if (!roleData) return p;
+        const isOutSide = ['out', 'agent', 'undercover'].includes(roleData.role);
 
-        // تهيئة الإحصائيات إذا لم تكن موجودة
-        if (!p.stats) p.stats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
-
-        const statKey = roleToStatKey[roleData.role];
-        const isOutSide = (roleData.role === 'out' || roleData.role === 'agent' || roleData.role === 'undercover');
-
-        if (winner === 'blind') {
-          p.points += 1;
-          if (statKey && p.stats[statKey]) {
-            p.stats[statKey].w++;
-          }
-        }
+        if (winner === 'blind') p.points += 1;
         else if (winner === 'group') {
-          if (!isOutSide) {
-            p.points += (state.panicMode ? 2 : 1);
-            p.stats.det.w++;
-          } else {
-            if (statKey) p.stats[statKey].l++;
-          }
-        }
-        else if (winner === 'out' || winner === 'out_win') {
+          if (!isOutSide) { p.points += (state.panicMode ? 2 : 1); if (p.stats) p.stats.det.w++; }
+          else if (p.stats) { if (roleData.role == 'out') p.stats.out.l++; if (roleData.role == 'agent') p.stats.agt.l++; }
+        } else {
           if (isOutSide) {
-            let pts = 2;
-            if (roleData.role === 'out' && state.panicMode) pts = 4;
+            let pts = 2; if (roleData.role === 'out' && state.panicMode) pts = 4;
             p.points += pts;
-
-            if (statKey) p.stats[statKey].w++;
-          }
-          else {
-            p.stats.det.l++;
-          }
+            if (p.stats) { if (roleData.role == 'out') p.stats.out.w++; if (roleData.role == 'agent') p.stats.agt.w++; }
+          } else if (p.stats) p.stats.det.l++;
         }
         return p;
       });
@@ -1693,97 +1317,31 @@
 
     function updateFinalResultsUI() {
       const list = document.getElementById('final-leaderboard');
-      if (!list) return;
-      list.innerHTML = '';
+      if (!list) return; list.innerHTML = '';
       state.players.forEach(p => {
         const roleData = state.currentRoles.find(r => r.id === p.id);
         if (!roleData) return;
-        const isOutSide = (roleData.role === 'out' || roleData.role === 'agent' || roleData.role === 'undercover');
-
+        const isOutSide = ['out', 'agent', 'undercover'].includes(roleData.role);
         let didWin = false;
         if (state.lastWinner === 'group' && !isOutSide) didWin = true;
-        if ((state.lastWinner === 'out' || state.lastWinner === 'out_win') && isOutSide) didWin = true;
-        if (state.lastWinner === 'blind') didWin = true; // الجميع فائز في الوضع الأعمى
+        if ((state.lastWinner === 'out') && isOutSide) didWin = true;
+        if (state.lastWinner === 'blind') didWin = true;
 
-        const colorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-100' : 'bg-red-500/20 border-red-500/40 text-red-100';
-        const roleLabel = roleNamesMap[roleData.role] || 'محقق';
-
-        list.innerHTML += `<div class="flex items-center justify-between p-3 rounded-2xl border ${colorClass} mb-2 shadow-inner text-right"><div class="flex items-center gap-3"><span class="text-2xl">${p.avatar}</span><div class="text-right"><p class="font-black text-white text-sm text-right">${p.name}</p><p class="text-[8px] uppercase opacity-60 text-white text-right">${roleLabel}</p></div></div><span class="font-mono text-xs font-black text-white">${p.points}</span></div>`;
+        const colorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500' : 'bg-red-500/20 border-red-500/40 text-red-500';
+        list.innerHTML += `<div class="flex items-center justify-between p-3 rounded-2xl border ${colorClass} mb-2 shadow-inner text-right"><div class="flex items-center gap-3"><span class="text-2xl">${p.avatar}</span><div class="text-right"><p class="font-black text-theme-main text-sm text-right">${p.name}</p><p class="text-[8px] uppercase opacity-60 text-theme-main text-right">${roleNamesMap[roleData.role]}</p></div></div><span class="font-mono text-xs font-black text-theme-main">${p.points}</span></div>`;
       });
     }
 
-    function updateLeaderboardUI(containerId) {
+    function updateLeaderboardUI() {
       const list = document.getElementById('leaderboard-list');
       if (!list) return;
       const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
       const sorted = [...saved].sort((a, b) => b.points - a.points);
       list.innerHTML = '';
       sorted.forEach((p, idx) => {
-        const title = funnyTitles[Math.min(Math.floor(p.points / 3), funnyTitles.length - 1)];
-        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 cursor-pointer text-right"><div class="flex items-center gap-4 text-right"><span class="text-3xl">${p.avatar}</span><div class="text-right"><p class="font-black text-white text-right">${p.name}</p><p class="text-[10px] text-indigo-400 font-bold text-right">${title}</p></div></div><span class="bg-indigo-500/20 px-3 py-1 rounded-full font-mono text-sm font-black text-indigo-200">${p.points}</span></div>`;
+        const title = funnyTitles[Math.min(Math.floor(p.points / 3), 4)];
+        list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 cursor-pointer text-right"><div class="flex items-center gap-4 text-right"><span class="text-3xl">${p.avatar}</span><div class="text-right"><p class="font-black text-theme-main text-right">${p.name}</p><p class="text-[10px] text-indigo-400 font-bold text-right">${title}</p></div></div><span class="bg-indigo-500/20 px-3 py-1 rounded-full font-mono text-sm font-black text-indigo-200">${p.points}</span></div>`;
       });
-    }
-
-    function openStatsModal(playerId) {
-      const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-      const p = saved.find(x => x.id === playerId);
-      if (!p) return;
-      // Ensure stats exist
-      const s = p.stats || { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
-
-      const wins = (s.det?.w || 0) + (s.out?.w || 0) + (s.agt?.w || 0) + (s.und?.w || 0);
-      const loss = (s.det?.l || 0) + (s.out?.l || 0) + (s.agt?.l || 0) + (s.und?.l || 0);
-
-      document.getElementById('player-stat-avatar').innerText = p.avatar;
-      document.getElementById('player-stat-name').innerText = p.name;
-      document.getElementById('stat-total-games').innerText = wins + loss;
-      document.getElementById('stat-total-points').innerText = p.points;
-      document.getElementById('stat-total-wins').innerText = wins;
-      document.getElementById('stat-total-losses').innerText = loss;
-      document.getElementById('stat-det-w').innerText = s.det.w; document.getElementById('stat-det-l').innerText = s.det.l;
-      document.getElementById('stat-out-w').innerText = s.out.w; document.getElementById('stat-out-l').innerText = s.out.l;
-      document.getElementById('stat-agt-w').innerText = s.agt?.w || 0; document.getElementById('stat-agt-l').innerText = s.agt?.l || 0;
-      document.getElementById('stat-und-w').innerText = s.und?.w || 0; document.getElementById('stat-und-l').innerText = s.und?.l || 0;
-      document.getElementById('modal-stats').classList.remove('hidden'); document.getElementById('modal-stats').classList.add('flex');
-    }
-
-    function resetPoints() {
-      const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-      const reset = saved.map(p => ({ ...p, points: 0, stats: { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } } }));
-      localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(reset));
-      state.players = reset;
-      closeModal(); updateLeaderboardUI('leaderboard-list'); checkResetButtonVisibility();
-    }
-
-    function checkResetButtonVisibility() {
-      const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-      const has = saved.some(p => p.points > 0);
-      const btn = document.getElementById('btn-reset-points-trigger');
-      if (btn) btn.classList.toggle('hidden', !has);
-    }
-
-    function openCategoryModal() {
-      const modal = document.getElementById('modal-category');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        renderCategories('modal-categories-grid');
-      }
-    }
-
-    function closeCategoryModal() {
-      const m = document.getElementById('modal-category');
-      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
-    }
-
-    function showAlert(msg) {
-      const alertMsg = document.getElementById('alert-message');
-      const modal = document.getElementById('modal-alert');
-      if (alertMsg && modal) {
-        alertMsg.innerText = msg;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-      }
     }
 
     function restartSameGame() {
@@ -1794,50 +1352,37 @@
       startRevealSequence();
     }
 
-    function pauseTimer() { state.isPaused = !state.isPaused; document.getElementById('btn-pause').innerText = state.isPaused ? "استئناف" : "إيقاف مؤقت"; }
-    function endGameEarly() { clearInterval(state.interval); startVoting(); }
+    function resetPoints() {
+      const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+      const reset = saved.map(p => ({ ...p, points: 0, stats: { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } } }));
+      localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(reset));
+      state.players = reset;
+      closeModal(); updateLeaderboardUI(); checkResetButtonVisibility();
+    }
 
-    // تم تحديث الدالة لتدعم "مطر المهرجين"
     function createConfetti(isClown = false) {
       const container = document.getElementById('confetti-container');
       if (!container) return;
-      // Clear previous confetti
       container.innerHTML = '';
-
       const colors = ['#6366f1', '#10b981', '#ef4444', '#fbbf24', '#f472b6'];
       const clowns = ['🤡', '🤣', '🤪', '🎪', '🙈'];
-
-      // زيادة العدد للمهرجين
       const count = isClown ? 100 : 80;
-
       for (let i = 0; i < count; i++) {
         const c = document.createElement('div');
         c.style.left = Math.random() * 100 + 'vw';
-
         if (isClown) {
           c.className = 'emoji-drop text-4xl';
           c.innerText = clowns[Math.floor(Math.random() * clowns.length)];
+          c.style.animationDuration = (2 + Math.random() * 3) + 's';
         } else {
           c.className = 'confetti-piece';
           c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          // Use standard confetti animation for non-clowns
           c.style.top = '-20px';
           c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(100vh) rotate(720deg)`, opacity: 0 }], { duration: 2000 + Math.random() * 2000 });
         }
-
         container.appendChild(c);
-
-        if (isClown) {
-          // Set random animation duration for CSS animation
-          c.style.animationDuration = (2 + Math.random() * 3) + 's';
-          c.style.animationDelay = (Math.random() * 2) + 's';
-        }
       }
-
-      // Remove after 5 seconds
-      setTimeout(() => {
-        container.innerHTML = '';
-      }, 5000);
+      setTimeout(() => { container.innerHTML = ''; }, 5000);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
