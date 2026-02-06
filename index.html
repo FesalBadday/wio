@@ -8,6 +8,14 @@
   <meta name="description" content="لعبة من برا السالفة. اكتشف الضايع وتحدى أصدقاءك!">
   <title>من برا السالفة؟</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
 </head>
 
 <body>
