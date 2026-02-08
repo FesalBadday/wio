@@ -93,7 +93,7 @@
           <label class="text-indigo-500 font-bold block mb-3 text-right text-sm">أضف كلماتك الخاصة (4 كحد أدنى):</label>
           <div class="flex gap-2">
             <input type="text" id="custom-word-input"
-              class="flex-1 bg-card-theme border-none rounded-xl p-4 text-theme-main outline-none focus:ring-2 ring-indigo-500 text-sm text-right"
+              class="flex-1 bg-card-theme border-none rounded-xl p-4 outline-none focus:ring-2 ring-indigo-500 text-sm text-right"
               placeholder="كلمة سرية...">
             <button onclick="addCustomWord()"
               class="bg-indigo-600 px-6 rounded-2xl font-black text-white text-sm">إضافة</button>
@@ -128,7 +128,7 @@
               <label class="text-theme-muted font-bold text-sm text-right">وقت النقاش</label>
               <span class="text-emerald-500 font-black text-lg" id="val-time-label">دقيقة واحدة</span>
             </div>
-            <input type="range" id="input-time" min="30" max="300" step="30" value="60" oninput="updateSetupInfo()">
+            <input type="range" id="input-time" min="60" max="900" step="60" value="60" oninput="updateSetupInfo()">
           </div>
         </div>
 
@@ -137,7 +137,7 @@
             class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
             <div class="text-right">
               <h4 class="font-bold text-sm text-theme-main">🙈 التحدي الأعمى</h4>
-              <p class="text-[10px] text-theme-muted italic">قد لا يكون هناك ضايع!</p>
+              <p class="text-[10px] text-theme-muted italic">قد لا يكون هناك ضايع! أو الكل ضايع!</p>
             </div>
             <input type="checkbox" id="check-blind-mode" class="custom-checkbox" onchange="updateSetupInfo()">
           </div>
@@ -158,7 +158,7 @@
             class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
             <div class="text-right">
               <h4 class="font-bold text-sm text-theme-main">🕵️‍♂️ كشفت السالفة!</h4>
-              <p class="text-[10px] text-theme-muted italic">زر الهلع للضايع (للمقاطعة)</p>
+              <p class="text-[10px] text-theme-muted italic">زر كشفت السالفة للضايع (للمقاطعة)</p>
             </div>
             <!-- الافتراضي غير مفعل -->
             <input type="checkbox" id="check-panic-mode" class="custom-checkbox" onchange="updateSetupInfo()">
@@ -602,8 +602,7 @@
   <div id="modal-category"
     class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
     <div class="glass-panel max-w-sm w-full shadow-2xl text-center font-black">
-      <h3 class="text-2xl font-black mb-8 text-theme-main underline decoration-indigo-500 text-center">تغيير الفئة
-        السريع ⚡</h3>
+      <h3 class="text-2xl font-black mb-8 text-theme-main underline decoration-indigo-500 text-center">تغيير الفئة</h3>
       <!-- This grid now uses the quick selection logic -->
       <div id="modal-categories-grid" class="grid grid-cols-2 gap-4 mb-10 text-center text-white"></div>
       <button onclick="closeCategoryModal()"

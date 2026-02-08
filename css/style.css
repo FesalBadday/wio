@@ -137,6 +137,7 @@
   --accent: #10b981;
   --danger: #ef4444;
   --rule-bg: rgba(255, 255, 255, 0.03);
+  --bg-options: rgb(148 163 184);
 }
 
 body.light-mode {
@@ -155,6 +156,7 @@ body.light-mode {
   --btn-sec-text: #334155;
   --btn-sec-border: rgba(0, 0, 0, 0.2);
   --rule-bg: rgba(0, 0, 0, 0.05);
+  --bg-options: rgb(248 113 113);
 }
 
 /* --- القواعد العامة --- */
@@ -185,6 +187,14 @@ body {
   touch-action: manipulation;
   transition: background 0.5s ease, color 0.3s ease;
   padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
+}
+
+#custom-word-input {
+  color: #000;
+}
+
+.options-bg {
+  background-color: var(--bg-options);
 }
 
 /* --- المكونات (UI Components) --- */

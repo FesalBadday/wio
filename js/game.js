@@ -16,7 +16,20 @@ function updateSettingsUI() {
 }
 
 // Helpers
-function formatTimeLabel(s) { const m = Math.floor(s / 60); const sc = s % 60; return sc === 0 ? `${m} دقائق` : `${m} دقيقة و${sc} ثانية`; }
+function formatTimeLabel(s) {
+  const m = Math.floor(s / 60);
+  const sc = s % 60;
+  let mText = "";
+
+  // تحديد صيغة الدقائق
+  if (m === 1) mText = "دقيقة واحدة";
+  else if (m === 2) mText = "دقيقتان";
+  else if (m >= 3 && m <= 10) mText = `${m} دقائق`;
+  else mText = `${m} دقيقة`; // من 11 فما فوق (وأيضاً الصفر إذا وجد)
+
+  // إرجاع النص النهائي (مع الثواني أو بدونها)
+  return sc === 0 ? mText : `${mText} و${sc} ثانية`;
+}
 function triggerVibrate(p) { if (isVibrationEnabled && navigator.vibrate) navigator.vibrate(p); }
 function playTone(f, d, t = 'sine', v = 0.1) { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
 function playFlipSound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'triangle'; o.frequency.setValueAtTime(400, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); o.start(); o.stop(audioCtx.currentTime + 0.2); }
@@ -35,9 +48,9 @@ let state = {
   players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
   revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: false,
   outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "عشوائي",
-  allowedCategories: [], // الفئات التي اختارها اللاعب
-  customWords: [], lastWinner: null, votingMode: 'group', voterIndex: 0, votesAccumulated: {}, panicMode: false,
-  smartDistractors: true, blindModeActive: false, blindRoundType: null, guessInterval: null, panicModeAllowed: false
+  allowedCategories: [], usedWords: [], customWords: [], lastWinner: null, votingMode: 'group', voterIndex: 0,
+  votesAccumulated: {}, panicMode: false, smartDistractors: true, blindModeActive: false, blindRoundType: null,
+  guessInterval: null, panicModeAllowed: false
 };
 
 function showScreen(screenId) {
@@ -105,7 +118,9 @@ function confirmReset() {
   const modal = document.getElementById('modal-confirm');
   modal.classList.remove('hidden');
   modal.classList.add('flex');
+  sounds.wrong();
 }
+
 function showAlert(msg) {
   document.getElementById('alert-message').innerText = msg;
   document.getElementById('modal-alert').classList.remove('hidden');
@@ -341,11 +356,35 @@ function startGame() {
   }
 
   const count = parseInt(document.getElementById('input-players').value);
+
+  // --- بداية التعديل: التحقق من الفراغات والتكرار ---
+  const enteredNames = new Set(); // نستخدم Set لتخزين الأسماء الفريدة
+
+  for (let i = 0; i < count; i++) {
+    const nameInp = document.getElementById(`name-${i}`);
+    const nameVal = nameInp ? nameInp.value.trim() : "";
+
+    // 1. التحقق من أن الاسم ليس فارغاً
+    if (nameVal === "") {
+      showAlert("الرجاء كتابة أسماء جميع اللاعبين!");
+      return;
+    }
+
+    // 2. التحقق من أن الاسم غير مكرر
+    if (enteredNames.has(nameVal)) {
+      showAlert(`الاسم "${nameVal}" مكرر! يرجى تغيير الأسماء المتشابهة.`);
+      return;
+    }
+
+    enteredNames.add(nameVal); // إضافة الاسم للقائمة المرجعية
+  }
+  // --- نهاية التعديل ---
+
   state.players = [];
   const savedData = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
   for (let i = 0; i < count; i++) {
     const nameInp = document.getElementById(`name-${i}`);
-    const name = nameInp ? nameInp.value.trim() : `لاعب ${i + 1}`;
+    const name = nameInp.value.trim();
     const avatar = document.getElementById(`avatar-${i}`).value;
     const existing = savedData[i];
     state.players.push({
@@ -383,88 +422,127 @@ function startGame() {
 }
 
 function setupRoles() {
-  // Ensure Custom Words are synced before starting
-  if (state.customWords.length > 0) {
-    wordBank["كلمات خاصة"] = state.customWords;
-  }
+  // 1. تجهيز الكلمات الخاصة إذا وجدت
+  if (state.customWords.length > 0) wordBank["كلمات خاصة"] = state.customWords;
 
+  // 2. اختيار الفئة
   let cat = state.selectedCategory;
+  let pool;
 
-  // Logic for Random selection
+  // منطق العشوائي مع الذاكرة
   if (cat === "عشوائي") {
-    let pool = [...state.allowedCategories];
-    // Add custom words if enough exist
+    let availableCats = [...state.allowedCategories]; // انسخ المصفوفة لتجنب التعديل على الأصل
+    // إضافة الكلمات الخاصة للعشوائي فقط إذا كان هناك عدد كافٍ
     if (state.customWords.length >= 4) {
-      pool.push("كلمات خاصة");
+      availableCats.push("كلمات خاصة");
       wordBank["كلمات خاصة"] = state.customWords;
     }
+    // احتياط في حال كانت القائمة فارغة
+    if (availableCats.length === 0) availableCats = ["طعام"];
 
-    // Fallback to avoid empty pool
-    if (pool.length === 0) pool = ["طعام"];
-
-    cat = pool[Math.floor(Math.random() * pool.length)];
+    cat = availableCats[Math.floor(Math.random() * availableCats.length)];
   }
 
   state.currentRoundCategory = cat;
-  let pool = wordBank[cat] || wordBank["طعام"]; // Safety fallback
 
-  // --- FIX: Check if pool is valid/empty to prevent crash ---
+  // جلب مصفوفة الكلمات للفئة المختارة
+  pool = wordBank[cat] || wordBank["طعام"];
   if (!pool || pool.length === 0) {
-    // Fallback if selected category is empty (e.g. Custom Words without words)
     cat = "طعام";
-    state.currentRoundCategory = cat;
+    state.currentRoundCategory = "طعام";
     pool = wordBank["طعام"];
   }
 
-  state.secretData = pool[Math.floor(Math.random() * pool.length)];
+  // 3. اختيار الكلمة السرية (Secret Word) مع منع التكرار
+  let candidates = pool.filter(w => !state.usedWords.includes(w.word));
+  if (candidates.length === 0) {
+    state.usedWords = [];
+    candidates = pool;
+  } // إعادة تعيين الذاكرة إذا انتهت الكلمات
 
-  // NEW: Define Undercover Word Logic here (Fix for "related story" issue)
-  let undercoverWord = "";
-  let undercoverObj = null;
+  state.secretData = candidates[Math.floor(Math.random() * candidates.length)];
+
+  // إضافة الكلمة للتاريخ (لمنع تكرارها قريباً)
+  state.usedWords.push(state.secretData.word);
+  if (state.usedWords.length > 10) state.usedWords.shift();
+
+  // ============================================================
+  // 4. تعديل منطق المموه (Undercover Logic) - التحديث المطلوب
+  // ============================================================
+  let ucData = null;
 
   if (cat === "كلمات خاصة") {
-    // For custom words, pick a different random word from the pool
-    const otherWords = pool.filter(w => w.word !== state.secretData.word);
-    if (otherWords.length > 0) {
-      undercoverObj = otherWords[Math.floor(Math.random() * otherWords.length)];
-    }
+    // الكلمات الخاصة ليس لديها قائمة "related"، نختار كلمة عشوائية أخرى
+    const others = pool.filter(w => w.word !== state.secretData.word);
+    if (others.length > 0) ucData = others[Math.floor(Math.random() * others.length)];
   } else {
-    // For standard categories, use the 'related' field
-    const relatedName = state.secretData.related;
-    if (relatedName) {
-      undercoverObj = pool.find(w => w.word === relatedName);
-    }
-    // Fallback if related not found
-    if (!undercoverObj) {
-      const otherWords = pool.filter(w => w.word !== state.secretData.word);
-      if (otherWords.length > 0) undercoverObj = otherWords[Math.floor(Math.random() * otherWords.length)];
+    // الفئات العادية: نختار من مصفوفة الـ 10 كلمات المشابهة (related)
+    if (state.secretData.related && Array.isArray(state.secretData.related) && state.secretData.related.length > 0) {
+      // اختيار كلمة عشوائية من القائمة المحدثة
+      const randomRelatedWord = state.secretData.related[Math.floor(Math.random() * state.secretData.related.length)];
+
+      // إنشاء كائن بيانات للمموه يدوياً لأن القائمة تحتوي نصوصاً فقط
+      ucData = {
+        word: randomRelatedWord,
+        emoji: "🤫",
+        desc: "أنت المموه! كلمتك قريبة من السالفة، حاول تلمح بذكاء."
+      };
+    } else {
+      // كود احتياطي: في حال لم توجد قائمة related (للأمان فقط)
+      const others = pool.filter(w => w.word !== state.secretData.word);
+      if (others.length > 0) ucData = others[Math.floor(Math.random() * others.length)];
     }
   }
 
-  // Final fallback
-  if (!undercoverObj) undercoverObj = { word: "سالفة قريبة", emoji: "🤫", desc: "حاول مجاراة الحديث بذكاء" };
+  // احتياط نهائي
+  if (!ucData) ucData = { word: "موضوع قريب", emoji: "🤫", desc: "حاول مجاراة الحديث بذكاء" };
 
-  state.currentUndercoverData = undercoverObj;
+  state.currentUndercoverData = ucData;
+  // ============================================================
 
+  // 5. توزيع الأدوار عشوائياً
   let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
-  state.outPlayerIds = []; state.agentPlayerId = null; state.undercoverPlayerId = null; state.blindRoundType = null;
 
-  if (state.blindModeActive && Math.random() < 0.25) { // 25% chance for blind round
-    if (Math.random() < 0.20) state.blindRoundType = 'all_in'; // No outsider
-    else { state.blindRoundType = 'all_out'; state.outPlayerIds = state.players.map(p => p.id); }
+  // تصفير المتغيرات
+  state.outPlayerIds = [];
+  state.agentPlayerId = null;
+  state.undercoverPlayerId = null;
+  state.blindRoundType = null;
+
+  // منطق الجولات (Blind Mode vs Normal)
+  if (state.blindModeActive && Math.random() < 0.35) {
+    // جولة عمياء
+    if (Math.random() < 0.5) {
+      state.blindRoundType = 'all_in';
+    } else {
+      state.blindRoundType = 'all_out';
+      state.outPlayerIds = state.players.map(p => p.id);
+    }
   } else {
+    // جولة عادية
+    // اختيار "الضايع" (Out)
     let outID = ids.splice(0, 1)[0];
     state.outPlayerIds = [outID];
-    if (state.doubleAgentActive && ids.length > 0) state.agentPlayerId = ids.splice(0, 1)[0];
-    if (state.undercoverActive && ids.length > 0) state.undercoverPlayerId = ids.splice(0, 1)[0];
+
+    // اختيار "العميل" (Agent) إذا مفعل
+    if (state.doubleAgentActive && ids.length > 0) {
+      state.agentPlayerId = ids.splice(0, 1)[0];
+    }
+
+    // اختيار "المموه" (Undercover) إذا مفعل
+    if (state.undercoverActive && ids.length > 0) {
+      state.undercoverPlayerId = ids.splice(0, 1)[0];
+    }
   }
 
+  // 6. تعيين الأدوار للاعبين
   state.currentRoles = state.players.map(p => {
-    let role = 'in';
+    let role = 'in'; // الافتراضي: محقق
+
     if (state.blindRoundType === 'all_out') role = 'out';
     else if (state.blindRoundType === 'all_in') role = 'in';
     else {
-      if (p.id === (state.outPlayerIds[0])) role = 'out';
+      if (state.outPlayerIds.includes(p.id)) role = 'out';
       else if (p.id === state.agentPlayerId) role = 'agent';
       else if (p.id === state.undercoverPlayerId) role = 'undercover';
     }
@@ -501,13 +579,15 @@ function populateCardBack(player) {
     img.innerText = state.secretData.emoji; desc.innerText = state.secretData.desc || "";
     txt.className = "text-xl font-bold mb-4 text-emerald-500";
   } else if (roleData.role === 'agent') {
-    txt.innerText = "أنت العميل! احمِ الضايع:"; word.innerText = state.secretData.word;
-    img.innerText = "🎭"; desc.innerText = state.secretData.desc || ""; // Show Desc for Double Agent
+    txt.innerText = "أنت العميل! احمِ الضايع:";
+    word.innerText = state.secretData.word;
+    img.innerText = "🎭";
+    desc.innerText = state.secretData.desc || ""; // Show Desc for Double Agent
     txt.className = "text-xl font-bold mb-4 text-orange-500";
   } else if (roleData.role === 'undercover') {
     txt.innerText = "أنت المموه! كلمتك:";
     word.innerText = state.currentUndercoverData.word;
-    img.innerText = state.currentUndercoverData.emoji;
+    img.innerText = "🤫";
     desc.innerText = state.currentUndercoverData.desc || "";
     txt.className = "text-xl font-bold mb-4 text-yellow-500";
   } else {
@@ -622,36 +702,107 @@ function processVoteResult(id) {
   }
 }
 
-function startGuessingPhase(name, isPanic = false) {
-  const container = document.getElementById('guess-options'); container.innerHTML = '';
-  const titleEl = document.getElementById('guess-title');
-  if (isPanic) {
-    titleEl.innerText = "🚨 تخمين الهلع!";
-    titleEl.className = "text-2xl font-black mb-6 text-orange-500";
-  } else {
-    titleEl.innerText = `فرصة أخيرة يا ${name || 'ضايع'}!`;
-    titleEl.className = "text-xl font-black mb-4 text-red-500";
+function startGuessingPhase(caughtName, isPanic = false) {
+  const container = document.getElementById('guess-options');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // تحديث العنوان باسم الضايع
+  const titleElement = document.getElementById('guess-title');
+  const subtitleElement = document.getElementById('guess-subtitle');
+
+  if (titleElement) {
+    if (isPanic) {
+      // Panic Mode
+      titleElement.innerText = `لديك بعض الشجاعة يا ${caughtName}! 😎`;
+      titleElement.className = "text-2xl sm:text-3xl font-black mb-6 text-orange-500";
+      subtitleElement.innerText = "خمن السالفة من الخيارات التالية..";
+    } else {
+      // Caught Mode
+      titleElement.innerText = caughtName ? `لقد كشفوك يا ${caughtName}! 🎯` : 'لقد كشفوك يا ضايع! 🎯';
+      titleElement.className = "text-xl sm:text-2xl font-black mb-4 text-red-400 leading-normal";
+      if (subtitleElement) {
+        subtitleElement.innerText = caughtName ? `لديك فرصة أخيرة لتسرق الفوز يا ${caughtName}!\nخمن السالفة من الخيارات التالية..` : '..خمن السالفة من الخيارات التالية!';
+      }
+    }
   }
 
-  // Timer logic for panic/guess
+  // Handle Timer for Panic Mode
+  const timerContainer = document.getElementById('guess-timer-container');
+  const timerEl = document.getElementById('guess-timer');
+
   if (state.guessInterval) clearInterval(state.guessInterval);
+
   if (isPanic) {
-    document.getElementById('guess-timer-container').classList.remove('hidden');
-    let t = 30; document.getElementById('guess-timer').innerText = t;
+    timerContainer.classList.remove('hidden');
+    let timeLeft = 30;
+    timerEl.innerText = timeLeft;
+
     state.guessInterval = setInterval(() => {
-      t--; document.getElementById('guess-timer').innerText = t;
-      if (t <= 5) sounds.tick();
-      if (t <= 0) { clearInterval(state.guessInterval); showFinalResults('group_win', "انتهى الوقت! ⏳"); }
+      timeLeft--;
+      timerEl.innerText = timeLeft;
+      if (timeLeft <= 10 && timeLeft > 0) sounds.tick(); // تأكد من وجود دالة الصوت أو احذف السطر
+
+      if (timeLeft <= 0) {
+        clearInterval(state.guessInterval);
+        showFinalResults('group_win', "انتهى الوقت! (عقاب مضاعف) ⏳");
+      }
     }, 1000);
-  } else document.getElementById('guess-timer-container').classList.add('hidden');
+  } else {
+    timerContainer.classList.add('hidden');
+  }
 
+  // تحديد مصفوفة الكلمات الحالية
   let pool = wordBank[state.currentRoundCategory] || wordBank["طعام"];
-  let distractors = pool.filter(w => w.word !== state.secretData.word).sort(() => 0.5 - Math.random()).slice(0, 3);
-  let options = [...distractors, state.secretData].sort(() => 0.5 - Math.random());
 
+  // ============================================================
+  // التعديل الجديد: اختيار الخيارات من قائمة related حصراً
+  // ============================================================
+  let distinctDistractors = [];
+
+  // 1. التأكد من وجود قائمة related (التي تحتوي على 10 كلمات)
+  if (state.secretData.related && Array.isArray(state.secretData.related)) {
+
+    // ننسخ القائمة ونقوم بخلطها عشوائياً
+    let shuffledRelated = [...state.secretData.related].sort(() => 0.5 - Math.random());
+
+    // نأخذ أول 3 كلمات من القائمة المخلوطة
+    let selectedStrings = shuffledRelated.slice(0, 3);
+
+    // تحويل النصوص إلى كائنات (للبحث عن الإيموجي إذا كانت الكلمة موجودة في البنك)
+    distinctDistractors = selectedStrings.map(str => {
+      // محاولة العثور على الكلمة في البنك الكامل لجلب الإيموجي الخاص بها
+      let foundObj = pool.find(p => p.word === str);
+
+      if (foundObj) {
+        return foundObj;
+      } else {
+        // إذا لم تكن الكلمة موجودة كعنصر رئيسي، نعيدها ككائن بسيط مع إيموجي افتراضي
+        return { word: str, emoji: "" };
+      }
+    });
+  }
+
+  // 2. احتياط: إذا كان العدد أقل من 3 (لأي سبب)، نملأ الباقي عشوائياً من نفس الفئة
+  if (distinctDistractors.length < 3) {
+    let remainder = pool.filter(w => w.word !== state.secretData.word && !distinctDistractors.find(d => d.word === w.word));
+    remainder = remainder.sort(() => 0.5 - Math.random());
+    while (distinctDistractors.length < 3 && remainder.length > 0) {
+      distinctDistractors.push(remainder.pop());
+    }
+  }
+
+  // دمج الخيارات النهائية (3 خطأ + 1 صح)
+  let options = [...distinctDistractors, state.secretData];
+
+  // خلط أماكن الأزرار
+  options = options.sort(() => 0.5 - Math.random());
+
+  // عرض الأزرار
   options.forEach(opt => {
-    container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-4 bg-white/5 rounded-2xl text-lg font-bold border text-theme-main">${opt.word}</button>`;
+    container.innerHTML += `<button onclick="checkGuess('${opt.word}')" class="w-full py-5 options-bg rounded-3xl text-xl sm:text-2xl font-black active:bg-indigo-500/20 transition-all shadow-xl border-2 border-white/5 text-white break-word-custom text-center hover:scale-[1.02]">${opt.word}</button>`;
   });
+
   showScreen('guess');
 }
 
