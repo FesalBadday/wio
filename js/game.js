@@ -73,28 +73,50 @@ function closeModal() {
 function closeStatsModal() { document.getElementById('modal-stats').classList.add('hidden'); }
 function closeAlert() { document.getElementById('modal-alert').classList.add('hidden'); }
 
-// --- NEW: Render Quick Category Selection ---
+//Render Quick Category Selection ---
 function renderQuickCategorySelection(gridId) {
   const grid = document.getElementById(gridId);
-  if (!grid) return; grid.innerHTML = '';
+  if (!grid) return;
+  grid.innerHTML = '';
 
-  // Random Option
-  grid.innerHTML += `<div onclick="selectCategory('عشوائي', '${gridId}')" class="category-card ${state.selectedCategory === 'عشوائي' ? 'active' : ''}"><span>🎲</span><span class="text-xs">عشوائي</span></div>`;
+  // 1. خيار "عشوائي" (دائماً في البداية)
+  const isRandomActive = state.selectedCategory === 'عشوائي';
+  grid.innerHTML += `
+    <div onclick="selectCategory('عشوائي', '${gridId}')" 
+         class="category-card ${isRandomActive ? 'active' : ''}">
+         <span class="text-2xl">🎲</span>
+         <span class="text-xs">عشوائي</span>
+    </div>`;
 
-  // Allowed Categories
+  // 2. عرض الفئات المسموحة (Allowed Categories)
   state.allowedCategories.forEach(cat => {
-    // Check if it's "Custom Words"
-    if (cat === "كلمات خاصة") {
-      // Only show "Custom Words" in Quick Select if there are enough words
-      if (state.customWords.length >= 4) {
-        const isActive = state.selectedCategory === 'كلمات خاصة';
-        grid.innerHTML += `<div onclick="selectCategory('كلمات خاصة', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span>✏️</span><span class="text-xs font-bold">كلمات خاصة</span></div>`;
-      }
-    } else if (wordBank[cat]) {
-      const icon = wordBank[cat][0].emoji;
-      const isActive = state.selectedCategory === cat;
-      grid.innerHTML += `<div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''}"><span>${icon}</span><span class="text-xs font-bold">${cat}</span></div>`;
+
+    // شرط خاص للكلمات الخاصة: لا تعرضها في الاختيار السريع إلا إذا كان هناك عدد كافٍ من الكلمات
+    if (cat === "كلمات خاصة" && state.customWords.length < 4) {
+      return; // تخطي هذا التكرار (لا تعرض الزر)
     }
+
+    // البحث عن الإيموجي الثابت في categoryGroups
+    let emoji = "❓";
+
+    // نلف على كل المجموعات للبحث عن الفئة الحالية
+    for (const group of Object.values(categoryGroups)) {
+      const foundItem = group.find(item => item.id === cat);
+      if (foundItem) {
+        emoji = foundItem.emoji;
+        break; // وجدنا الايموجي، نوقف البحث
+      }
+    }
+
+    const isActive = state.selectedCategory === cat;
+
+    // إضافة الكرت للشبكة
+    grid.innerHTML += `
+        <div onclick="selectCategory('${cat}', '${gridId}')" 
+             class="category-card ${isActive ? 'active' : ''}">
+             <span class="text-2xl">${emoji}</span>
+             <span class="text-xs">${cat}</span>
+        </div>`;
   });
 }
 
@@ -140,19 +162,21 @@ function renderCategorySelectionGrid() {
     const subGrid = document.createElement('div');
     subGrid.className = "grid grid-cols-3 gap-2 text-center mb-4";
 
-    cats.forEach(cat => {
-      // Special handling for "Custom Words" or existing categories
-      if (wordBank[cat] || cat === "كلمات خاصة") {
-        const isSelected = state.allowedCategories.includes(cat);
-        const emoji = (cat === "كلمات خاصة") ? "✏️" : wordBank[cat][0].emoji;
+    cats.forEach(catItem => {
+      const catName = catItem.id;   // الاسم: "دول"
+      const catEmoji = catItem.emoji; // الايموجي: "🌍"
+
+      // التحقق من وجود الفئة في البيانات
+      if (wordBank[catName] || catName === "كلمات خاصة") {
+        const isSelected = state.allowedCategories.includes(catName);
 
         subGrid.innerHTML += `
-                            <div onclick="toggleCategorySelection('${cat}')" class="category-card ${isSelected ? 'selected active' : ''}">
-                                <div class="check-badge">✓</div>
-                                <span class="text-2xl">${emoji}</span>
-                                <span class="text-xs font-bold">${cat}</span>
-                            </div>
-                        `;
+            <div onclick="toggleCategorySelection('${catName}')" class="category-card ${isSelected ? 'selected active' : ''}">
+                <div class="check-badge">✓</div>
+                <span class="text-2xl">${catEmoji}</span>
+                <span class="text-xs font-bold">${catName}</span>
+            </div>
+        `;
       }
     });
     grid.appendChild(subGrid);
@@ -201,15 +225,38 @@ function confirmCategories() {
 // --- Setup Logic ---
 function renderActiveCategoryGrid() {
   const grid = document.getElementById('active-category-grid');
-  if (!grid) return; grid.innerHTML = '';
+  if (!grid) return;
+  grid.innerHTML = '';
 
-  // Random Option (Default & First)
-  grid.innerHTML += `<div onclick="selectCategory('عشوائي', 'active-category-grid')" class="category-card ${state.selectedCategory === 'عشوائي' ? 'active' : ''}"><span>🎲</span><span class="text-xs">عشوائي</span></div>`;
+  // خيار "عشوائي" (دائماً في البداية)
+  grid.innerHTML += `
+    <div onclick="selectCategory('عشوائي', 'active-category-grid')" 
+         class="category-card ${state.selectedCategory === 'عشوائي' ? 'active' : ''}">
+         <span class="text-2xl">🎲</span>
+         <span class="text-xs">عشوائي</span>
+    </div>`;
 
-  // Render Selected Categories
+  // عرض الفئات المختارة
   state.allowedCategories.forEach(cat => {
-    const emoji = (cat === "كلمات خاصة") ? "✏️" : wordBank[cat][0].emoji;
-    grid.innerHTML += `<div onclick="selectCategory('${cat}', 'active-category-grid')" class="category-card ${state.selectedCategory === cat ? 'active' : ''}"><span>${emoji}</span><span class="text-xs font-bold">${cat}</span></div>`;
+    let emoji = "❓"; // إيموجي افتراضي
+
+    // البحث عن الإيموجي الصحيح داخل هيكلية المجموعات الجديدة
+    // نلف على كل مجموعة (قيم الكائن categoryGroups)
+    for (const group of Object.values(categoryGroups)) {
+      // نبحث داخل المصفوفة عن الكائن الذي يملك نفس الـ id
+      const foundItem = group.find(item => item.id === cat);
+      if (foundItem) {
+        emoji = foundItem.emoji;
+        break; // وجدناه، نوقف البحث
+      }
+    }
+
+    grid.innerHTML += `
+        <div onclick="selectCategory('${cat}', 'active-category-grid')" 
+             class="category-card ${state.selectedCategory === cat ? 'active' : ''}">
+             <span class="text-2xl">${emoji}</span>
+             <span class="text-xs font-bold">${cat}</span>
+        </div>`;
   });
 }
 
@@ -481,12 +528,20 @@ function setupRoles() {
       // اختيار كلمة عشوائية من القائمة المحدثة
       const randomRelatedWord = state.secretData.related[Math.floor(Math.random() * state.secretData.related.length)];
 
-      // إنشاء كائن بيانات للمموه يدوياً لأن القائمة تحتوي نصوصاً فقط
-      ucData = {
-        word: randomRelatedWord,
-        emoji: "🤫",
-        desc: "أنت المموه! كلمتك قريبة من السالفة، حاول تلمح بذكاء."
-      };
+      // ب. نبحث عن هذه الكلمة داخل البنك (pool) لجلب بياناتها الكاملة (الوصف والايموجي)
+      const foundObject = pool.find(w => w.word === randomRelatedWord);
+
+      if (foundObject) {
+        // وجدنا الكلمة كعنصر رئيسي، نستخدم بياناتها (بما في ذلك الوصف)
+        ucData = foundObject;
+      } else {
+        // لم نجدها (مجرد نص في related وليست مدخل رئيسي)، نستخدم بيانات افتراضية
+        ucData = {
+          word: randomRelatedWord,
+          emoji: "🤫",
+          desc: "أنت المموه! كلمتك قريبة من السالفة، حاول تلمح بذكاء."
+        };
+      }
     } else {
       // كود احتياطي: في حال لم توجد قائمة related (للأمان فقط)
       const others = pool.filter(w => w.word !== state.secretData.word);
@@ -510,7 +565,7 @@ function setupRoles() {
   state.blindRoundType = null;
 
   // منطق الجولات (Blind Mode vs Normal)
-  if (state.blindModeActive && Math.random() < 0.35) {
+  if (state.blindModeActive && Math.random() < 0.2) {
     // جولة عمياء
     if (Math.random() < 0.5) {
       state.blindRoundType = 'all_in';
@@ -575,8 +630,11 @@ function populateCardBack(player) {
   }
 
   if (roleData.role === 'in') {
-    txt.innerText = "أنت تعرف السالفة!"; word.innerText = state.secretData.word;
-    img.innerText = state.secretData.emoji; desc.innerText = state.secretData.desc || "";
+    txt.innerText = "أنت تعرف السالفة!";
+    word.innerText = state.secretData.word;
+    img.innerText = "🕵️‍♂️";
+    //img.innerText = state.secretData.emoji; 
+    desc.innerText = state.secretData.desc || "";
     txt.className = "text-xl font-bold mb-4 text-emerald-500";
   } else if (roleData.role === 'agent') {
     txt.innerText = "أنت العميل! احمِ الضايع:";
@@ -591,7 +649,7 @@ function populateCardBack(player) {
     desc.innerText = state.currentUndercoverData.desc || "";
     txt.className = "text-xl font-bold mb-4 text-yellow-500";
   } else {
-    txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "🕵️‍♂️"; desc.innerText = "؟؟؟؟؟";
+    txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "😶‍🌫️"; desc.innerText = "؟؟؟؟؟";
     txt.className = "text-xl font-bold mb-4 text-red-500";
   }
 }
@@ -692,7 +750,7 @@ function processVoteResult(id) {
     if (state.guessingEnabled) {
       const p = state.players.find(x => x.id === id);
       startGuessingPhase(p ? p.name : null);
-    } else showFinalResults('group_win', "كفو! صدتوا الضايع 🕵️‍♂️");
+    } else showFinalResults('group_win', "كفو! صدتوا الضايع 😶‍🌫️");
   } else if (id === state.undercoverPlayerId) {
     showFinalResults('out_win', "المموه خدعكم! 🤫 فاز الضايع");
   } else {
