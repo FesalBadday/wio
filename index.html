@@ -45,7 +45,7 @@
         اللعبة الرسمية لكشف "الضايع" بينكم!</p> -->
       <div class="space-y-4 text-center">
         <button onclick="showScreen('category-select')"
-          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black shadow-2xl">بدء التحدي</button>
+          class="btn-gradient w-full py-6 rounded-3xl text-2xl font-black">بدء التحدي</button>
         <div class="grid grid-cols-2 gap-4 text-center">
           <button onclick="showScreen('leaderboard')"
             class="btn-secondary-theme py-4 rounded-2xl font-bold shadow-sm">🏆 الصدارة</button>
@@ -196,8 +196,8 @@
     <div id="screen-names" class="glass-panel hidden text-right">
       <h2 class="text-2xl sm:text-3xl font-black mb-8 text-center text-theme-main">تجهيز فريق المحققين 🔎</h2>
       <div id="names-container" class="space-y-4 mb-8 max-h-[60vh] overflow-y-auto px-2"></div>
-      <button onclick="startGame()"
-        class="btn-gradient w-full py-6 rounded-3xl font-black text-white text-xl shadow-2xl">انطلاق! 🚀</button>
+      <button onclick="startGame()" class="btn-gradient w-full py-6 rounded-3xl font-black text-white text-xl">انطلاق!
+        🚀</button>
     </div>
 
     <!-- 5. Reveal Screen -->
@@ -234,7 +234,7 @@
         </div>
       </div>
       <button id="btn-reveal-action" onclick="toggleReveal()"
-        class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white shadow-2xl">كشف الدور</button>
+        class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white">كشف الدور</button>
     </div>
 
     <!-- 6. Game Screen -->
@@ -298,7 +298,7 @@
     <div id="screen-final" class="glass-panel hidden text-center overflow-y-auto">
       <div id="final-status-emoji" class="text-8xl sm:text-9xl mb-6">🏆</div>
       <h2 id="final-result-title" class="text-3xl sm:text-5xl font-black mb-6 text-theme-main"></h2>
-      <div class="bg-card-theme p-8 rounded-[2.5rem] mb-8 border shadow-2xl">
+      <div class="bg-card-theme p-8 rounded-[2.5rem] mb-8 border">
         <p class="text-theme-muted mb-3 font-bold text-sm uppercase tracking-widest">السالفة كانت:</p>
         <div id="final-word-emoji" class="text-7xl sm:text-8xl mb-3"></div>
         <p id="final-secret-word"
@@ -311,8 +311,8 @@
         <div id="final-leaderboard" class="space-y-3 text-right"></div>
       </div>
       <div class="grid grid-cols-1 gap-4 text-center">
-        <button onclick="restartSameGame()"
-          class="btn-gradient py-6 rounded-[2rem] font-black text-white text-2xl shadow-2xl">جولة جديدة 🔁</button>
+        <button onclick="restartSameGame()" class="btn-gradient py-6 rounded-[2rem] font-black text-white text-2xl">جولة
+          جديدة 🔁</button>
         <button onclick="openCategoryModal()"
           class="btn-secondary-theme py-5 rounded-2xl font-bold text-lg shadow-md">تغيير الفئة فقط ⚙️</button>
         <button onclick="showScreen('start')" class="py-3 text-theme-muted underline text-base font-bold">العودة
@@ -593,7 +593,7 @@
         <button onclick="closeModal()"
           class="flex-1 py-5 btn-secondary-theme rounded-3xl font-bold text-xl text-center">تراجع</button>
         <button onclick="resetPoints()"
-          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white shadow-2xl text-xl text-center">نعم</button>
+          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white text-xl text-center">نعم</button>
       </div>
     </div>
   </div>
@@ -601,7 +601,7 @@
   <!-- Category (Quick Change) Modal (Modified to use Quick Selection Logic) -->
   <div id="modal-category"
     class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
-    <div class="glass-panel max-w-sm w-full shadow-2xl text-center font-black">
+    <div class="glass-panel max-w-sm w-full text-center font-black">
       <h3 class="text-2xl font-black mb-8 text-theme-main underline decoration-indigo-500 text-center">تغيير الفئة</h3>
       <!-- This grid now uses the quick selection logic -->
       <div id="modal-categories-grid" class="grid grid-cols-2 gap-4 mb-10 text-center text-white"></div>
