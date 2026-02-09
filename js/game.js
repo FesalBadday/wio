@@ -469,131 +469,123 @@ function startGame() {
 }
 
 function setupRoles() {
-  // 1. تجهيز الكلمات الخاصة إذا وجدت
+  // 1. تجهيز الكلمات الخاصة
   if (state.customWords.length > 0) wordBank["كلمات خاصة"] = state.customWords;
 
   // 2. اختيار الفئة
   let cat = state.selectedCategory;
   let pool;
 
-  // منطق العشوائي مع الذاكرة
+  // منطق العشوائي
   if (cat === "عشوائي") {
-    let availableCats = [...state.allowedCategories]; // انسخ المصفوفة لتجنب التعديل على الأصل
-    // إضافة الكلمات الخاصة للعشوائي فقط إذا كان هناك عدد كافٍ
+    let availableCats = [...state.allowedCategories];
     if (state.customWords.length >= 4) {
       availableCats.push("كلمات خاصة");
       wordBank["كلمات خاصة"] = state.customWords;
     }
-    // احتياط في حال كانت القائمة فارغة
     if (availableCats.length === 0) availableCats = ["طعام"];
-
     cat = availableCats[Math.floor(Math.random() * availableCats.length)];
   }
 
   state.currentRoundCategory = cat;
-
-  // جلب مصفوفة الكلمات للفئة المختارة
   pool = wordBank[cat] || wordBank["طعام"];
-  if (!pool || pool.length === 0) {
-    cat = "طعام";
-    state.currentRoundCategory = "طعام";
-    pool = wordBank["طعام"];
+  if (!pool || pool.length === 0) { cat = "طعام"; state.currentRoundCategory = "طعام"; pool = wordBank["طعام"]; }
+
+  // ============================================================
+  // التعديل الجديد: تحديد "وصف الفئة" (الاسم + الإيموجي)
+  // ============================================================
+  let categoryDescription = cat; // الافتراضي: اسم الفئة فقط (مثل "دول")
+
+  // البحث عن الإيموجي الخاص بالفئة من categoryGroups
+  for (const group of Object.values(categoryGroups)) {
+    const foundItem = group.find(item => item.id === cat);
+    if (foundItem) {
+      // دمج الإيموجي مع الاسم (مثال: "🌍 دول")
+      categoryDescription = `${foundItem.emoji} ${cat}`;
+      break;
+    }
   }
+  // ============================================================
 
-  // 3. اختيار الكلمة السرية (Secret Word) مع منع التكرار
+  // 3. اختيار السالفة (Secret Word)
   let candidates = pool.filter(w => !state.usedWords.includes(w.word));
-  if (candidates.length === 0) {
-    state.usedWords = [];
-    candidates = pool;
-  } // إعادة تعيين الذاكرة إذا انتهت الكلمات
+  if (candidates.length === 0) { state.usedWords = []; candidates = pool; }
 
-  state.secretData = candidates[Math.floor(Math.random() * candidates.length)];
+  // نستخدم Spread Operator (...) لنسخ الكائن وتعديل الوصف
+  const selectedSecret = candidates[Math.floor(Math.random() * candidates.length)];
+  state.secretData = {
+    ...selectedSecret,
+    desc: categoryDescription // هنا نستبدل وصف الكلمة بوصف الفئة
+  };
 
-  // إضافة الكلمة للتاريخ (لمنع تكرارها قريباً)
   state.usedWords.push(state.secretData.word);
   if (state.usedWords.length > 10) state.usedWords.shift();
 
-  // ============================================================
-  // 4. تعديل منطق المموه (Undercover Logic) - التحديث المطلوب
-  // ============================================================
+  // 4. منطق المموه (مع تطبيق وصف الفئة أيضاً)
   let ucData = null;
 
   if (cat === "كلمات خاصة") {
-    // الكلمات الخاصة ليس لديها قائمة "related"، نختار كلمة عشوائية أخرى
     const others = pool.filter(w => w.word !== state.secretData.word);
-    if (others.length > 0) ucData = others[Math.floor(Math.random() * others.length)];
+    if (others.length > 0) {
+      ucData = {
+        ...others[Math.floor(Math.random() * others.length)],
+        desc: categoryDescription // توحيد الوصف
+      };
+    }
   } else {
-    // الفئات العادية: نختار من مصفوفة الـ 10 كلمات المشابهة (related)
+    // التحقق من قائمة related
     if (state.secretData.related && Array.isArray(state.secretData.related) && state.secretData.related.length > 0) {
-      // اختيار كلمة عشوائية من القائمة المحدثة
-      const randomRelatedWord = state.secretData.related[Math.floor(Math.random() * state.secretData.related.length)];
 
-      // ب. نبحث عن هذه الكلمة داخل البنك (pool) لجلب بياناتها الكاملة (الوصف والايموجي)
+      const randomRelatedWord = state.secretData.related[Math.floor(Math.random() * state.secretData.related.length)];
       const foundObject = pool.find(w => w.word === randomRelatedWord);
 
       if (foundObject) {
-        // وجدنا الكلمة كعنصر رئيسي، نستخدم بياناتها (بما في ذلك الوصف)
-        ucData = foundObject;
+        // وجدنا الكلمة في البيانات، ننسخها ونعدل الوصف
+        ucData = {
+          ...foundObject,
+          desc: categoryDescription
+        };
       } else {
-        // لم نجدها (مجرد نص في related وليست مدخل رئيسي)، نستخدم بيانات افتراضية
+        // لم نجدها، ننشئ كائناً جديداً
         ucData = {
           word: randomRelatedWord,
           emoji: "🤫",
-          desc: "أنت المموه! كلمتك قريبة من السالفة، حاول تلمح بذكاء."
+          desc: categoryDescription
         };
       }
     } else {
-      // كود احتياطي: في حال لم توجد قائمة related (للأمان فقط)
+      // احتياط
       const others = pool.filter(w => w.word !== state.secretData.word);
-      if (others.length > 0) ucData = others[Math.floor(Math.random() * others.length)];
+      if (others.length > 0) {
+        ucData = {
+          ...others[Math.floor(Math.random() * others.length)],
+          desc: categoryDescription
+        };
+      }
     }
   }
 
-  // احتياط نهائي
-  if (!ucData) ucData = { word: "موضوع قريب", emoji: "🤫", desc: "حاول مجاراة الحديث بذكاء" };
+  // احتياط نهائي للمموه
+  if (!ucData) ucData = { word: "موضوع قريب", emoji: "🤫", desc: categoryDescription };
 
   state.currentUndercoverData = ucData;
-  // ============================================================
 
-  // 5. توزيع الأدوار عشوائياً
+  // 5. توزيع الأدوار (بدون تغيير)
   let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
+  state.outPlayerIds = []; state.agentPlayerId = null; state.undercoverPlayerId = null; state.blindRoundType = null;
 
-  // تصفير المتغيرات
-  state.outPlayerIds = [];
-  state.agentPlayerId = null;
-  state.undercoverPlayerId = null;
-  state.blindRoundType = null;
-
-  // منطق الجولات (Blind Mode vs Normal)
-  if (state.blindModeActive && Math.random() < 0.2) {
-    // جولة عمياء
-    if (Math.random() < 0.5) {
-      state.blindRoundType = 'all_in';
-    } else {
-      state.blindRoundType = 'all_out';
-      state.outPlayerIds = state.players.map(p => p.id);
-    }
+  if (state.blindModeActive && Math.random() < 0.35) {
+    if (Math.random() < 0.5) state.blindRoundType = 'all_in';
+    else { state.blindRoundType = 'all_out'; state.outPlayerIds = state.players.map(p => p.id); }
   } else {
-    // جولة عادية
-    // اختيار "الضايع" (Out)
     let outID = ids.splice(0, 1)[0];
     state.outPlayerIds = [outID];
-
-    // اختيار "العميل" (Agent) إذا مفعل
-    if (state.doubleAgentActive && ids.length > 0) {
-      state.agentPlayerId = ids.splice(0, 1)[0];
-    }
-
-    // اختيار "المموه" (Undercover) إذا مفعل
-    if (state.undercoverActive && ids.length > 0) {
-      state.undercoverPlayerId = ids.splice(0, 1)[0];
-    }
+    if (state.doubleAgentActive && ids.length > 0) state.agentPlayerId = ids.splice(0, 1)[0];
+    if (state.undercoverActive && ids.length > 0) state.undercoverPlayerId = ids.splice(0, 1)[0];
   }
 
-  // 6. تعيين الأدوار للاعبين
   state.currentRoles = state.players.map(p => {
-    let role = 'in'; // الافتراضي: محقق
-
+    let role = 'in';
     if (state.blindRoundType === 'all_out') role = 'out';
     else if (state.blindRoundType === 'all_in') role = 'in';
     else {
@@ -955,7 +947,7 @@ function updateFinalResultsUI() {
     if (state.lastWinner === 'blind') didWin = true;
 
     const colorClass = didWin ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500' : 'bg-red-500/20 border-red-500/40 text-red-500';
-    list.innerHTML += `<div class="flex items-center justify-between p-3 rounded-2xl border ${colorClass} mb-2 shadow-inner text-right"><div class="flex items-center gap-3"><span class="text-2xl">${p.avatar}</span><div class="text-right"><p class="font-black text-theme-main text-sm text-right">${p.name}</p><p class="text-[8px] uppercase opacity-60 text-theme-main text-right">${roleNamesMap[roleData.role]}</p></div></div><span class="font-mono text-xs font-black text-theme-main">${p.points}</span></div>`;
+    list.innerHTML += `<div class="flex items-center justify-between p-3 rounded-2xl border ${colorClass} mb-2 shadow-inner text-right"><div class="flex items-center gap-3"><span class="text-2xl">${p.avatar}</span><div class="text-right"><p class="font-black text-theme-main text-sm text-right">${p.name}</p><p class="text-[9px] uppercase opacity-60 text-theme-main text-right">${roleNamesMap[roleData.role]}</p></div></div><span class="font-mono text-xs font-black text-theme-main">${p.points}</span></div>`;
   });
 }
 
@@ -967,7 +959,7 @@ function updateLeaderboardUI() {
   list.innerHTML = '';
   sorted.forEach((p, idx) => {
     const title = funnyTitles[Math.min(Math.floor(p.points / 3), 4)];
-    list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border hover:bg-white/10 cursor-pointer text-right"><div class="flex items-center gap-4 text-right"><span class="text-3xl">${p.avatar}</span><div class="text-right"><p class="font-black text-theme-main text-right">${p.name}</p><p class="text-[10px] text-indigo-400 font-bold text-right">${title}</p></div></div><span class="bg-indigo-500/20 px-3 py-1 rounded-full font-mono text-sm font-black text-indigo-200">${p.points}</span></div>`;
+    list.innerHTML += `<div onclick="openStatsModal(${p.id})" class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border hover:bg-white/10 cursor-pointer text-right"><div class="flex items-center gap-4 text-right"><span class="text-3xl">${p.avatar}</span><div class="text-right"><p class="font-black text-theme-main text-right">${p.name}</p><p class="text-[10px] text-indigo-400 font-bold text-right">${title}</p></div></div><span class="bg-indigo-500/20 px-3 py-1 rounded-full font-mono text-sm font-black">${p.points}</span></div>`;
   });
 }
 
