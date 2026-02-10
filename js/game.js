@@ -1063,6 +1063,27 @@ function startHeroEmojiAnimation() {
 // منطق عجلة العقاب (Punishment Wheel)
 // ==========================================
 
+// دالة خاصة لصوت تكتكة العجلة (صوت خشبي/بلاستيكي)
+function playWheelTick() {
+  if (isMuted) return;
+  const t = audioCtx.currentTime;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.connect(g);
+  g.connect(audioCtx.destination);
+
+  // إعدادات تجعل الصوت يشبه احتكاك المؤشر البلاستيكي
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(600, t); // تردد البداية
+  o.frequency.exponentialRampToValueAtTime(100, t + 0.05); // انخفاض سريع للتردد
+
+  g.gain.setValueAtTime(0.15, t); // مستوى الصوت
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); // تلاشي سريع
+
+  o.start(t);
+  o.stop(t + 0.05);
+}
+
 // القائمة الافتراضية للعقوبات
 const defaultPunishments = [];
 
@@ -1198,29 +1219,57 @@ function spinWheel() {
   const canvas = document.getElementById('wheel-canvas');
   const btn = document.getElementById('btn-spin');
   const resultDiv = document.getElementById('punishment-result');
+  const resultText = document.getElementById('result-text');
 
   // إخفاء النتيجة السابقة
   resultDiv.classList.add('hidden');
+  resultText.innerText = "";
   btn.disabled = true;
   btn.style.opacity = "0.5";
 
-  // حساب دوران عشوائي (على الأقل 5 لفات كاملة)
-  const spinAngle = 360 * 5 + Math.random() * 360;
-  currentWheelRotation += spinAngle; // تراكم الدوران للحفاظ على الاستمرارية
+  // إعداد الدوران
+  // 360 * 8 = 8 لفات كاملة + جزء عشوائي
+  const extraSpins = 360 * 8;
+  const randomDegree = Math.floor(Math.random() * 360);
+  const totalRotation = extraSpins + randomDegree;
 
-  // تطبيق التدوير عبر CSS للحصول على سلاسة عالية
+  // نضيف الدوران الجديد للمجموع السابق للحفاظ على السلاسة
+  currentWheelRotation += totalRotation;
+
+  // 1. تطبيق الحركة البصرية (CSS Transition)
+  // ملاحظة: تأكد أن مدة الـ duration في الـ CSS هي 4000ms أو 4s
+  canvas.style.transition = "transform 4000ms cubic-bezier(0.25, 1, 0.5, 1)";
   canvas.style.transform = `rotate(-${currentWheelRotation}deg)`;
 
-  // تشغيل صوت التدوير (اختياري)
-  sounds.funny();
+  // 2. تشغيل صوت التكتكة المتزامن (Simulation)
+  let time = 0;
+  let interval = 20; // البداية: تكة كل 20 ملي ثانية (سريع جداً)
+  const totalDuration = 4000; // 4 ثواني
 
-  // انتظار انتهاء الأنيميشن (4 ثواني كما في CSS)
+  function scheduleNextTick() {
+    // كلما زاد الوقت، زادت المدة بين التكات (محاكاة التباطؤ)
+    // المعادلة: نزيد الفترة بنسبة 10% في كل خطوة
+    interval = interval * 1.1;
+    time += interval;
+
+    if (time < totalDuration - 500) { // نتوقف قبل النهاية بقليل لتبدو واقعية
+      setTimeout(() => {
+        playWheelTick();
+        scheduleNextTick(); // جدولة التكة التالية
+      }, interval);
+    }
+  }
+
+  // البدء بالصوت
+  scheduleNextTick();
+
+  // 3. إنهاء الدوران وإظهار النتيجة
   setTimeout(() => {
     calculateWinner(currentWheelRotation);
     btn.disabled = false;
     btn.style.opacity = "1";
-    sounds.win();
-    createConfetti(); // احتفال بالعقاب!
+    sounds.win(); // صوت الفوز عند التوقف
+    createConfetti(); // احتفال
   }, 4000);
 }
 
@@ -1252,10 +1301,39 @@ function calculateWinner(rotation) {
 const originalShowScreen = showScreen;
 showScreen = function (screenId) {
   originalShowScreen(screenId);
+
   if (screenId === 'punishment') {
-    setTimeout(drawWheel, 100); // تأخير بسيط لضمان ظهور العنصر
+    // إعادة تعيين الواجهة عند الدخول (إخفاء أي نتيجة سابقة)
+    const resDiv = document.getElementById('punishment-result');
+    if (resDiv) resDiv.classList.add('hidden');
+
+    // رسم العجلة
+    setTimeout(drawWheel, 100);
   }
 };
+
+function closePunishmentScreen() {
+  // 1. إخفاء صندوق النتيجة
+  const resultDiv = document.getElementById('punishment-result');
+  if (resultDiv) {
+    resultDiv.classList.add('hidden');
+  }
+
+  // 2. مسح نص العقاب
+  const resultText = document.getElementById('result-text');
+  if (resultText) {
+    resultText.innerText = "";
+  }
+
+  // 3. إزالة الكونفيتي إذا كان لا يزال يعمل
+  const confettiContainer = document.getElementById('confetti-container');
+  if (confettiContainer) {
+    confettiContainer.innerHTML = '';
+  }
+
+  // 4. الانتقال لشاشة النتائج النهائية
+  showScreen('final');
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize default selected categories (e.g. none)
