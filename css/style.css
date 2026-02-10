@@ -651,3 +651,7 @@ input[type="range"]::-webkit-slider-thumb {
 .text-theme-muted {
   color: var(--text-muted) !important;
 }
+
+#hero-emoji {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}

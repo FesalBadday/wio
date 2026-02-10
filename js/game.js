@@ -574,7 +574,7 @@ function setupRoles() {
   let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
   state.outPlayerIds = []; state.agentPlayerId = null; state.undercoverPlayerId = null; state.blindRoundType = null;
 
-  if (state.blindModeActive && Math.random() < 0.35) {
+  if (state.blindModeActive && Math.random() < 0.95) {
     if (Math.random() < 0.5) state.blindRoundType = 'all_in';
     else { state.blindRoundType = 'all_out'; state.outPlayerIds = state.players.map(p => p.id); }
   } else {
@@ -1010,7 +1010,7 @@ function createConfetti(isClown = false) {
   if (!container) return;
   container.innerHTML = '';
   const colors = ['#6366f1', '#10b981', '#ef4444', '#fbbf24', '#f472b6'];
-  const clowns = ['🤡', '🤣', '🤪', '🎪', '🙈'];
+  const clowns = ['🤡', '🤣', '🤪', '😜', '🙈'];
   const count = isClown ? 100 : 100;
   for (let i = 0; i < count; i++) {
     const c = document.createElement('div');
@@ -1030,9 +1030,39 @@ function createConfetti(isClown = false) {
   setTimeout(() => { container.innerHTML = ''; }, 5000);
 }
 
+// ==========================================
+// كود تغيير ايموجي الشاشة الرئيسية
+// ==========================================
+function startHeroEmojiAnimation() {
+  const heroEmojiEl = document.getElementById('hero-emoji');
+  if (!heroEmojiEl) return;
+
+  // قائمة الايموجي التي تريد التبديل بينها
+  const emojis = ["🕵️‍♂️", "😶‍🌫️", "🤫", "🎭", "🤥", "🧐", "🤡", "🤔", "😵‍💫"];
+  let index = 0;
+
+  setInterval(() => {
+    // 1. تأثير اختفاء بسيط (اختياري لتحسين الشكل)
+    heroEmojiEl.style.opacity = '0';
+    heroEmojiEl.style.transform = 'scale(0.5)';
+
+    setTimeout(() => {
+      // 2. تغيير الايموجي
+      index = (index + 1) % emojis.length;
+      heroEmojiEl.innerText = emojis[index];
+
+      // 3. إعادة الظهور
+      heroEmojiEl.style.opacity = '1';
+      heroEmojiEl.style.transform = 'scale(1)';
+    }, 200); // ينتظر جزء من الثانية وهو مختفي ثم يغيره
+
+  }, 1700); // كل 3000 ميلي ثانية = 3 ثواني
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize default selected categories (e.g. none)
   state.allowedCategories = []; // User must select
   updateSetupInfo();
   renderCustomWords();
+  startHeroEmojiAnimation();
 });
