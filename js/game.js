@@ -747,6 +747,15 @@ function startRevealSequence() {
   const cardObj = document.getElementById('role-card');
   if (cardObj) cardObj.classList.remove('is-flipped');
   document.getElementById('btn-reveal-action').innerText = 'كشف الدور';
+
+  const scanner = document.getElementById('fingerprint-scanner');
+  if (scanner) {
+    scanner.classList.remove('scanning-active');
+    scanner.style.pointerEvents = "auto";
+    document.getElementById('btn-next-player').classList.add('hidden');
+    document.getElementById('scan-status').innerText = "ضع إصبعك للكشف";
+  }
+
   populateCardBack(p);
   showScreen('reveal');
 }
@@ -1535,6 +1544,123 @@ function closePunishmentScreen() {
 
   // 4. الانتقال لشاشة النتائج النهائية
   showScreen('final');
+}
+
+// ==========================================
+// 🕵️‍♂️ منطق ماسح البصمة (Fingerprint Scanner)
+// ==========================================
+
+let scanTimer = null;
+let scanAudioCtx = null;
+let scanOscillator = null;
+
+function startScan(e) {
+  // منع السلوك الافتراضي (مثل تحديد النص أو التمرير) خاصة في الجوال
+  if (e) e.preventDefault();
+
+  const scannerEl = document.getElementById('fingerprint-scanner');
+  const statusEl = document.getElementById('scan-status');
+  const progressEl = document.getElementById('scan-progress');
+
+  // 1. تفعيل التأثيرات البصرية
+  scannerEl.classList.add('scanning-active');
+  statusEl.innerText = "جاري التحليل... ⏳";
+  statusEl.classList.add('text-emerald-400');
+
+  // 2. تشغيل صوت المسح المتصاعد
+  if (!isMuted) {
+    if (!scanAudioCtx) scanAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    scanOscillator = scanAudioCtx.createOscillator();
+    const gainNode = scanAudioCtx.createGain();
+
+    scanOscillator.type = 'sawtooth';
+    scanOscillator.frequency.setValueAtTime(200, scanAudioCtx.currentTime);
+    scanOscillator.frequency.linearRampToValueAtTime(800, scanAudioCtx.currentTime + 2); // تصاعد الصوت
+
+    gainNode.gain.setValueAtTime(0.1, scanAudioCtx.currentTime);
+
+    scanOscillator.connect(gainNode);
+    gainNode.connect(scanAudioCtx.destination);
+    scanOscillator.start();
+  }
+
+  // 3. ضبط المؤقت لاكتمال المسح (2 ثانية)
+  scanTimer = setTimeout(() => {
+    completeScan();
+  }, 2000);
+}
+
+function cancelScan() {
+  if (!scanTimer) return; // لم يكن هناك مسح نشط
+
+  // إيقاف كل شيء
+  clearTimeout(scanTimer);
+  scanTimer = null;
+
+  const scannerEl = document.getElementById('fingerprint-scanner');
+  const statusEl = document.getElementById('scan-status');
+
+  scannerEl.classList.remove('scanning-active');
+  statusEl.innerText = "فشل المسح! حاول مجدداً ❌";
+  statusEl.classList.remove('text-emerald-400');
+
+  // إيقاف الصوت
+  if (scanOscillator) {
+    try { scanOscillator.stop(); } catch (e) { }
+    scanOscillator = null;
+  }
+}
+
+function completeScan() {
+  scanTimer = null;
+
+  // إيقاف صوت المسح
+  if (scanOscillator) {
+    try { scanOscillator.stop(); } catch (e) { }
+    scanOscillator = null;
+  }
+
+  // تشغيل صوت النجاح
+  if (!isMuted) sounds.win(); // أو صوت خاص "Access Granted"
+
+  const statusEl = document.getElementById('scan-status');
+  statusEl.innerText = "تم التحقق! ✅";
+
+  // استدعاء منطق الكشف الموجود مسبقاً (الغليتش + القلب)
+  // ملاحظة: نستخدم toggleReveal أو performRevealAction حسب آخر تحديث للكود
+  if (typeof performRevealLogic === 'function') {
+    performRevealLogic();
+  } else if (typeof toggleReveal === 'function') {
+    toggleReveal();
+  } else {
+    flipCard(); // احتياط
+  }
+
+  // إظهار زر "التالي" وإخفاء الماسح لمنع التكرار
+  document.getElementById('fingerprint-scanner').style.pointerEvents = "none"; // تعطيل الماسح
+  document.getElementById('btn-next-player').classList.remove('hidden');
+}
+
+// دالة للانتقال للاعب التالي (زر جديد)
+function nextPlayerAction() {
+  // إعادة تفعيل الماسح للاعب التالي
+  const scannerEl = document.getElementById('fingerprint-scanner');
+  scannerEl.style.pointerEvents = "auto";
+  scannerEl.classList.remove('scanning-active');
+  document.getElementById('scan-status').innerText = "انتظار البيانات...";
+  document.getElementById('scan-progress').style.strokeDashoffset = '390'; // تصفير الدائرة
+
+  // إخفاء زر التالي
+  document.getElementById('btn-next-player').classList.add('hidden');
+
+  // استدعاء منطق الانتقال (نستخدم المنطق الموجود في toggleReveal سابقاً)
+  const cardObj = document.getElementById('role-card');
+  cardObj.classList.remove('is-flipped');
+
+  setTimeout(() => {
+    state.revealIndex++;
+    startRevealSequence();
+  }, 300);
 }
 
 window.addEventListener('DOMContentLoaded', () => {

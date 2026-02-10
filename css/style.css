@@ -772,3 +772,41 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* تأثير ماسح البصمة */
+@keyframes scan-beam-anim {
+  0%, 100% {
+    top: 0%;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  50% {
+    top: 100%;
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+}
+
+.scanning-active #scan-beam {
+  display: block;
+  animation: scan-beam-anim 1.5s linear infinite;
+}
+
+.scanning-active #scanner-icon {
+  color: rgba(16, 185, 129, 0.8);
+  /* يتحول للأخضر */
+  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+}
+
+.scanning-active #scan-progress {
+  opacity: 1;
+  stroke-dashoffset: 0 !important;
+  /* ملء الدائرة */
+}

@@ -206,40 +206,64 @@
     </div>
 
     <!-- 5. Reveal Screen -->
-    <div id="screen-reveal" class="glass-panel hidden text-center">
+    <div id="screen-reveal" class="glass-panel hidden text-center select-none">
       <div class="text-7xl sm:text-8xl mb-6">📱</div>
       <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
       <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-10 text-indigo-500"></h2>
 
-      <div class="card-scene" onclick="flipCard()">
+      <div class="card-scene">
         <div class="card-object" id="role-card">
-          <div class="card-face card-face-front relative">
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); z-index: 0;">
-              <span class="font-black text-theme-muted opacity-10"
-                style="font-size: 10rem; display: block; animation: space-float 8s ease-in-out infinite;">?</span>
+
+          <div class="card-face card-face-front relative overflow-hidden">
+            <div
+              class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBoNDBNNDAgMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-30">
             </div>
-            <span class="space-floater text-6xl text-indigo-500 opacity-40"
-              style="top: 2rem; left: 2rem; animation-delay: 1s;">?</span>
-            <span class="space-floater text-6xl text-purple-500 opacity-40"
-              style="top: 2rem; right: 2rem; animation-delay: 2s;">?</span>
-            <span class="space-floater text-6xl text-pink-500 opacity-40"
-              style="bottom: 6rem; left: 2rem; animation-delay: 3s;">?</span>
-            <span class="space-floater text-6xl text-emerald-500 opacity-40"
-              style="bottom: 6rem; right: 2rem; animation-delay: 4s;">?</span>
-            <p class="text-theme-muted mt-auto mb-10 font-bold animate-pulse z-10">اضغط للكشف</p>
+
+            <div class="z-10 flex flex-col items-center">
+              <h3 class="text-theme-muted font-bold text-sm mb-6 animate-pulse">ضع إصبعك للكشف</h3>
+
+              <div id="fingerprint-scanner"
+                class="relative w-32 h-32 rounded-full border-2 border-indigo-500/30 flex items-center justify-center cursor-pointer transition-all duration-300 active:scale-95 hover:border-indigo-400"
+                onmousedown="startScan()" ontouchstart="startScan(event)" onmouseup="cancelScan()"
+                ontouchend="cancelScan()" onmouseleave="cancelScan()">
+
+                <svg class="w-20 h-20 text-indigo-500/50 transition-all duration-300" id="scanner-icon"
+                  fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.93-2.85-1.45-6.45-1.45-9.28.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.2-.41.2zm6.27 12c-.25 0-.48-.19-.5-.45-.09-1.39-.03-2.79.16-4.18.36-2.59 2.05-4.43 4.54-4.93.27-.05.53.12.59.39.05.27-.12.53-.39.59-1.89.38-3.17 1.78-3.44 3.73-.18 1.3-.23 2.6-.15 3.9.02.28-.19.52-.47.54-.11.01-.23 0-.34-.49zM9.6 20.3c-.27 0-.5-.21-.52-.49-.1-2.18.23-4.52.95-6.73.53-1.63 1.46-3.08 2.7-4.21.21-.19.53-.18.72.03.19.21.18.53-.03.72-1.07 1-1.87 2.24-2.33 3.66-.66 2.03-.96 4.17-.87 6.17.02.27-.2.5-.47.52-.05 0-.1 0-.15-.17zm6 1.4c-.26 0-.49-.2-.51-.46-.14-2.18.17-4.4.89-6.42.54-1.51 1.44-2.82 2.6-3.79.22-.18.53-.15.72.06.18.22.15.53-.06.72-1 1.05-1.77 2.18-2.24 3.5-.66 1.84-.94 3.86-.81 5.86.02.28-.19.52-.47.54-.04-.01-.08-.01-.12-.01z" />
+                </svg>
+
+                <div id="scan-beam"
+                  class="absolute w-full h-1 bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] top-0 hidden"></div>
+
+                <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
+                  <circle cx="64" cy="64" r="62" stroke="#10b981" stroke-width="4" fill="none"
+                    class="opacity-0 transition-all duration-[2000ms] ease-linear" id="scan-progress"
+                    stroke-dasharray="390" stroke-dashoffset="390">
+                  </circle>
+                </svg>
+              </div>
+
+              <p id="scan-status" class="text-xs text-indigo-400 mt-4 font-mono h-4">انتظار البيانات...</p>
+            </div>
           </div>
+
           <div class="card-face card-face-back flex flex-col items-center justify-center">
             <p id="reveal-role-text" class="text-xl sm:text-2xl font-bold mb-4"></p>
             <div id="reveal-img-placeholder" class="text-7xl sm:text-8xl mb-4"></div>
             <p id="reveal-secret-word"
-              class="text-3xl sm:text-4xl font-black text-theme-main tracking-widest uppercase break-word-custom"></p>
+              class="text-3xl sm:text-5xl font-black text-emerald-500 mb-6 tracking-wider break-words w-full px-2 leading-tight"
+              style="direction: rtl; unicode-bidi: embed;"></p>
             <p id="reveal-word-desc" class="text-base sm:text-lg text-theme-muted mt-4 font-bold"></p>
-            <!-- hidden -->
           </div>
         </div>
       </div>
+
       <button id="btn-reveal-action" onclick="toggleReveal()"
-        class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white">كشف الدور</button>
+        class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white hidden">كشف الدور</button>
+
+      <button id="btn-next-player" onclick="nextPlayerAction()"
+        class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white hidden">التالي ⏭️</button>
     </div>
 
     <!-- 6. Game Screen -->
