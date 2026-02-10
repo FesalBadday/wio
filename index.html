@@ -307,8 +307,9 @@
         <p class="text-theme-muted mb-3 font-bold text-sm uppercase tracking-widest">السالفة كانت:</p>
         <div id="final-word-emoji" class="text-7xl sm:text-8xl mb-3"></div>
         <p id="final-secret-word"
-          class="text-5xl sm:text-7xl font-black text-emerald-500 mb-4 tracking-wider break-word-custom"
-          style="margin-bottom: 20px;"></p>
+          class="text-3xl sm:text-5xl font-black text-emerald-500 mb-6 tracking-wider break-words w-full px-2 leading-tight"
+          style="direction: rtl; unicode-bidi: embed;">
+        </p>
         <p id="topic-description" class="text-lg sm:text-xl text-theme-muted opacity-80"></p>
         <!-- hidden -->
       </div>
@@ -350,9 +351,10 @@
         العجلة! 🎲</button>
 
       <div class="grid grid-cols-2 gap-4 w-full">
-        <button onclick="openPunishmentModal()"
+        <button id="btn-spin-add" onclick="openPunishmentModal()"
           class="py-4 btn-secondary-theme rounded-2xl font-bold text-sm">تعديل/إضافة</button>
-        <button onclick="closePunishmentScreen()" class="py-4 btn-secondary-theme rounded-2xl font-bold text-sm">رجوع
+        <button id="btn-spin-back" onclick="closePunishmentScreen()"
+          class="py-4 btn-secondary-theme rounded-2xl font-bold text-sm">رجوع
           للنتائج</button>
       </div>
     </div>

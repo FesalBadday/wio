@@ -1420,14 +1420,15 @@ function spinWheel() {
 
   const canvas = document.getElementById('wheel-canvas');
   const btn = document.getElementById('btn-spin');
+  const btnAdd = document.getElementById('btn-spin-add');
+  const btnBack = document.getElementById('btn-spin-back');
   const resultDiv = document.getElementById('punishment-result');
   const resultText = document.getElementById('result-text');
 
   // إخفاء النتيجة السابقة
   resultDiv.classList.add('hidden');
   resultText.innerText = "";
-  btn.disabled = true;
-  btn.style.opacity = "0.5";
+  [btn, btnAdd, btnBack].forEach(b => b.disabled = true);
 
   // إعداد الدوران
   // 360 * 8 = 8 لفات كاملة + جزء عشوائي
@@ -1468,8 +1469,7 @@ function spinWheel() {
   // 3. إنهاء الدوران وإظهار النتيجة
   setTimeout(() => {
     calculateWinner(currentWheelRotation);
-    btn.disabled = false;
-    btn.style.opacity = "1";
+    [btn, btnAdd, btnBack].forEach(b => b.disabled = false);
     sounds.win(); // صوت الفوز عند التوقف
     createConfetti(); // احتفال
   }, 4000);
