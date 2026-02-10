@@ -676,3 +676,94 @@ input[type="range"]::-webkit-slider-thumb {
   /* تأثير ظل داخلي للعجلة */
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.3);
 }
+
+@keyframes panic-pulse-animation {
+  0% {
+    box-shadow: inset 0 0 0 rgba(220, 38, 38, 0);
+    border-color: var(--glass-border);
+  }
+
+  50% {
+    box-shadow: inset 0 0 60px rgba(220, 38, 38, 0.4);
+    /* توهج أحمر داخلي */
+    border-color: rgba(220, 38, 38, 0.8);
+    /* حدود حمراء */
+  }
+
+  100% {
+    box-shadow: inset 0 0 0 rgba(220, 38, 38, 0);
+    border-color: var(--glass-border);
+  }
+}
+
+.panic-pulse-active {
+  animation-name: panic-pulse-animation;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  /* المدة يتم تحديدها بالجافاسكربت لتتسارع */
+}
+
+/* ========================================= */
+/* ⚡ تأثير الغليتش (GLITCH EFFECT) ⚡ */
+/* ========================================= */
+
+@keyframes glitch-chaos {
+  0% {
+    transform: translate(0) scale(1);
+    filter: hue-rotate(0deg);
+  }
+
+  10% {
+    transform: translate(-5px, 5px) scale(1.02);
+    filter: invert(0.8);
+  }
+
+  20% {
+    transform: translate(5px, -5px) scale(0.98);
+    filter: hue-rotate(90deg) blur(2px);
+  }
+
+  30% {
+    transform: translate(-10px, 0) scale(1.05);
+    filter: invert(0);
+  }
+
+  40% {
+    transform: translate(10px, 0) scale(0.95);
+    filter: hue-rotate(180deg);
+  }
+
+  50% {
+    filter: invert(1);
+  }
+
+  100% {
+    transform: translate(0) scale(1);
+    filter: hue-rotate(0deg);
+  }
+}
+
+.force-glitch {
+  animation: glitch-chaos 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both !important;
+  position: relative;
+  overflow: hidden;
+  /* لمنع ظهور أشرطة التمرير أثناء الاهتزاز */
+}
+
+/* طبقة الخطوط (Scanlines) */
+.force-glitch::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 2px);
+  z-index: 99999;
+  pointer-events: none;
+  mix-blend-mode: exclusion;
+}

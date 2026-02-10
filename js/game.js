@@ -44,6 +44,149 @@ const sounds = {
   funny: () => { playFunnySound(); triggerVibrate([50, 50, 50, 50, 50]); }
 };
 
+// دالة لتوليد نبضة واحدة (Thud)
+function createHeartThud(time, frequency, decay) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  // استخدام موجة مثلثة ومفلترة لتعطي صوت مكتوم وقوي
+  osc.type = 'triangle';
+
+  // انحناء التردد: يبدأ عالياً وينخفض بسرعة (محاكاة الضربة)
+  osc.frequency.setValueAtTime(frequency, time);
+  osc.frequency.exponentialRampToValueAtTime(frequency * 0.5, time + decay);
+
+  // التحكم في الصوت (Envelope)
+  gain.gain.setValueAtTime(0, time);
+  gain.gain.linearRampToValueAtTime(1, time + 0.01); // Attack سريع
+  gain.gain.exponentialRampToValueAtTime(0.001, time + decay); // Decay سريع
+
+  osc.start(time);
+  osc.stop(time + decay + 0.1);
+}
+
+// دالة دقات القلب الكاملة (Lub-Dub)
+function playHeartbeatSound() {
+  if (isMuted) return;
+  const t = audioCtx.currentTime;
+
+  // النبضة الأولى "لُب" (أقوى وأعمق)
+  createHeartThud(t, 80, 0.15);
+
+  // النبضة الثانية "دُب" (أسرع وأعلى قليلاً) - تأتي بعد 150 ملي ثانية
+  createHeartThud(t + 0.15, 90, 0.12);
+}
+
+// ==========================================
+// ⚡ منطق الغليتش والصوت الموحد ⚡
+// ==========================================
+
+// 1. دالة تشغيل المؤثرات (صوت + اهتزاز + كلاس CSS)
+function triggerGlitchEffects() {
+  // أ) تشغيل الصوت (AudioContext)
+  if (!isMuted) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AC();
+    const t = ctx.currentTime;
+
+    // توليد ضوضاء بيضاء (تشويش)
+    const bufferSize = ctx.sampleRate * 0.3; // مدة 0.3 ثانية
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const gain = ctx.createGain();
+    // جعل الصوت حاداً ومتقطعاً
+    gain.gain.setValueAtTime(0.5, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+    gain.gain.linearRampToValueAtTime(0.3, t + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+
+    noise.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start(t);
+  }
+
+  // ب) اهتزاز الجهاز
+  triggerVibrate([40, 30, 40, 30]);
+
+  // ج) تفعيل تأثير الـ CSS على الجسم بالكامل
+  document.body.classList.add('force-glitch');
+
+  // إزالة التأثير بعد 400 ملي ثانية (نفس مدة الانيميشن في CSS)
+  setTimeout(() => {
+    document.body.classList.remove('force-glitch');
+  }, 400);
+}
+
+// صوت درامي لبدء التصويت (جرس عميق)
+function playVotingSound() {
+  if (isMuted) return;
+  const t = audioCtx.currentTime;
+
+  // 1. الطبقة العميقة (The Boom)
+  const oscLow = audioCtx.createOscillator();
+  const gainLow = audioCtx.createGain();
+  oscLow.connect(gainLow);
+  gainLow.connect(audioCtx.destination);
+
+  oscLow.type = 'sine';
+  oscLow.frequency.setValueAtTime(100, t);
+  oscLow.frequency.exponentialRampToValueAtTime(30, t + 1); // انخفاض عميق
+
+  gainLow.gain.setValueAtTime(0.5, t);
+  gainLow.gain.exponentialRampToValueAtTime(0.01, t + 1.5); // صدى طويل
+
+  oscLow.start(t);
+  oscLow.stop(t + 1.5);
+
+  // 2. الطبقة المعدنية (The Clang) - لتعطي إحساس الجرس
+  const oscHigh = audioCtx.createOscillator();
+  const gainHigh = audioCtx.createGain();
+  oscHigh.connect(gainHigh);
+  gainHigh.connect(audioCtx.destination);
+
+  oscHigh.type = 'triangle'; // موجة حادة قليلاً
+  oscHigh.frequency.setValueAtTime(500, t);
+  oscHigh.frequency.linearRampToValueAtTime(200, t + 0.3); // انخفاض سريع
+
+  gainHigh.gain.setValueAtTime(0.3, t);
+  gainHigh.gain.exponentialRampToValueAtTime(0.01, t + 0.5); // تلاشي سريع
+
+  oscHigh.start(t);
+  oscHigh.stop(t + 0.5);
+
+  // اهتزاز قوي لتنبيه اللاعبين
+  triggerVibrate([100, 50, 100]);
+}
+
+// دالة خاصة لصوت تكتكة العجلة (صوت خشبي/بلاستيكي)
+function playWheelTick() {
+  if (isMuted) return;
+  const t = audioCtx.currentTime;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.connect(g);
+  g.connect(audioCtx.destination);
+
+  // إعدادات تجعل الصوت يشبه احتكاك المؤشر البلاستيكي
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(600, t); // تردد البداية
+  o.frequency.exponentialRampToValueAtTime(100, t + 0.05); // انخفاض سريع للتردد
+
+  g.gain.setValueAtTime(0.15, t); // مستوى الصوت
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); // تلاشي سريع
+
+  o.start(t);
+  o.stop(t + 0.05);
+}
+
 let state = {
   players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
   revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: false,
@@ -646,13 +789,54 @@ function populateCardBack(player) {
   }
 }
 
-function flipCard() {
+// 2. الدالة الموحدة للكشف (تستخدمها البطاقة والزر)
+function performRevealLogic() {
   const cardObj = document.getElementById('role-card');
+  const btn = document.getElementById('btn-reveal-action');
+
+  // الحالة 1: البطاقة مغلقة -> نريد كشف الدور (مع غليتش)
   if (!cardObj.classList.contains('is-flipped')) {
-    cardObj.classList.add('is-flipped'); sounds.flip();
-    document.getElementById('btn-reveal-action').innerText = "التالي";
+
+    triggerGlitchEffects(); // 🔥 تشغيل التأثيرات هنا 🔥
+
+    cardObj.classList.add('is-flipped');
+    if (btn) btn.innerText = "التالي";
+  }
+
+  // الحالة 2: البطاقة مكشوفة -> نريد الانتقال للاعب التالي (بدون غليتش)
+  else {
+    cardObj.classList.remove('is-flipped');
+    if (btn) btn.innerText = "كشف الدور"; // إعادة النص للأصل
+
+    // صوت قلب عادي عند الإغلاق (اختياري)
+    if (sounds && sounds.flip) sounds.flip();
+
+    // تأخير الانتقال قليلاً حتى تنقلب البطاقة
+    setTimeout(() => {
+      state.revealIndex++;
+      startRevealSequence();
+    }, 300);
   }
 }
+
+// 3. ربط الزر (Button) بالمنطق الموحد
+// سيقوم بمسح الدالة القديمة واستبدالها بهذه
+window.toggleReveal = function () {
+  performRevealLogic();
+};
+
+// 4. ربط البطاقة (Card) بالمنطق الموحد
+// سيقوم بمسح الدالة القديمة واستبدالها بهذه
+window.flipCard = function () {
+  const cardObj = document.getElementById('role-card');
+
+  // عند الضغط على البطاقة:
+  // إذا كانت مغلقة -> اكشفها (شغل الغليتش)
+  // إذا كانت مفتوحة -> لا تفعل شيئاً (نترك زر "التالي" يقوم بالمهمة لتجنب الخطأ)
+  if (!cardObj.classList.contains('is-flipped')) {
+    performRevealLogic();
+  }
+};
 
 function toggleReveal() {
   const cardObj = document.getElementById('role-card');
@@ -666,19 +850,56 @@ function toggleReveal() {
 }
 
 function startTimer() {
-  state.isPaused = false; clearInterval(state.interval);
+  state.isPaused = false;
+  clearInterval(state.interval);
+
   state.interval = setInterval(() => {
     if (state.isPaused) return;
+
     state.timer--;
+
+    // --- تحديث شريط التقدم (كودك الأصلي) ---
     const circumference = 565.48;
     const progressEl = document.getElementById('timer-progress');
     if (progressEl) progressEl.style.strokeDashoffset = circumference * (1 - (state.timer / state.initialTimer));
     const m = Math.floor(state.timer / 60), s = state.timer % 60;
     document.getElementById('game-timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    if (state.timer <= 5 && state.timer > 0) sounds.tick();
-    if (state.timer <= 0) { clearInterval(state.interval); startVoting(); }
+
+    // --- الإضافة الجديدة: منطق التوتر (آخر 10 ثواني) ---
+    const gameScreen = document.getElementById('screen-game');
+
+    if (state.timer <= 10 && state.timer > 0) {
+      // 1. تشغيل صوت القلب
+      playHeartbeatSound();
+
+      // 2. تفعيل تأثير النبض البصري
+      gameScreen.classList.add('panic-pulse-active');
+
+      // 3. تسريع النبض كلما قل الوقت (تعديل مدة الأنيميشن)
+      // كلما قل الوقت، قلت مدة الأنيميشن (أسرع)
+      const speed = Math.max(0.4, state.timer / 10);
+      gameScreen.style.animationDuration = `${speed}s`;
+
+      // اهتزاز خفيف للجهاز مع كل دقة
+      if (state.timer % 2 === 0) triggerVibrate(50);
+
+    } else {
+      // إزالة التأثير إذا كان الوقت أكثر من 10 (أو انتهى)
+      gameScreen.classList.remove('panic-pulse-active');
+      gameScreen.style.animationDuration = '0s'; // إعادة تعيين
+
+      // تشغيل صوت التكتكة العادية إذا لم نكن في وضع التوتر
+      if (state.timer > 10 && state.timer <= 5) sounds.tick(); // (اختياري: يمكنك حذف هذا السطر لمنع تداخل الأصوات)
+    }
+
+    if (state.timer <= 0) {
+      clearInterval(state.interval);
+      gameScreen.classList.remove('panic-pulse-active'); // تنظيف
+      startVoting();
+    }
   }, 1000);
 }
+
 function pauseTimer() { state.isPaused = !state.isPaused; document.getElementById('btn-pause').innerText = state.isPaused ? "استئناف" : "إيقاف مؤقت"; }
 function endGameEarly() { clearInterval(state.interval); startVoting(); }
 
@@ -694,9 +915,11 @@ function triggerPanic() {
 }
 
 function startVoting() {
+  playVotingSound();
   state.voterIndex = 0; state.votesAccumulated = {};
   state.players.forEach(p => state.votesAccumulated[p.id] = 0);
-  updateVotingGrid(); showScreen('voting');
+  updateVotingGrid();
+  showScreen('voting');
 }
 
 function updateVotingGrid() {
@@ -1062,27 +1285,6 @@ function startHeroEmojiAnimation() {
 // ==========================================
 // منطق عجلة العقاب (Punishment Wheel)
 // ==========================================
-
-// دالة خاصة لصوت تكتكة العجلة (صوت خشبي/بلاستيكي)
-function playWheelTick() {
-  if (isMuted) return;
-  const t = audioCtx.currentTime;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.connect(g);
-  g.connect(audioCtx.destination);
-
-  // إعدادات تجعل الصوت يشبه احتكاك المؤشر البلاستيكي
-  o.type = 'triangle';
-  o.frequency.setValueAtTime(600, t); // تردد البداية
-  o.frequency.exponentialRampToValueAtTime(100, t + 0.05); // انخفاض سريع للتردد
-
-  g.gain.setValueAtTime(0.15, t); // مستوى الصوت
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); // تلاشي سريع
-
-  o.start(t);
-  o.stop(t + 0.05);
-}
 
 // القائمة الافتراضية للعقوبات
 const defaultPunishments = [];
