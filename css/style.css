@@ -139,6 +139,8 @@
   --danger: #ef4444;
   --rule-bg: rgba(255, 255, 255, 0.03);
   --bg-options: rgb(148 163 184);
+  --bg-dark: #0f172a;
+  --bg-dark-text: #cbd5e1;
 }
 
 body.light-mode {
@@ -159,6 +161,8 @@ body.light-mode {
   --btn-sec-border: rgba(0, 0, 0, 0.2);
   --rule-bg: rgba(0, 0, 0, 0.05);
   --bg-options: rgb(248 113 113);
+  --bg-dark: #cbd5e1;
+  --bg-dark-text: #0f172a;
 }
 
 /* --- القواعد العامة --- */
@@ -623,11 +627,13 @@ input[type="range"]::-webkit-slider-thumb {
   position: fixed;
   inset: 0;
   background: var(--bg-dark);
+  color: var(--bg-dark-text);
   z-index: 100000;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  font-weight: bold;
   padding: 2rem;
 }
 
