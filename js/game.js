@@ -1059,6 +1059,204 @@ function startHeroEmojiAnimation() {
   }, 1700); // كل 3000 ميلي ثانية = 3 ثواني
 }
 
+// ==========================================
+// منطق عجلة العقاب (Punishment Wheel)
+// ==========================================
+
+// القائمة الافتراضية للعقوبات
+const defaultPunishments = [];
+
+let punishments = JSON.parse(localStorage.getItem('out_loop_punishments')) || [...defaultPunishments];
+let wheelCanvas = null;
+let wheelCtx = null;
+let currentWheelRotation = 0;
+
+// فتح وإغلاق المودال
+function openPunishmentModal() {
+  document.getElementById('modal-punishments').classList.remove('hidden');
+  document.getElementById('modal-punishments').classList.add('flex');
+  renderPunishmentList();
+}
+
+function closePunishmentModal() {
+  document.getElementById('modal-punishments').classList.add('hidden');
+  document.getElementById('modal-punishments').classList.remove('flex');
+  // إعادة رسم العجلة بالتحديثات الجديدة
+  if (!document.getElementById('screen-punishment').classList.contains('hidden')) {
+    drawWheel();
+  }
+}
+
+// عرض القائمة
+function renderPunishmentList() {
+  const list = document.getElementById('punishments-list');
+  list.innerHTML = '';
+
+  if (punishments.length === 0) {
+    list.innerHTML = '<p class="text-theme-muted text-sm">لا توجد عقوبات! أضف بعضها.</p>';
+    return;
+  }
+
+  punishments.forEach((p, index) => {
+    list.innerHTML += `
+      <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border animate-fade-in">
+        <span class="text-sm font-bold text-right flex-1 ml-2">${p}</span>
+        <button onclick="removePunishment(${index})" class="text-red-400 bg-red-500/10 w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500 transition-colors">✕</button>
+      </div>
+    `;
+  });
+}
+
+// إضافة عقاب (مع التحقق)
+function addPunishment() {
+  const input = document.getElementById('new-punishment-input');
+  const val = input.value.trim();
+
+  if (!val) {
+    showAlert("الرجاء كتابة العقاب أولاً! ✍️");
+    return;
+  }
+
+  if (punishments.includes(val)) {
+    showAlert("هذا العقاب موجود بالفعل! 🤔");
+    return;
+  }
+
+  punishments.push(val);
+  localStorage.setItem('out_loop_punishments', JSON.stringify(punishments));
+  input.value = '';
+  renderPunishmentList();
+  sounds.tick();
+}
+
+// حذف عقاب
+function removePunishment(index) {
+  punishments.splice(index, 1);
+  localStorage.setItem('out_loop_punishments', JSON.stringify(punishments));
+  renderPunishmentList();
+  sounds.flip();
+}
+
+// استعادة الافتراضي
+function resetDefaultPunishments() {
+  punishments = [...defaultPunishments];
+  localStorage.setItem('out_loop_punishments', JSON.stringify(punishments));
+  renderPunishmentList();
+  showAlert("تمت استعادة العقوبات الافتراضية");
+}
+
+// رسم العجلة
+function drawWheel() {
+  wheelCanvas = document.getElementById('wheel-canvas');
+  if (!wheelCanvas) return;
+  wheelCtx = wheelCanvas.getContext('2d');
+
+  const ctx = wheelCtx;
+  const width = wheelCanvas.width;
+  const height = wheelCanvas.height;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = width / 2 - 10;
+
+  ctx.clearRect(0, 0, width, height);
+
+  const total = punishments.length;
+  if (total === 0) return;
+
+  const arc = (2 * Math.PI) / total;
+  const colors = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444', '#06b6d4'];
+
+  punishments.forEach((p, i) => {
+    const angle = i * arc;
+    ctx.beginPath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, angle, angle + arc);
+    ctx.lineTo(centerX, centerY);
+    ctx.fill();
+    ctx.stroke();
+
+    // إضافة النص
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(angle + arc / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 24px Cairo"; // حجم خط أكبر للكشف
+    ctx.fillText(p.length > 15 ? p.substring(0, 15) + '..' : p, radius - 20, 10);
+    ctx.restore();
+  });
+}
+
+// تدوير العجلة
+function spinWheel() {
+  if (punishments.length < 2) {
+    showAlert("يجب أن يكون هناك عقابان على الأقل لتدوير العجلة!");
+    return;
+  }
+
+  const canvas = document.getElementById('wheel-canvas');
+  const btn = document.getElementById('btn-spin');
+  const resultDiv = document.getElementById('punishment-result');
+
+  // إخفاء النتيجة السابقة
+  resultDiv.classList.add('hidden');
+  btn.disabled = true;
+  btn.style.opacity = "0.5";
+
+  // حساب دوران عشوائي (على الأقل 5 لفات كاملة)
+  const spinAngle = 360 * 5 + Math.random() * 360;
+  currentWheelRotation += spinAngle; // تراكم الدوران للحفاظ على الاستمرارية
+
+  // تطبيق التدوير عبر CSS للحصول على سلاسة عالية
+  canvas.style.transform = `rotate(-${currentWheelRotation}deg)`;
+
+  // تشغيل صوت التدوير (اختياري)
+  sounds.funny();
+
+  // انتظار انتهاء الأنيميشن (4 ثواني كما في CSS)
+  setTimeout(() => {
+    calculateWinner(currentWheelRotation);
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    sounds.win();
+    createConfetti(); // احتفال بالعقاب!
+  }, 4000);
+}
+
+function calculateWinner(rotation) {
+  const actualRotation = rotation % 360;
+  const total = punishments.length;
+  const sliceDeg = 360 / total;
+
+  // بما أن المؤشر في الأعلى (90 درجة) والعجلة تدور عكس عقارب الساعة
+  // نحتاج لحساب المؤشر بناءً على الدوران المعاكس
+  // المعادلة: (index) = floor(((rotation + 90) % 360) / sliceDeg)
+  // ملاحظة: بما أننا نستخدم rotate سالب في الـ CSS، المعادلة تكون كالتالي:
+
+  let index = Math.floor(((actualRotation + 90) % 360) / sliceDeg);
+
+  // لأن الرسم يبدأ من 0 (اليمين) ويدور باتجاه عقارب الساعة، والمؤشر ثابت في الأعلى
+  // الحساب يحتاج لضبط ليتوافق مع الـ Canvas Arc
+  index = (total - Math.floor(((actualRotation + 90) % 360) / sliceDeg)) % total;
+
+  // تصحيح أخير لضمان الدقة
+  const winningPunishment = punishments[index];
+
+  document.getElementById('result-text').innerText = winningPunishment;
+  document.getElementById('punishment-result').classList.remove('hidden');
+  triggerVibrate([50, 50, 200]);
+}
+
+// تعديل دالة showScreen لإضافة استدعاء رسم العجلة
+const originalShowScreen = showScreen;
+showScreen = function (screenId) {
+  originalShowScreen(screenId);
+  if (screenId === 'punishment') {
+    setTimeout(drawWheel, 100); // تأخير بسيط لضمان ظهور العنصر
+  }
+};
+
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize default selected categories (e.g. none)
   state.allowedCategories = []; // User must select
