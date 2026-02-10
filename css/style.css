@@ -800,11 +800,18 @@ button:disabled {
   filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.5));
 }
 
-/* تحديث: حلقة التقدم */
+/* كلاس لإلغاء الحركة فوراً (للتصفير) */
+.notransition {
+  transition: none !important;
+}
+
 .scanning-active #scan-progress {
-  opacity: 1;
-  stroke-dashoffset: 0 !important;
-  /* الرقم الجديد المحسوب في HTML */
+  opacity: 1 !important;
+}
+
+#scan-progress {
+  transition: stroke-dashoffset 2s linear, opacity 0.2s ease;
+  transform-origin: center;
 }
 
 /* شعاع الليزر */
