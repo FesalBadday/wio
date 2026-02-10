@@ -794,19 +794,47 @@ button:disabled {
   }
 }
 
-.scanning-active #scan-beam {
-  display: block;
-  animation: scan-beam-anim 1.5s linear infinite;
-}
-
+/* تحديث: إخفاء أيقونة البصمة قليلاً عند المسح لإظهار الليزر بوضوح */
 .scanning-active #scanner-icon {
-  color: rgba(16, 185, 129, 0.8);
-  /* يتحول للأخضر */
-  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+  color: rgba(16, 185, 129, 0.4);
+  filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.5));
 }
 
+/* تحديث: حلقة التقدم */
 .scanning-active #scan-progress {
   opacity: 1;
   stroke-dashoffset: 0 !important;
-  /* ملء الدائرة */
+  /* الرقم الجديد المحسوب في HTML */
+}
+
+/* شعاع الليزر */
+@keyframes scan-beam-anim {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.8;
+  }
+
+  50% {
+    top: 100%;
+    opacity: 0.8;
+  }
+
+  80% {
+    opacity: 0.8;
+  }
+
+  100% {
+    top: 0%;
+    opacity: 0;
+  }
+}
+
+.scanning-active #scan-beam {
+  display: block;
+  animation: scan-beam-anim 1.8s ease-in-out infinite;
+  /* حركة أنعم */
 }

@@ -1550,50 +1550,66 @@ function closePunishmentScreen() {
 // 🕵️‍♂️ منطق ماسح البصمة (Fingerprint Scanner)
 // ==========================================
 
+// المتغيرات العامة للصوت (يجب أن تكون معرفة في الأعلى أو خارج الدالة)
 let scanTimer = null;
 let scanAudioCtx = null;
 let scanOscillator = null;
+let scanGain = null;
 
 function startScan(e) {
-  // منع السلوك الافتراضي (مثل تحديد النص أو التمرير) خاصة في الجوال
-  if (e) e.preventDefault();
+  if (e) e.preventDefault(); // منع قائمة النسخ في الجوال
 
   const scannerEl = document.getElementById('fingerprint-scanner');
   const statusEl = document.getElementById('scan-status');
   const progressEl = document.getElementById('scan-progress');
 
-  // 1. تفعيل التأثيرات البصرية
+  // تفعيل الشكل البصري
   scannerEl.classList.add('scanning-active');
-  statusEl.innerText = "جاري التحليل... ⏳";
-  statusEl.classList.add('text-emerald-400');
-
-  // 2. تشغيل صوت المسح المتصاعد
-  if (!isMuted) {
-    if (!scanAudioCtx) scanAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    scanOscillator = scanAudioCtx.createOscillator();
-    const gainNode = scanAudioCtx.createGain();
-
-    scanOscillator.type = 'sawtooth';
-    scanOscillator.frequency.setValueAtTime(200, scanAudioCtx.currentTime);
-    scanOscillator.frequency.linearRampToValueAtTime(800, scanAudioCtx.currentTime + 2); // تصاعد الصوت
-
-    gainNode.gain.setValueAtTime(0.1, scanAudioCtx.currentTime);
-
-    scanOscillator.connect(gainNode);
-    gainNode.connect(scanAudioCtx.destination);
-    scanOscillator.start();
+  if (statusEl) {
+    statusEl.innerText = "جاري التحليل...";
+    statusEl.className = "text-xs font-mono h-4 mt-4 text-emerald-400 animate-pulse";
   }
 
-  // 3. ضبط المؤقت لاكتمال المسح (2 ثانية)
+  // --- تشغيل الصوت الجديد (أنعم وأخف) ---
+  if (!isMuted) {
+    if (!scanAudioCtx) scanAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // 1. إنشاء المذبذب (Oscillator)
+    scanOscillator = scanAudioCtx.createOscillator();
+    scanGain = scanAudioCtx.createGain();
+
+    // استخدام موجة Sine (أنعم صوت ممكن)
+    scanOscillator.type = 'sine';
+
+    // التردد: يبدأ منخفضاً ويرتفع ببطء ونعومة (تأثير Sci-fi Hum)
+    const now = scanAudioCtx.currentTime;
+    scanOscillator.frequency.setValueAtTime(200, now);
+    scanOscillator.frequency.exponentialRampToValueAtTime(600, now + 2); // ارتفاع تدريجي ناعم
+
+    // 2. التحكم في مستوى الصوت (أخف بكثير)
+    scanGain.gain.setValueAtTime(0, now);
+    scanGain.gain.linearRampToValueAtTime(0.05, now + 0.1); // دخول ناعم (Fade in) بصوت منخفض (0.05)
+
+    // ربط العقد الصوتية
+    scanOscillator.connect(scanGain);
+    scanGain.connect(scanAudioCtx.destination);
+
+    scanOscillator.start();
+
+    // اهتزاز خفيف جداً ومستمر
+    if (navigator.vibrate) navigator.vibrate([20, 100, 20, 100, 20]);
+  }
+
+  // بدء المؤقت (2 ثانية)
   scanTimer = setTimeout(() => {
     completeScan();
   }, 2000);
 }
 
+// دالة الإلغاء (يجب التأكد من إيقاف الصوت بنعومة)
 function cancelScan() {
-  if (!scanTimer) return; // لم يكن هناك مسح نشط
+  if (!scanTimer) return;
 
-  // إيقاف كل شيء
   clearTimeout(scanTimer);
   scanTimer = null;
 
@@ -1601,13 +1617,25 @@ function cancelScan() {
   const statusEl = document.getElementById('scan-status');
 
   scannerEl.classList.remove('scanning-active');
-  statusEl.innerText = "فشل المسح! حاول مجدداً ❌";
-  statusEl.classList.remove('text-emerald-400');
+  if (statusEl) {
+    statusEl.innerText = "فشل المسح!";
+    statusEl.className = "text-xs font-mono h-4 mt-4 text-red-400";
+  }
 
-  // إيقاف الصوت
-  if (scanOscillator) {
-    try { scanOscillator.stop(); } catch (e) { }
-    scanOscillator = null;
+  // إيقاف الصوت بنعومة (Fade out)
+  if (scanOscillator && scanGain) {
+    const now = scanAudioCtx.currentTime;
+    scanGain.gain.cancelScheduledValues(now);
+    scanGain.gain.setValueAtTime(scanGain.gain.value, now);
+    scanGain.gain.linearRampToValueAtTime(0, now + 0.1); // تلاشي خلال 0.1 ثانية
+
+    setTimeout(() => {
+      if (scanOscillator) {
+        scanOscillator.stop();
+        scanOscillator.disconnect();
+        scanOscillator = null;
+      }
+    }, 150);
   }
 }
 
