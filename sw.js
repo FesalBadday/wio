@@ -1,12 +1,14 @@
-const CACHE_NAME = 'out-of-loop-gold-v1';
+const CACHE_NAME = 'out-of-loop-gold-v1'; // قمنا بتغيير الإصدار لتحديث الكاش
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './main.css',
-  './tailwind.min.js',
+  './css/style.css',         // تم تصحيح المسار (كان main.css)
+  './js/tailwind.min.js',    // تم تصحيح المسار (كان في الجذر)
+  './js/game.js',            // إضافة ضرورية
+  './js/data.js',            // إضافة ضرورية
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  './icon-192.png',       // ⚠️ فعل هذا السطر فقط إذا كانت الصورة موجودة فعلاً في المجلد
+  './icon-512.png'        // ⚠️ فعل هذا السطر فقط إذا كانت الصورة موجودة فعلاً في المجلد
 ];
 
 // 1. تثبيت الخدمة وتخزين الملفات

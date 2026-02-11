@@ -1419,6 +1419,7 @@ function showFinalResults(type, title) {
 
   awardPoints(state.lastWinner);
   showScreen('final');
+  generateRoast(type);
 }
 
 function awardPoints(winner) {
@@ -2022,6 +2023,64 @@ function nextPlayerAction() {
     state.revealIndex++;
     startRevealSequence();
   }, 300);
+}
+
+// ==========================================
+// 🤖 محلل الأداء الساخر (The Roaster AI)
+// ==========================================
+function generateRoast(winnerType) {
+  const roastEl = document.getElementById('final-roast-msg');
+  if (!roastEl) return;
+
+  let msg = "";
+  const timeUsed = state.initialTimer - state.timer; // الوقت المستغرق
+  const isQuickGame = timeUsed < 20; // هل انتهت بسرعة؟ (أقل من 20 ثانية)
+
+  // تحليل بناءً على الفائز ونوع الفوز
+  if (winnerType === 'blind_win') {
+    msg = "شكيتوا في بعض على الفاضي! 😂💔";
+  }
+  else if (winnerType === 'group_win') {
+    // المحققون فازوا
+    if (isQuickGame) {
+      msg = "شارلوك هولمز فخور بكم! 🕵️‍♂️⚡";
+    } else if (state.timer === 0) {
+      msg = "أخيراً! بغينا ننام.. 😴🕙";
+    } else if (state.panicMode) {
+      msg = "كفو! جبتوه قبل لا يتنفس! 😤🔥";
+    } else {
+      msg = "تعاون أسطوري! لا مكان للمجرمين 🚓";
+    }
+  }
+  else if (winnerType === 'out_win') {
+    // الضايع فاز
+    const spy = state.players.find(p => state.outPlayerIds.includes(p.id));
+
+    // هل فاز بالتخمين؟ (نعرف هذا إذا كنا في مرحلة التخمين)
+    const guessOptions = document.getElementById('guess-options');
+    const isGuessWin = guessOptions && guessOptions.innerHTML !== "";
+
+    if (isGuessWin) {
+      msg = "حظ المبتدئين! 🍀 (أو أنه ذكي بزيادة؟ 🤔)";
+    } else if (state.votesAccumulated && state.votesAccumulated[spy.id] === 0) {
+      // لم يصوت عليه أحد (في النمط الفردي)
+      msg = "نينجا! 🥷 اختفى ببراعة تامة.";
+    } else {
+      msg = "لعب بعقولكم وطلع منها! 🤯🤡";
+    }
+  }
+  else if (winnerType === 'out' && state.undercoverPlayerId) {
+    // المموه فاز (يعني الناس صوتوا عليه)
+    msg = "المموه ضحى بنفسه من أجل الوطن 🫡🥇";
+  }
+
+  // رسائل خاصة للعميل المزدوج
+  if (winnerType === 'out_win' && state.agentPlayerId) {
+    const agent = state.players.find(p => p.id === state.agentPlayerId);
+    if (Math.random() > 0.5) msg = `العميل ${agent.name} كان يطبخ الطبخة صح 🍳🦊`;
+  }
+
+  roastEl.innerText = msg;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
