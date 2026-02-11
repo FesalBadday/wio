@@ -330,6 +330,18 @@
 
     <!-- 9. Final Result Screen -->
     <div id="screen-final" class="glass-panel hidden text-center overflow-y-auto">
+      <div id="web-container" class="hidden mb-8 border-b border-white/10 pb-6">
+        <h3 class="text-xl font-black text-theme-muted mb-6">نتائج التصويت التفصيلية 🗳️</h3>
+
+        <div id="voting-results-grid" class="flex flex-wrap justify-center gap-4 w-full px-2"></div>
+
+        <p
+          class="text-[10px] font-bold mt-6 dir-rtl flex flex-wrap justify-center gap-2 bg-slate-900/40 p-3 rounded-xl mx-auto max-w-xs">
+          <span class="text-emerald-500 flex items-center gap-1">✅ كشف الضايع</span> <span
+            class="text-slate-500">|</span>
+          <span class="text-red-500 flex items-center gap-1">❌ اتهام خاطئ</span>
+        </p>
+      </div>
       <div id="final-status-emoji" class="text-8xl sm:text-9xl mb-6">🏆</div>
       <h2 id="final-result-title" class="text-3xl sm:text-5xl font-black mb-6 text-theme-main"></h2>
       <div class="bg-card-theme p-8 rounded-[2.5rem] mb-8 border">

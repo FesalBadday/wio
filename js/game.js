@@ -943,12 +943,277 @@ function triggerPanic() {
   startGuessingPhase(name, true);
 }
 
+// ==========================================
+// 🗳️ نظام التصويت المتقدم + شبكة الأكاذيب
+// ==========================================
+
+let votesHistory = []; // مصفوفة لتخزين تاريخ التصويت (للرسم)
+
+// 1. بدء التصويت (توجيه حسب النمط)
 function startVoting() {
   playVotingSound();
-  state.voterIndex = 0; state.votesAccumulated = {};
-  state.players.forEach(p => state.votesAccumulated[p.id] = 0);
-  updateVotingGrid();
+  state.voterIndex = 0;
+  votesHistory = []; // تصفير السجل
+
+  if (state.votingMode === 'individual') {
+    // نمط الفردي: نبدأ سلسلة التصويت السري
+    showIndividualVotingStep();
+  } else {
+    // نمط الجماعي: شاشة واحدة للجميع
+    showGroupVotingScreen();
+  }
+}
+
+// 2. عرض شاشة التصويت الفردي (خطوة بخطوة)
+function showIndividualVotingStep() {
+  // إذا انتهى الجميع
+  if (state.voterIndex >= state.players.length) {
+    calculateIndividualResults();
+    return;
+  }
+
+  const voter = state.players[state.voterIndex];
   showScreen('voting');
+
+  // تحديث النصوص
+  const title = document.querySelector('#screen-voting h2');
+  const subtitle = document.getElementById('voting-instruction');
+  const indicator = document.getElementById('voter-indicator');
+
+  title.innerText = "تحقيق سري 🕵️";
+  indicator.classList.remove('hidden');
+  indicator.innerText = `الدور على: ${voter.avatar} ${voter.name}`;
+  subtitle.innerHTML = `يا <span class="text-indigo-400 font-black">${voter.name}</span>، من هو الضايع برأيك؟`;
+
+  // رسم الشبكة (الجميع ما عدا المصوت نفسه)
+  const grid = document.getElementById('voting-grid');
+  grid.innerHTML = '';
+
+  state.players.forEach(p => {
+    if (p.id !== voter.id) {
+      grid.innerHTML += `
+        <button onclick="castIndividualVote('${voter.id}', '${p.id}')" 
+             class="p-4 bg-white/5 border border-transparent hover:border-indigo-500 rounded-3xl flex flex-col items-center gap-2 active:bg-indigo-500/20 text-theme-main transition-all">
+            <span class="text-4xl">${p.avatar}</span>
+            <span class="font-bold text-xs">${p.name}</span>
+        </button>`;
+    }
+  });
+}
+
+// 3. تسجيل الصوت الفردي
+function castIndividualVote(voterId, targetId) {
+  // تحويل الـ IDs لأرقام لضمان التوافق
+  voterId = parseInt(voterId);
+  targetId = parseInt(targetId);
+
+  votesHistory.push({ voter: voterId, target: targetId });
+  sounds.tick();
+
+  state.voterIndex++;
+  showIndividualVotingStep(); // الانتقال للاعب التالي
+}
+
+// 4. عرض شاشة التصويت الجماعي (الكل في شاشة واحدة)
+function showGroupVotingScreen() {
+  showScreen('voting');
+
+  const title = document.querySelector('#screen-voting h2');
+  const subtitle = document.getElementById('voting-instruction');
+  const indicator = document.getElementById('voter-indicator');
+
+  title.innerText = "قرار المجموعة ⚖️";
+  indicator.classList.add('hidden');
+  subtitle.innerText = "من هو الضايع؟ اضغطوا على صورته!";
+
+  const grid = document.getElementById('voting-grid');
+  grid.innerHTML = '';
+
+  state.players.forEach(p => {
+    grid.innerHTML += `
+      <button onclick="processVoteResult(${p.id})" 
+           class="p-4 bg-white/5 border border-transparent hover:border-red-500 rounded-3xl flex flex-col items-center gap-2 active:bg-red-500/20 text-theme-main transition-all">
+          <span class="text-4xl">${p.avatar}</span>
+          <span class="font-bold text-xs">${p.name}</span>
+      </button>`;
+  });
+}
+
+// 5. حساب نتائج التصويت الفردي
+function calculateIndividualResults() {
+  // حساب تكرار الأصوات
+  const voteCounts = {};
+  votesHistory.forEach(v => {
+    voteCounts[v.target] = (voteCounts[v.target] || 0) + 1;
+  });
+
+  // معرفة الأكثر تصويتاً
+  let maxVotes = -1;
+  let victimId = null;
+
+  for (const [pid, count] of Object.entries(voteCounts)) {
+    if (count > maxVotes) {
+      maxVotes = count;
+      victimId = parseInt(pid);
+    }
+  }
+
+  // إرسال الضحية للمعالجة
+  processVoteResult(victimId);
+}
+
+// 6. معالجة النتيجة النهائية (مشترك) + التحكم بظهور الشبكة
+function processVoteResult(id) {
+  // --- إظهار/إخفاء الشبكة بناءً على النمط ---
+  const webContainer = document.getElementById('web-container');
+  if (state.votingMode === 'individual') {
+    webContainer.classList.remove('hidden');
+    setTimeout(drawWebOfLies, 200); // رسم الشبكة
+  } else {
+    webContainer.classList.add('hidden');
+  }
+  // ------------------------------------------
+
+  // المنطق الأصلي الخاص بك (كما هو في ملفك)
+  if (state.blindRoundType) {
+    const p = state.players.find(x => x.id === id);
+    sounds.funny();
+    showFinalResults('blind_win', `مقلب! 🤣 ${p ? p.name : ''} بريء! ما كان فيه ضايع!`);
+    return;
+  }
+
+  const isOut = state.outPlayerIds.includes(id);
+
+  if (isOut) {
+    if (state.guessingEnabled) {
+      const p = state.players.find(x => x.id === id);
+      startGuessingPhase(p ? p.name : null);
+    } else showFinalResults('group_win', "كفو! صدتوا الضايع 😶‍🌫️");
+  } else if (id === state.undercoverPlayerId) {
+    showFinalResults('out_win', "المموه خدعكم! 🤫 فاز الضايع");
+  } else {
+    sounds.wrong();
+    document.body.classList.add('wrong-flash-active');
+    setTimeout(() => { document.body.classList.remove('wrong-flash-active'); showFinalResults('out_win', "خطأ! الضايع فاز 😈"); }, 600);
+  }
+}
+
+// 7. دالة عرض النتائج بنظام البطاقات (بديل الكانفاس)
+function drawWebOfLies() {
+  const container = document.getElementById('voting-results-grid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // 1. تجميع الأصوات: لكل لاعب، من صوت له؟
+  const results = {};
+
+  // تهيئة القائمة بجميع اللاعبين الذين تلقوا أصواتاً
+  votesHistory.forEach(v => {
+    if (!results[v.target]) {
+      results[v.target] = {
+        targetId: v.target,
+        voters: []
+      };
+    }
+    results[v.target].voters.push(v.voter);
+  });
+
+  // تحويل الكائن لمصفوفة لترتيبها (الأكثر تصويتاً يظهر أولاً)
+  const sortedResults = Object.values(results).sort((a, b) => b.voters.length - a.voters.length);
+
+  if (sortedResults.length === 0) {
+    container.innerHTML = '<p class="text-theme-muted text-sm">لم يصوت أحد! 🕊️</p>';
+    return;
+  }
+
+  // 2. بناء بطاقة لكل متهم
+  sortedResults.forEach(group => {
+    const targetPlayer = state.players.find(p => p.id === group.targetId);
+    const targetRoleData = state.currentRoles.find(r => r.id === group.targetId);
+
+    // تحديد ألوان ودور المتهم
+    let roleLabel = "المحقق";
+    let roleColorClass = "bg-indigo-500/20 text-indigo-300 border-indigo-500/30"; // Default Blue
+    let borderColor = "border-indigo-500/30";
+
+    if (targetRoleData.role === 'out') {
+      roleLabel = "الضايع";
+      roleColorClass = "bg-red-500/20 text-red-300 border-red-500/30";
+      borderColor = "border-red-500/50";
+    } else if (targetRoleData.role === 'agent') {
+      roleLabel = "العميل";
+      roleColorClass = "bg-orange-500/20 text-orange-300 border-orange-500/30";
+      borderColor = "border-orange-500/50";
+    } else if (targetRoleData.role === 'undercover') {
+      roleLabel = "المموه";
+      roleColorClass = "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+      borderColor = "border-yellow-500/50";
+    }
+
+    // إنشاء HTML المصوتين
+    let votersHTML = '';
+    group.voters.forEach(voterId => {
+      const voter = state.players.find(p => p.id === voterId);
+
+      // تحديد لون حدود المصوت (هل كان تصويته ذكياً أم لا؟)
+      let borderClass = 'border-wrong'; // أحمر (خطأ - صوت لمحقق)
+
+      if (targetRoleData.role === 'out') borderClass = 'border-correct'; // أخضر (كشف الضايع)
+      else if (targetRoleData.role === 'agent') borderClass = 'border-orange'; // برتقالي (كشف العميل)
+      else if (targetRoleData.role === 'undercover') borderClass = 'border-yellow'; // أصفر (صوت للمموه)
+
+      votersHTML += `
+                <div class="voter-bubble ${borderClass}" title="${voter.name}">
+                    ${voter.avatar}
+                </div>
+            `;
+    });
+
+    // HTML البطاقة الكاملة
+    const cardHTML = `
+            <div class="vote-card ${borderColor}">
+                <div class="vote-card-header">
+                    <div class="text-4xl mb-1">${targetPlayer.avatar}</div>
+                    <div class="font-bold text-sm truncate max-w-[140px]">${targetPlayer.name}</div>
+                    <span class="role-badge border ${roleColorClass}">${roleLabel}</span>
+                </div>
+                
+                <div class="w-full border-t border-white/10 my-2"></div>
+                <div class="text-[10px] text-theme-muted mb-1">المصوتون (${group.voters.length}):</div>
+                <div class="voters-container">
+                    ${votersHTML}
+                </div>
+            </div>
+        `;
+
+    container.innerHTML += cardHTML;
+  });
+}
+
+// دالة رسم السهم المساعدة
+function drawArrow(ctx, fromX, fromY, toX, toY, color, width) {
+  const headlen = 15;
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  const offset = 40; // مسافة التوقف قبل الدائرة
+
+  const startX = fromX + offset * Math.cos(angle);
+  const startY = fromY + offset * Math.sin(angle);
+  const endX = toX - offset * Math.cos(angle);
+  const endY = toY - offset * Math.sin(angle);
+
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  ctx.lineTo(endX, endY);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(endX, endY);
+  ctx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
+  ctx.fillStyle = color;
+  ctx.fill();
 }
 
 function updateVotingGrid() {
@@ -978,29 +1243,6 @@ function handleVoteClick(id) {
       }
       processVoteResult(winnerId);
     }
-  }
-}
-
-function processVoteResult(id) {
-  if (state.blindRoundType) {
-    const p = state.players.find(x => x.id === id);
-    sounds.funny();
-    showFinalResults('blind_win', `مقلب! 🤣 ${p ? p.name : ''} بريء! ما كان فيه ضايع!`);
-    return;
-  }
-  const isOut = state.outPlayerIds.includes(id);
-  if (isOut) {
-    // If Panic Button (Guessing) was allowed in setup, show guessing.
-    if (state.guessingEnabled) {
-      const p = state.players.find(x => x.id === id);
-      startGuessingPhase(p ? p.name : null);
-    } else showFinalResults('group_win', "كفو! صدتوا الضايع 😶‍🌫️");
-  } else if (id === state.undercoverPlayerId) {
-    showFinalResults('out_win', "المموه خدعكم! 🤫 فاز الضايع");
-  } else {
-    sounds.wrong();
-    document.body.classList.add('wrong-flash-active');
-    setTimeout(() => { document.body.classList.remove('wrong-flash-active'); showFinalResults('out_win', "خطأ! الضايع فاز 😈"); }, 600);
   }
 }
 
