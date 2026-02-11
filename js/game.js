@@ -780,6 +780,44 @@ function startRevealSequence() {
   showScreen('reveal');
 }
 
+// دالة تأثير فك التشفير (Matrix Style)
+function scrambleText(elementId, finalText, duration = 800) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  // الحروف العشوائية التي ستظهر (عربية ورموز)
+  const chars = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي?!@#$%&';
+  let start = null;
+
+  function update(timestamp) {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+
+    // عدد الحروف التي تم كشفها
+    const revealedLength = Math.floor(finalText.length * progress);
+
+    // بناء النص: الجزء المكشوف + رموز عشوائية
+    let output = finalText.substring(0, revealedLength);
+
+    // إضافة الرموز العشوائية للباقي
+    for (let i = revealedLength; i < finalText.length; i++) {
+      // الحفاظ على المسافات كما هي
+      if (finalText[i] === ' ') output += ' ';
+      else output += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    el.innerText = output;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      el.innerText = finalText; // التأكد من النص النهائي
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
 function populateCardBack(player) {
   const roleData = state.currentRoles.find(r => r.id === player.id);
   const txt = document.getElementById('reveal-role-text');
@@ -825,6 +863,13 @@ function performRevealLogic() {
 
   // الحالة 1: البطاقة مغلقة -> نريد كشف الدور (مع غليتش)
   if (!cardObj.classList.contains('is-flipped')) {
+
+    // تشغيل فك التشفير للنصوص المهمة
+    const roleTxt = document.getElementById('reveal-role-text').innerText; // النص المخزن حالياً
+    const secretWord = document.getElementById('reveal-secret-word').innerText;
+
+    scrambleText('reveal-role-text', roleTxt);
+    scrambleText('reveal-secret-word', secretWord);
 
     triggerGlitchEffects(); // 🔥 تشغيل التأثيرات هنا 🔥
 
