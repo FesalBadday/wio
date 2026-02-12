@@ -191,7 +191,7 @@ let state = {
   players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
   revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: false,
   outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "عشوائي",
-  allowedCategories: [], usedWords: [], customWords: [], lastWinner: null, votingMode: 'group', voterIndex: 0,
+  allowedCategories: [], usedWords: [], customWords: [], lastWinner: null, votingMode: 'individual', voterIndex: 0,
   votesAccumulated: {}, panicMode: false, smartDistractors: true, blindModeActive: false, blindRoundType: null,
   guessInterval: null, panicModeAllowed: false
 };
