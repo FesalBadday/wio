@@ -605,6 +605,8 @@ function startGame() {
   }
   localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(state.players));
 
+  state.revealOrder = state.players.map((_, i) => i).sort(() => Math.random() - 0.5);
+
   state.timer = parseInt(document.getElementById('input-time').value);
   state.initialTimer = state.timer;
   state.doubleAgentActive = document.getElementById('check-double-agent').checked;
@@ -791,7 +793,9 @@ function startRevealSequence() {
 
   document.getElementById('btn-next-player').classList.add('hidden');
 
-  const p = state.players[state.revealIndex];
+  const playerIndex = state.revealOrder[state.revealIndex];
+  const p = state.players[playerIndex];
+
   document.getElementById('reveal-player-name').innerText = `${p.avatar} ${p.name}`;
   const cardObj = document.getElementById('role-card');
   if (cardObj) cardObj.classList.remove('is-flipped');

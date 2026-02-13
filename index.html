@@ -200,9 +200,20 @@
     <!-- 4. Names Screen (Improved Styling) -->
     <div id="screen-names" class="glass-panel hidden text-right">
       <h2 class="text-2xl sm:text-3xl font-black mb-8 text-center text-theme-main">تجهيز فريق المحققين 🔎</h2>
+
       <div id="names-container" class="space-y-4 mb-8 max-h-[60vh] overflow-y-auto px-2"></div>
-      <button onclick="startGame()" class="btn-gradient w-full py-6 rounded-3xl font-black text-white text-xl">انطلاق!
-        🚀</button>
+
+      <div class="grid grid-cols-2 gap-4">
+        <button onclick="showScreen('setup')"
+          class="btn-secondary-theme py-6 rounded-3xl font-bold text-lg transition-all">
+          رجوع 🔙
+        </button>
+
+        <button onclick="startGame()"
+          class="btn-gradient py-6 rounded-3xl font-black text-white text-xl transition-all">
+          انطلاق! 🚀
+        </button>
+      </div>
     </div>
 
     <!-- 5. Reveal Screen -->
