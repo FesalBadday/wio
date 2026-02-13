@@ -30,7 +30,18 @@ function formatTimeLabel(s) {
   // إرجاع النص النهائي (مع الثواني أو بدونها)
   return sc === 0 ? mText : `${mText} و${sc} ثانية`;
 }
-function triggerVibrate(p) { if (isVibrationEnabled && navigator.vibrate) navigator.vibrate(p); }
+
+function triggerVibrate(ms) {
+  // 1. التحقق مما إذا كنا داخل تطبيق الأندرويد
+  if (typeof Android !== "undefined" && Android.vibrate) {
+    Android.vibrate(ms); // استدعاء الاهتزاز الأصلي القوي
+  }
+  // 2. إذا كنا في متصفح عادي أو آيفون
+  else if (navigator.vibrate) {
+    navigator.vibrate(ms);
+  }
+}
+
 function playTone(f, d, t = 'sine', v = 0.1) { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
 function playFlipSound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'triangle'; o.frequency.setValueAtTime(400, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); o.start(); o.stop(audioCtx.currentTime + 0.2); }
 function playFunnySound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth'; o.frequency.setValueAtTime(300, audioCtx.currentTime); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2); o.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6); o.start(); o.stop(audioCtx.currentTime + 0.6); }
@@ -337,6 +348,7 @@ function toggleCategorySelection(cat) {
       showAlert("الحد الأقصى 12 فئة!");
     }
   }
+  sounds.tick();
   renderCategorySelectionGrid();
 }
 
@@ -1914,7 +1926,7 @@ function startScan(e) {
     scanOscillator.connect(scanGain);
     scanGain.connect(scanAudioCtx.destination);
     scanOscillator.start();
-    if (navigator.vibrate) navigator.vibrate([20]);
+    if (triggerVibrate) triggerVibrate([20]);
   }
 
   // انتهاء المؤقت
