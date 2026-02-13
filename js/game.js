@@ -32,14 +32,22 @@ function formatTimeLabel(s) {
 }
 
 function triggerVibrate(ms) {
-  // 1. التحقق مما إذا كنا داخل تطبيق الأندرويد
-  if (typeof Android !== "undefined" && Android.vibrate) {
-    Android.vibrate(ms); // استدعاء الاهتزاز الأصلي القوي
-  }
-  // 2. إذا كنا في متصفح عادي أو آيفون
-  else if (navigator.vibrate) {
-    navigator.vibrate(ms);
-  }
+  if (!isVibrationEnabled) return;
+  // نضع الكود داخل setTimeout بمدة 0
+  // هذا الحيلة تجعل الاهتزاز يعمل في "طابور" منفصل ولا يعطل اللعبة أبداً
+  setTimeout(() => {
+    try {
+      const duration = Math.floor(ms); // التأكد أنه رقم صحيح
+
+      if (typeof Android !== "undefined" && Android.vibrate) {
+        Android.vibrate(duration);
+      } else if (navigator.vibrate) {
+        navigator.vibrate(duration);
+      }
+    } catch (err) {
+      console.warn("Vibration failed ignored:", err);
+    }
+  }, 0);
 }
 
 function playTone(f, d, t = 'sine', v = 0.1) { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
