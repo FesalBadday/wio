@@ -717,7 +717,7 @@ function setupRoles() {
   let ids = state.players.map(p => p.id).sort(() => 0.5 - Math.random());
   state.outPlayerIds = []; state.agentPlayerId = null; state.undercoverPlayerId = null; state.blindRoundType = null;
 
-  if (state.blindModeActive && Math.random() < 0.95) {
+  if (state.blindModeActive && Math.random() < 0.20) {
     if (Math.random() < 0.5) state.blindRoundType = 'all_in';
     else { state.blindRoundType = 'all_out'; state.outPlayerIds = state.players.map(p => p.id); }
   } else {
