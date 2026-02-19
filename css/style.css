@@ -847,3 +847,25 @@ button:disabled {
   color: white;
   display: inline-block;
 }
+
+/* حركة شريط التحميل */
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* كلاس للإخفاء الناعم */
+.fade-out {
+  opacity: 0 !important;
+  pointer-events: none;
+  /* لمنع اللمس أثناء الاختفاء */
+}
