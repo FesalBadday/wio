@@ -132,8 +132,8 @@ body {
   border: 1px solid var(--glass-border);
   border-radius: 2.5rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  max-height: 94vh;
-  width: 100%;
+  max-height: 90vh;
+  width: 90vw;
   max-width: 550px;
   overflow-y: auto;
   position: relative;
@@ -868,4 +868,21 @@ button:disabled {
   opacity: 0 !important;
   pointer-events: none;
   /* لمنع اللمس أثناء الاختفاء */
+}
+
+/* تعريف حركة دوران ناعمة ومستمرة */
+@keyframes border-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* كلاس لتطبيق الحركة */
+.animate-border-spin {
+  animation: border-spin 4s linear infinite;
+  /* يدور دورة كاملة كل 4 ثواني */
 }

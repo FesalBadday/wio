@@ -671,6 +671,7 @@ function handleClientData(data) {
     // استلام إشارة البدء وبيانات الدور
     state.players = onlinePlayers;
     state.secretData = data.secretData;
+    state.currentUndercoverData = data.undercoverData;
     state.myRole = data.roleData;
     state.timer = data.timer;
     state.initialTimer = data.timer;
@@ -681,6 +682,7 @@ function handleClientData(data) {
       state.panicModeAllowed = data.settings.panicModeAllowed;
       state.guessingEnabled = data.settings.guessingEnabled;
       state.blindModeActive = data.settings.blindModeActive;
+      state.hintEnabled = data.settings.hintEnabled;
     }
 
     // الانتقال لشاشة الكشف
@@ -1550,7 +1552,7 @@ let state = {
   outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "عشوائي",
   allowedCategories: [], usedWords: [], customWords: [], lastWinner: null, votingMode: 'individual', voterIndex: 0,
   votesAccumulated: {}, panicMode: false, smartDistractors: true, blindModeActive: false, blindRoundType: null,
-  guessInterval: null, panicModeAllowed: false
+  guessInterval: null, panicModeAllowed: false, hintEnabled: false
 };
 
 function showScreen(screenId) {
@@ -2172,6 +2174,8 @@ function startOnlineGame() {
   state.undercoverActive = document.getElementById('online-check-undercover').checked;
   // -------------------------------------------------------------
 
+  state.hintEnabled = document.getElementById('online-check-hint') ? document.getElementById('online-check-hint').checked : false;
+
   setupRoles();
 
   state.players.forEach(p => {
@@ -2180,13 +2184,15 @@ function startOnlineGame() {
     const packet = {
       type: 'START_GAME',
       secretData: state.secretData,
+      undercoverData: state.currentUndercoverData,
       roleData: roleData,
       timer: state.timer,
       customWords: state.customWords,
       settings: {
         panicModeAllowed: state.panicModeAllowed,
         guessingEnabled: state.guessingEnabled,
-        blindModeActive: state.blindModeActive
+        blindModeActive: state.blindModeActive,
+        hintEnabled: state.hintEnabled
       }
     };
 
@@ -2214,7 +2220,7 @@ function setupOnlineRevealScreen() {
     // ... (نفس كود HTML البناء السابق) ...
     // اختصاراً، استخدم نفس كود البناء الذي أعطيتك إياه في الرد السابق
     // سأضع النسخة المختصرة هنا، تأكد من وجود كود الـ innerHTML الكامل
-    screenReveal.innerHTML = `
+    /* screenReveal.innerHTML = `
       <div class="text-7xl sm:text-8xl mb-6">📱</div>
       <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
       <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-10 text-indigo-500"></h2>
@@ -2247,7 +2253,57 @@ function setupOnlineRevealScreen() {
       </div>
       <button id="btn-reveal-action" onclick="toggleReveal()" class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white hidden">كشف الدور</button>
       <button id="btn-next-player" onclick="nextPlayerAction()" class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white hidden">التالي ⏭️</button>
-      `;
+      `; */
+    screenReveal.innerHTML = `
+      <div class="text-7xl sm:text-8xl mb-6"></div>
+      <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
+      <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-8 text-indigo-500"></h2>
+
+      <div class="card-scene w-full max-w-sm mx-auto mb-8 h-[400px] sm:h-[420px]">
+        <div class="card-object w-full h-full" id="role-card">
+          
+          <div class="card-face card-face-front absolute inset-0 w-full h-full overflow-hidden bg-gradient-to-br from-slate-900 to-black border-2 border-indigo-500/30 shadow-[0_0_30px_rgba(99,102,241,0.2)] rounded-[2.5rem]">
+            <div class="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0deg,#4f46e5_90deg,#8b5cf6_180deg,transparent_270deg,#4f46e5_360deg)] animate-border-spin opacity-80"></div>
+            
+            <div class="absolute inset-[3px] bg-gradient-to-br from-slate-950 to-black rounded-[calc(2.5rem-3px)] z-10">
+              <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBoNDBNNDAgMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-30"></div>
+              <div class="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            </div>
+            
+            <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4">
+              <h3 class="text-theme-muted font-bold text-sm mb-6 animate-pulse">ضع إصبعك للكشف</h3>
+              <div id="fingerprint-scanner" class="relative w-32 h-32 flex items-center justify-center cursor-pointer group active:scale-95 transition-transform duration-200" onmousedown="startScan(event)" ontouchstart="startScan(event)" onmouseup="cancelScan()" ontouchend="cancelScan()" onmouseleave="cancelScan()">
+                <svg class="w-14 h-14 text-indigo-500/50 transition-all duration-300 z-10 group-hover:text-indigo-500/80" id="scanner-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.93-2.85-1.45-6.45-1.45-9.28.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.2-.41.2zm6.27 12c-.25 0-.48-.19-.5-.45-.09-1.39-.03-2.79.16-4.18.36-2.59 2.05-4.43 4.54-4.93.27-.05.53.12.59.39.05.27-.12.53-.39.59-1.89.38-3.17 1.78-3.44 3.73-.18 1.3-.23 2.6-.15 3.9.02.28-.19.52-.47.54-.11.01-.23 0-.34-.49zM9.6 20.3c-.27 0-.5-.21-.52-.49-.1-2.18.23-4.52.95-6.73.53-1.63 1.46-3.08 2.7-4.21.21-.19.53-.18.72.03.19.21.18.53-.03.72-1.07 1-1.87 2.24-2.33 3.66-.66 2.03-.96 4.17-.87 6.17.02.27-.2.5-.47.52-.05 0-.1 0-.15-.17zm6 1.4c-.26 0-.49-.2-.51-.46-.14-2.18.17-4.4.89-6.42.54-1.51 1.44-2.82 2.6-3.79.22-.18.53-.15.72.06.18.22.15.53-.06.72-1 1.05-1.77 2.18-2.24 3.5-.66 1.84-.94 3.86-.81 5.86.02.28-.19.52-.47.54-.04-.01-.08-.01-.12-.01z" /></svg>
+                <div class="absolute inset-0 rounded-full overflow-hidden z-20 pointer-events-none">
+                  <div id="scan-beam" class="absolute w-full h-1 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,1)] top-0 hidden opacity-80"></div>
+                </div>
+                <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none z-30" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="48" stroke="rgba(99, 102, 241, 0.2)" stroke-width="2" fill="none"></circle>
+                  <circle cx="50" cy="50" r="48" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" class="opacity-0" id="scan-progress" stroke-dasharray="301.6" stroke-dashoffset="301.6"></circle>
+                </svg>
+              </div>
+              <p id="scan-status" class="text-xs text-indigo-400 mt-6 font-mono h-4">انتظار البيانات...</p>
+            </div>
+          </div>
+          
+          <div class="card-face card-face-back absolute inset-0 w-full h-full overflow-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-black border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] rounded-[2.5rem]">
+            <div class="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0deg,#10b981_90deg,#34d399_180deg,transparent_270deg,#10b981_360deg)] animate-border-spin opacity-80"></div>
+            <div class="absolute inset-[3px] bg-gradient-to-tl from-slate-950 via-slate-900 to-black rounded-[calc(2.5rem-3px)] z-10">
+              <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+            </div>
+            <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4">
+              <p id="reveal-role-text" class="text-xl sm:text-2xl font-bold mb-4"></p>
+              <div id="reveal-img-placeholder" class="text-7xl sm:text-8xl mb-4 drop-shadow-2xl"></div>
+              <p id="reveal-secret-word" class="text-3xl sm:text-5xl font-black text-emerald-400 mb-6 tracking-wider break-words w-full px-2 leading-tight drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]" style="direction: rtl; unicode-bidi: embed;"></p>
+              <p id="reveal-word-desc" class="text-sm sm:text-base text-blue-400 mt-4 font-bold bg-blue-500/10 p-2 rounded-xl border border-blue-500/20 relative z-10"></p>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      <button id="btn-reveal-action" onclick="toggleReveal()" class="btn-gradient w-full py-6 rounded-3xl font-black text-2xl text-white hidden">كشف الدور</button>
+      <button id="btn-next-player" onclick="nextPlayerAction()" class="btn-gradient w-full py-6 rounded-3xl font-black text-2xl text-white hidden">التالي ⏭️</button>
+`;
   }
 
   // تصفير الماسح
@@ -2283,8 +2339,19 @@ function setupOnlineRevealScreen() {
         txt.innerText = "أنت الضايع!";
         word.innerText = "؟؟؟؟؟";
         img.innerText = "😶‍🌫️";
-        desc.innerText = "؟؟؟؟؟";
-        txt.className = "text-xl font-bold mb-4 text-red-500";
+
+        // منطق التلميح الجديد للأونلاين
+        if (state.hintEnabled && state.secretData) {
+          const wordLength = state.secretData.word.replace(/\s/g, '').length;
+          desc.innerText = `💡 تلميح: ${state.secretData.desc || state.currentRoundCategory} (${wordLength} حروف)`;
+          desc.className = "text-sm sm:text-base text-blue-400 mt-4 font-bold bg-blue-500/10 p-2 rounded-xl border border-blue-500/20 relative z-10";
+        } else {
+          desc.innerText = "؟؟؟؟؟";
+          desc.className = "text-sm sm:text-base text-blue-400 mt-4 font-bold bg-blue-500/10 p-2 rounded-xl border border-blue-500/20 relative z-10";
+          //desc.className = "text-base sm:text-lg text-theme-muted mt-4 font-bold relative z-10";
+        }
+
+        txt.className = "text-xl font-bold mb-4 text-red-500 relative z-10";
       } else if (roleData.role === 'agent') {
         txt.innerText = "أنت العميل!";
         word.innerText = state.secretData.word;
@@ -2400,6 +2467,7 @@ function startGame() {
   state.guessingEnabled = document.getElementById('check-guessing').checked;
 
   state.blindModeActive = document.getElementById('check-blind-mode').checked;
+  state.hintEnabled = document.getElementById('check-hint').checked;
 
   // Smart Distractors is ALWAYS active
   state.smartDistractors = true;
@@ -2529,7 +2597,7 @@ function setupRoles() {
 
   // ✅ تعديل: جعل التحدي الأعمى نادراً (8% فقط) وذكي (لا يكرر النوع)
   // يمكنك تغيير 0.08 إلى 0.05 لجعله أندر (5%)
-  if (state.blindModeActive && Math.random() < 10.05) {
+  if (state.blindModeActive && Math.random() < 0.05) {
 
     // تحديد النوع بناءً على المرة السابقة
     if (state.lastBlindType === 'all_in') {
@@ -2722,7 +2790,20 @@ function populateCardBack(player) {
     desc.innerText = state.currentUndercoverData.desc || "";
     txt.className = "text-xl font-bold mb-4 text-yellow-500";
   } else {
-    txt.innerText = "أنت الضايع!"; word.innerText = "؟؟؟؟؟"; img.innerText = "😶‍🌫️"; desc.innerText = "؟؟؟؟؟";
+    txt.innerText = "أنت الضايع!";
+    word.innerText = "؟؟؟؟؟";
+    img.innerText = "😶‍🌫️";
+
+    // منطق التلميح الجديد
+    if (state.hintEnabled && state.secretData) {
+      const wordLength = state.secretData.word.replace(/\s/g, '').length;
+      desc.innerText = `💡 تلميح: ${state.secretData.desc || state.currentRoundCategory} (${wordLength} حروف)`;
+      desc.className = "text-sm sm:text-base text-blue-400 mt-4 font-bold bg-blue-500/10 p-2 rounded-xl border border-blue-500/20 relative z-10";
+    } else {
+      desc.innerText = "؟؟؟؟؟";
+      desc.className = "text-sm sm:text-base text-blue-400 mt-4 font-bold bg-blue-500/10 p-2 rounded-xl border border-blue-500/20 relative z-10";
+    }
+
     txt.className = "text-xl font-bold mb-4 text-red-500";
   }
 }
