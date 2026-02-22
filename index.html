@@ -161,17 +161,17 @@
 
           <div
             class="grid grid-cols-5 gap-3 p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm shadow-sm">
-            <button onclick="showScreen('category-select')"
+            <button onclick="openCategoryModal()"
               class="col-span-2 btn-secondary-theme py-3 px-2 rounded-xl text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 hover:scale-[1.02] transition-transform">
-              <span class="text-lg">📚</span>
-              <span>تغيير الفئة</span>
+              <span class="text-lg" id="host-current-cat-emoji">📚</span>
+              <span id="host-current-cat-text">تغيير الفئة</span>
             </button>
 
             <div
               class="col-span-3 flex flex-col items-center justify-center bg-slate-900/50 rounded-xl p-2 border border-white/5">
               <div class="flex items-center gap-1 mb-2">
                 <span class="text-base">⏳</span>
-                <span id="online-time-display" class="text-xs font-black text-emerald-400">1 دقيقة</span>
+                <span id="online-time-display" class="text-xs font-black text-emerald-400">دقيقة</span>
               </div>
               <input type="range" id="online-time-input" min="60" max="900" step="60" value="60"
                 class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500 hover:accent-emerald-400 transition-all"
@@ -187,18 +187,18 @@
 
             <div class="grid grid-cols-2 gap-3">
               <label
-                class="relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-500/10 has-[:checked]:shadow-[0_0_15px_rgba(99,102,241,0.15)] group">
+                class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-500/10 has-[:checked]:shadow-[0_0_15px_rgba(99,102,241,0.15)] group">
                 <input type="checkbox" id="online-check-blind" class="peer sr-only" onchange="updateOnlineSettingsUI()">
                 <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🙈</div>
                 <div class="text-right flex-1">
                   <span
-                    class="block font-bold text-xs text-slate-300 peer-checked:text-indigo-300 transition-colors">التحدي
+                    class="block font-bold text-sm text-slate-300 peer-checked:text-indigo-300 transition-colors">التحدي
                     الأعمى</span>
-                  <span class="block text-[9px] text-theme-muted opacity-70">قد لا يكون هناك ضايع أو الكل ضايع!</span>
+                  <span class="block text-[10px] text-theme-muted opacity-70">قد لا يكون هناك ضايع أو الكل ضايع!</span>
                 </div>
                 <div
-                  class="w-5 h-5 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all">
-                  <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all">
+                  <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                   </svg>
@@ -206,18 +206,18 @@
               </label>
 
               <label
-                class="relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-emerald-500/50 has-[:checked]:bg-emerald-500/10 has-[:checked]:shadow-[0_0_15px_rgba(16,185,129,0.15)] group">
+                class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-emerald-500/50 has-[:checked]:bg-emerald-500/10 has-[:checked]:shadow-[0_0_15px_rgba(16,185,129,0.15)] group">
                 <input type="checkbox" id="online-check-guessing" class="peer sr-only">
                 <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🎯</div>
                 <div class="text-right flex-1">
                   <span
-                    class="block font-bold text-xs text-slate-300 peer-checked:text-emerald-300 transition-colors">فرصة
+                    class="block font-bold text-sm text-slate-300 peer-checked:text-emerald-300 transition-colors">فرصة
                     التخمين</span>
-                  <span class="block text-[9px] text-theme-muted opacity-70">للضايع إذا خسر</span>
+                  <span class="block text-[10px] text-theme-muted opacity-70">للضايع إذا خسر</span>
                 </div>
                 <div
-                  class="w-5 h-5 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-emerald-500 peer-checked:bg-emerald-500 transition-all">
-                  <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-emerald-500 peer-checked:bg-emerald-500 transition-all">
+                  <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                   </svg>
@@ -225,18 +225,18 @@
               </label>
 
               <label
-                class="relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-blue-500/50 has-[:checked]:bg-blue-500/10 has-[:checked]:shadow-[0_0_15px_rgba(59,130,246,0.15)] group">
+                class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-blue-500/50 has-[:checked]:bg-blue-500/10 has-[:checked]:shadow-[0_0_15px_rgba(59,130,246,0.15)] group">
                 <input type="checkbox" id="online-check-hint" class="peer sr-only">
                 <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">💡</div>
                 <div class="text-right flex-1">
                   <span
-                    class="block font-bold text-xs text-slate-300 peer-checked:text-blue-300 transition-colors">تلميح
+                    class="block font-bold text-sm text-slate-300 peer-checked:text-blue-300 transition-colors">تلميح
                     للضايع</span>
-                  <span class="block text-[9px] text-theme-muted opacity-70">يظهر بكرته السري</span>
+                  <span class="block text-[10px] text-theme-muted opacity-70">يظهر له الفئة و عدد حروف السالفة</span>
                 </div>
                 <div
-                  class="w-5 h-5 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all">
-                  <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all">
+                  <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                   </svg>
@@ -334,8 +334,7 @@
       <!-- 1. Start Screen -->
       <div id="screen-start" class="glass-panel text-center">
 
-        <div id="hero-emoji" class="mb-6 detective-float text-7xl sm:text-9xl text-center cursor-pointer"
-          onclick="sounds.funny()">🕵️‍♂️</div>
+        <div id="hero-emoji" class="mb-6 detective-float text-7xl sm:text-9xl text-center cursor-pointer">🕵️‍♂️</div>
 
         <h1
           class="text-4xl sm:text-6xl font-black mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-emerald-400 leading-normal"
@@ -375,7 +374,7 @@
           <button onclick="showScreen('rules')"
             class="btn-secondary-theme py-4 rounded-2xl font-bold shadow-sm flex flex-col items-center gap-1 hover:scale-[1.02] transition-transform">
             <span class="text-2xl">📖</span>
-            <span class="text-sm">طريقة اللعب</span>
+            <span class="text-sm">الدليل</span>
           </button>
         </div>
 
@@ -389,154 +388,239 @@
       <!-- 2. Category Selection Screen (Organized) -->
       <div id="screen-category-select" class="glass-panel hidden text-right">
         <h2 class="text-2xl sm:text-3xl font-black mb-2 text-center text-theme-main">اختر الفئات 📚</h2>
-        <p class="text-center text-theme-muted text-sm mb-6">اختر ما بين 6 إلى 12 فئة للعب بها</p>
+        <p class="text-center text-theme-muted text-sm mb-6">اختر الفئات أو اتركها فارغة للعب بالكل</p>
 
         <div
           class="sticky top-0 z-20 bg-card-theme/90 backdrop-blur p-3 rounded-2xl border mb-4 flex justify-between items-center shadow-lg">
-          <span class="text-theme-muted text-xs">المختار:</span>
-          <span id="cat-counter" class="text-primary font-black text-xl">0/12</span>
+          <span class="text-theme-muted text-xs">عدد الفئات المختارة:</span>
+          <span id="cat-counter" class="text-primary font-black text-xl">الكل</span>
         </div>
 
-        <!-- حاوية الفئات المرتبة -->
         <div id="selection-grid" class="mb-6"></div>
 
-        <div class="grid grid-cols-2 gap-4 pt-2 text-center">
-          <button onclick="handleCategoryBack()"
-            class="py-4 rounded-3xl btn-secondary-theme font-bold text-lg">رجوع</button>
+        <div id="custom-words-ui"
+          class="bg-indigo-500/10 p-5 rounded-3xl border border-indigo-500/20 hidden text-right mb-6">
+          <label class="text-indigo-500 font-bold block mb-3 text-right text-sm">أضف كلماتك الخاصة (4 كحد أدنى):</label>
+          <div class="flex flex-col gap-3">
+            <input type="text" id="custom-word-input"
+              class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-2xl p-4 outline-none focus:ring-2 ring-indigo-500 text-sm text-right text-white placeholder-slate-400 shadow-inner"
+              placeholder="اكتب الكلمة السرية هنا...">
+            <button onclick="addCustomWord()"
+              class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-2xl font-black text-white text-sm shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"><span>إضافة
+                للقائمة</span> <span>➕</span></button>
+          </div>
+          <div id="custom-words-list" class="flex flex-wrap gap-2 mt-4 max-h-32 overflow-y-auto justify-end text-right">
+          </div>
+        </div>
 
+        <div class="pt-2 text-center">
           <button id="btn-confirm-cats" onclick="confirmCategories()"
-            class="py-4 rounded-3xl btn-gradient font-black text-white text-lg" disabled>التالي</button>
+            class="w-full py-5 rounded-3xl btn-gradient font-black text-white text-xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg">
+            تأكيد ✅
+          </button>
         </div>
       </div>
 
       <!-- 3. Setup Screen -->
       <div id="screen-setup" class="glass-panel hidden text-right">
         <h2 class="text-2xl sm:text-3xl font-black mb-6 text-center text-theme-main">⚙️ إعدادات الجولة</h2>
+
         <div class="space-y-6">
-
-          <!-- الفئة النشطة (عشوائي + المختار) -->
-          <div>
-            <label class="text-theme-muted font-bold block mb-4 text-right">فئة هذه الجولة:</label>
-            <div id="active-category-grid" class="grid grid-cols-3 gap-2 text-center"></div>
-          </div>
-
-          <div id="custom-words-ui"
-            class="bg-indigo-500/10 p-5 rounded-3xl border border-indigo-500/20 hidden text-right">
-            <label class="text-indigo-500 font-bold block mb-3 text-right text-sm">أضف كلماتك الخاصة (4 كحد
-              أدنى):</label>
-
-            <div class="flex flex-col gap-3">
-              <input type="text" id="custom-word-input"
-                class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-2xl p-4 outline-none focus:ring-2 ring-indigo-500 text-sm text-right text-white placeholder-slate-400 shadow-inner"
-                placeholder="اكتب الكلمة السرية هنا...">
-
-              <button onclick="addCustomWord()"
-                class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-2xl font-black text-white text-sm shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
-                <span>إضافة للقائمة</span> <span>➕</span>
-              </button>
-            </div>
-
-            <div id="custom-words-list"
-              class="flex flex-wrap gap-2 mt-4 max-h-32 overflow-y-auto justify-end text-right">
-            </div>
-          </div>
-
-          <div class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
+          <div
+            class="bg-card-theme p-4 rounded-3xl mb-6 shadow-inner border border-white/5 flex justify-between items-center">
             <div class="text-right">
-              <h4 class="font-bold text-sm text-theme-main">⚖️ نظام التصويت</h4>
-              <p class="text-[10px] text-theme-muted italic">طريقة كشف الضايع</p>
+              <p class="text-[10px] text-theme-muted font-bold mb-1">فئة الجولة الحالية:</p>
+              <h4 id="setup-current-cat-text" class="text-base sm:text-lg font-black text-indigo-400">كل الفئات 🎲</h4>
             </div>
-            <div class="flex bg-slate-900/10 p-1 rounded-xl border border-theme">
-              <button id="btn-vote-group" onclick="setVotingMode('group')"
-                class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-theme-main">جماعي</button>
-              <button id="btn-vote-individual" onclick="setVotingMode('individual')"
-                class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg">فردي</button>
+            <button onclick="openCategoryModal()"
+              class="bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl font-bold text-sm transition-colors border border-white/10">تغيير
+              الفئة</button>
+          </div>
+        </div>
+
+        <div class="space-y-4 mt-8">
+          <h4
+            class="text-center text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-300 mb-4 flex items-center justify-center gap-2 before:h-px before:flex-1 before:bg-white/10 after:h-px after:flex-1 after:bg-white/10">
+            إعدادات اللعب ⏱️
+          </h4>
+
+          <div class="bg-card-theme border border-white/5 rounded-3xl p-5 space-y-6 shadow-[0_0_15px_rgba(0,0,0,0.2)]">
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">👥</span>
+                  <label class="text-slate-300 font-bold text-sm">عدد اللاعبين</label>
+                </div>
+                <span
+                  class="text-indigo-300 font-mono font-black text-lg bg-indigo-500/20 px-4 py-1 rounded-xl border border-indigo-500/30"
+                  id="val-players">3</span>
+              </div>
+              <input type="range" id="input-players" min="3" max="15" value="3" oninput="updateSetupInfo()"
+                class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 shadow-inner">
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">⏳</span>
+                  <label class="text-slate-300 font-bold text-sm">وقت النقاش</label>
+                </div>
+                <span
+                  class="text-emerald-300 font-black text-sm bg-emerald-500/20 px-4 py-1 rounded-xl border border-emerald-500/30"
+                  id="val-time-label">دقيقة واحدة</span>
+              </div>
+              <input type="range" id="input-time" min="60" max="900" step="60" value="60" oninput="updateSetupInfo()"
+                class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500 hover:accent-emerald-400 shadow-inner">
+            </div>
+
+            <div class="pt-5 border-t border-white/10 space-y-4">
+              <div class="flex items-center gap-3 text-right">
+                <span class="text-2xl drop-shadow-md">⚖️</span>
+                <div>
+                  <h4 class="font-bold text-sm text-slate-200">نظام التصويت</h4>
+                  <p class="text-[10px] text-indigo-300/80 font-bold">طريقة كشف الضايع</p>
+                </div>
+              </div>
+
+              <div class="flex bg-black/40 p-1.5 rounded-2xl border border-white/5 shadow-inner">
+                <button id="btn-vote-group" onclick="setVotingMode('group')"
+                  class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-white">جماعي</button>
+                <button id="btn-vote-individual" onclick="setVotingMode('individual')"
+                  class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-indigo-600 text-white shadow-lg">فردي</button>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="grid grid-cols-1 gap-4 text-right">
-            <div class="bg-card-theme p-4 rounded-2xl text-right shadow-inner">
-              <div class="flex justify-between mb-3 flex-row-reverse">
-                <label class="text-theme-muted font-bold text-sm text-right">عدد اللاعبين</label>
-                <span class="text-indigo-500 font-mono font-black text-xl" id="val-players">3</span>
+        <div class="space-y-4 mt-8">
+          <h4
+            class="text-center text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 mb-4 flex items-center justify-center gap-2 before:h-px before:flex-1 before:bg-white/10 after:h-px after:flex-1 after:bg-white/10">
+            إعدادات الأدوار ⚙️
+          </h4>
+
+          <div class="grid grid-cols-2 gap-3">
+            <label id="blind-mode-container"
+              class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-500/10 has-[:checked]:shadow-[0_0_15px_rgba(99,102,241,0.15)] group">
+              <input type="checkbox" id="check-blind-mode" class="peer sr-only" onchange="updateSetupInfo()">
+              <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🙈</div>
+              <div class="text-right flex-1">
+                <span
+                  class="block font-bold text-sm text-slate-300 peer-checked:text-indigo-300 transition-colors">التحدي
+                  الأعمى</span>
+                <span class="block text-[10px] text-theme-muted opacity-70">قد لا يكون هناك ضايع أو الكل ضايع!</span>
               </div>
-              <input type="range" id="input-players" min="3" max="15" value="3" oninput="updateSetupInfo()">
-            </div>
-            <div class="bg-card-theme p-4 rounded-2xl text-right shadow-inner">
-              <div class="flex justify-between mb-3 flex-row-reverse">
-                <label class="text-theme-muted font-bold text-sm text-right">وقت النقاش</label>
-                <span class="text-emerald-500 font-black text-lg" id="val-time-label">دقيقة واحدة</span>
+              <div
+                class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all">
+                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-              <input type="range" id="input-time" min="60" max="900" step="60" value="60" oninput="updateSetupInfo()">
-            </div>
+            </label>
+
+            <label id="guessing-container"
+              class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-emerald-500/50 has-[:checked]:bg-emerald-500/10 has-[:checked]:shadow-[0_0_15px_rgba(16,185,129,0.15)] group">
+              <input type="checkbox" id="check-guessing" class="peer sr-only">
+              <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🎯</div>
+              <div class="text-right flex-1">
+                <span
+                  class="block font-bold text-sm text-slate-300 peer-checked:text-emerald-300 transition-colors">فرصة
+                  التخمين</span>
+                <span class="block text-[10px] text-theme-muted opacity-70">هل يحق للضايع التخمين عند كشفه؟</span>
+              </div>
+              <div
+                class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-emerald-500 peer-checked:bg-emerald-500 transition-all">
+                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </label>
+
+            <label id="hint-container"
+              class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-blue-500/50 has-[:checked]:bg-blue-500/10 has-[:checked]:shadow-[0_0_15px_rgba(59,130,246,0.15)] group">
+              <input type="checkbox" id="check-hint" class="peer sr-only">
+              <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">💡</div>
+              <div class="text-right flex-1">
+                <span class="block font-bold text-sm text-slate-300 peer-checked:text-blue-300 transition-colors">تلميح
+                  للضايع</span>
+                <span class="block text-[10px] text-theme-muted opacity-70">يظهر له الفئة و عدد حروف السالفة</span>
+              </div>
+              <div
+                class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all">
+                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </label>
+
+            <label id="panic-container"
+              class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-red-500/50 has-[:checked]:bg-red-500/10 has-[:checked]:shadow-[0_0_15px_rgba(239,68,68,0.15)] has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed group">
+              <input type="checkbox" id="check-panic-mode" class="peer sr-only" onchange="updateSetupInfo()">
+              <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🕵️‍♂️</div>
+              <div class="text-right flex-1">
+                <span class="block font-bold text-sm text-slate-300 peer-checked:text-red-300 transition-colors">كشفت
+                  السالفة!</span>
+                <span class="block text-[10px] text-theme-muted opacity-70">زر للضايع لإنهاء اللعبة فوراً عند معرفة
+                  الكلمة</span>
+              </div>
+              <div
+                class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-red-500 peer-checked:bg-red-500 transition-all">
+                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </label>
           </div>
 
-          <div class="space-y-3">
-            <div id="blind-mode-container"
-              class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
-              <div class="text-right">
-                <h4 class="font-bold text-sm text-theme-main">🙈 التحدي الأعمى</h4>
-                <p class="text-[10px] text-theme-muted italic">قد لا يكون هناك ضايع! أو الكل ضايع!</p>
+          <div class="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-3">
+            <label id="double-agent-container"
+              class="relative flex flex-col items-center justify-center p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-orange-500/50 has-[:checked]:bg-orange-500/10 has-[:checked]:shadow-[0_0_15px_rgba(249,115,22,0.15)] has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed group text-center">
+              <input type="checkbox" id="check-double-agent" class="peer sr-only">
+              <div class="text-3xl mb-1 grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🎭
               </div>
-              <input type="checkbox" id="check-blind-mode" class="custom-checkbox" onchange="updateSetupInfo()">
-            </div>
+              <span class="block font-bold text-xs text-slate-300 peer-checked:text-orange-300 transition-colors">عميل
+                مزدوج</span>
+              <span class="block text-[8px] text-theme-muted opacity-70 mt-1">(يتطلب 5+ لاعبين)</span>
+              <div
+                class="absolute top-2 left-2 w-4 h-4 rounded-full border border-white/20 flex items-center justify-center peer-checked:border-orange-500 peer-checked:bg-orange-500 transition-all">
+                <svg class="w-2 h-2 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </label>
 
-            <!-- استرجاع خيار فرصة التخمين -->
-            <div id="guessing-container"
-              class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
-              <div class="text-right">
-                <h4 class="font-bold text-sm text-theme-main">🎯 فرصة التخمين</h4>
-                <p class="text-[10px] text-theme-muted italic">هل يحق للضايع التخمين عند كشفه؟</p>
+            <label id="undercover-container"
+              class="relative flex flex-col items-center justify-center p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-yellow-500/50 has-[:checked]:bg-yellow-500/10 has-[:checked]:shadow-[0_0_15px_rgba(234,179,8,0.15)] group text-center">
+              <input type="checkbox" id="check-undercover" class="peer sr-only">
+              <div class="text-3xl mb-1 grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🤫
               </div>
-              <!-- الافتراضي غير مفعل -->
-              <input type="checkbox" id="check-guessing" class="custom-checkbox">
-            </div>
-
-            <div id="hint-container"
-              class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
-              <div class="text-right">
-                <h4 class="font-bold text-sm text-theme-main">💡 تلميح للضايع</h4>
-                <p class="text-[10px] text-theme-muted italic">يظهر له عدد الحروف السالفة والفئة</p>
+              <span
+                class="block font-bold text-xs text-slate-300 peer-checked:text-yellow-300 transition-colors">المموه</span>
+              <span class="block text-[8px] text-theme-muted opacity-70 mt-1">يملك كلمة مشابهة</span>
+              <div
+                class="absolute top-2 left-2 w-4 h-4 rounded-full border border-white/20 flex items-center justify-center peer-checked:border-yellow-500 peer-checked:bg-yellow-500 transition-all">
+                <svg class="w-2 h-2 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-              <input type="checkbox" id="check-hint" class="custom-checkbox">
-            </div>
-
-            <!-- خيار "كشفت السالفة" -->
-            <div id="panic-container"
-              class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
-              <div class="text-right">
-                <h4 class="font-bold text-sm text-theme-main">🕵️‍♂️ كشفت السالفة!</h4>
-                <p class="text-[10px] text-theme-muted italic">زر كشفت السالفة للضايع (للمقاطعة)</p>
-              </div>
-              <!-- الافتراضي غير مفعل -->
-              <input type="checkbox" id="check-panic-mode" class="custom-checkbox" onchange="updateSetupInfo()">
-            </div>
-
-            <div id="double-agent-container"
-              class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
-              <div class="text-right">
-                <h4 class="font-bold text-sm text-theme-main">🎭 العميل المزدوج</h4>
-                <p class="text-[10px] text-theme-muted italic">متاح لـ 5 لاعبين فأكثر</p>
-              </div>
-              <input type="checkbox" id="check-double-agent" class="custom-checkbox">
-            </div>
-
-            <div id="undercover-container"
-              class="p-4 bg-card-theme rounded-2xl flex items-center justify-between transition-all">
-              <div class="text-right">
-                <h4 class="font-bold text-sm text-theme-main">🕵️ المموه</h4>
-                <p class="text-[10px] text-theme-muted italic">يملك كلمة مشابهة</p>
-              </div>
-              <input type="checkbox" id="check-undercover" class="custom-checkbox">
-            </div>
+            </label>
           </div>
+        </div>
 
-          <div class="grid grid-cols-2 gap-4 pt-4 text-center">
-            <button onclick="showScreen('category-select')"
-              class="py-5 rounded-3xl btn-secondary-theme font-bold text-lg">تعديل الفئات</button>
-            <button onclick="checkAndNext()"
-              class="py-5 rounded-3xl btn-gradient font-black text-white text-lg">التالي</button>
-          </div>
+        <div class="grid grid-cols-2 gap-4 pt-8 text-center">
+          <button onclick="showScreen('start')"
+            class="btn-secondary-theme py-5 rounded-3xl font-bold text-lg transition-all">
+            رجوع 🔙
+          </button>
+          <button onclick="checkAndNext()"
+            class="btn-gradient py-5 rounded-3xl font-black text-white text-xl transition-all">
+            التالي 🚀
+          </button>
         </div>
       </div>
 
@@ -670,7 +754,8 @@
 
           </div>
         </div>
-        <p class="text-2xl sm:text-3xl text-theme-muted mb-12 font-bold px-4">تناقشوا بذكاء.. لا تكشفوا السالفة للضايع!
+        <p class="text-2xl sm:text-3xl text-theme-muted mb-12 font-bold px-4">تناقشوا بذكاء.. لا تكشفوا السالفة
+          للضايع!
         </p>
         <button id="btn-panic" onclick="triggerPanic()"
           class="hidden w-full py-4 bg-orange-600/20 border-2 border-orange-500 text-orange-500 rounded-2xl font-black text-xl animate-pulse shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:bg-orange-600/30 transition-all mb-4">🕵️‍♂️
@@ -703,7 +788,8 @@
             <span id="guess-timer" class="text-3xl font-black text-theme-main tabular-nums">30</span>
           </div>
         </div>
-        <p id="guess-subtitle" class="text-theme-muted mb-10 text-xl font-bold leading-relaxed">خمن السالفة من الخيارات
+        <p id="guess-subtitle" class="text-theme-muted mb-10 text-xl font-bold leading-relaxed">خمن السالفة من
+          الخيارات
           التالية!</p>
         <div id="guess-options" class="grid grid-cols-1 gap-4 mb-8"></div>
       </div>
@@ -908,9 +994,11 @@
               <span class="order-first">🎯</span> فرصة التخمين
             </h4>
             <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
-              <li class="text-right">✔️ إذا تم تفعيل الخيار (الوضع الافتراضي): عند كشف الضايع، تظهر له شاشة بـ 4 خيارات،
+              <li class="text-right">✔️ إذا تم تفعيل الخيار (الوضع الافتراضي): عند كشف الضايع، تظهر له شاشة بـ 4
+                خيارات،
                 وإذا خمن السالفة يفوز.</li>
-              <li class="text-right">❌ إذا تم تعطيل الخيار: بمجرد أن يصوت اللاعبون على الضايع، يخسر فوراً ويفوز المحققون
+              <li class="text-right">❌ إذا تم تعطيل الخيار: بمجرد أن يصوت اللاعبون على الضايع، يخسر فوراً ويفوز
+                المحققون
                 دون إعطائه فرصة للتخمين.</li>
             </ul>
           </div>
@@ -937,7 +1025,8 @@
                 فيشك فيك المحققون!</li>
               <li class="text-right">2️⃣ إذا كنت العميل المزدوج أو المموه: حاول أن تكون إجاباتك غريبة بعض الشيء لتجذب
                 الأنظار إليك وتجعلهم يصوتون ضدك.</li>
-              <li class="text-right">3️⃣ إذا كنت الضايع: راقب ردات فعل الآخرين جيداً، وحاول التقاط أي خيط يوصلك للكلمة.
+              <li class="text-right">3️⃣ إذا كنت الضايع: راقب ردات فعل الآخرين جيداً، وحاول التقاط أي خيط يوصلك
+                للكلمة.
               </li>
             </ul>
           </div>
@@ -986,275 +1075,323 @@
               </div>
             </div>
           </div>
+
+          <div class="rule-card text-right">
+            <h4 class="font-black text-amber-400 mb-3 flex items-center justify-start gap-3 text-xl text-right">
+              <span class="order-first">💎</span> المجانية vs الكاملة
+            </h4>
+            <div class="text-sm space-y-3 font-bold text-slate-300 text-right">
+
+              <div class="p-3 bg-slate-500/10 rounded-xl border border-slate-500/20 text-right">
+                <p class="text-slate-300 mb-1">🆓 النسخة المجانية:</p>
+                <p class="text-xs text-theme-muted leading-relaxed">تحتوي على الفئات الأساسية فقط وعدد محدود من
+                  السوالف
+                  (49 سالفة للتجربة).</p>
+              </div>
+
+              <div class="p-3 bg-yellow-500/10 rounded-xl border border-yellow-500/20 text-right">
+                <p class="text-yellow-400 mb-1">👑 النسخة الكاملة (شراء مرة واحدة):</p>
+                <ul class="text-xs text-yellow-100/70 space-y-2 list-disc list-inside mt-2">
+                  <li>فتح جميع الفئات المغلقة.</li>
+                  <li>مكتبة ضخمة بها أكثر من +1000 سالفة جديدة.</li>
+                  <li>ميزة "كلمات خاصة" للعب بسوالفكم الخاصة.</li>
+                  <li>الحصول على جميع التحديثات القادمة مجاناً.</li>
+                </ul>
+              </div>
+
+              <div
+                class="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/30 text-right shadow-[0_0_15px_rgba(16,185,129,0.15)] relative overflow-hidden mt-3">
+                <div class="absolute -left-2 -top-2 text-6xl opacity-10 rotate-12">🚀</div>
+                <p class="text-emerald-400 font-black mb-2 text-base relative z-10 flex items-center gap-2">
+                  <span>🌐</span> المضيف يدفع.. والجميع يستمتع!
+                </p>
+                <p class="text-xs text-slate-300 leading-relaxed relative z-10">
+                  في وضع <span class="text-emerald-400 font-black">الأونلاين</span>، لا يشترط أن يشتري جميع أصدقائك
+                  اللعبة!
+                  إذا كان <span class="text-emerald-400 font-black">"المضيف"</span> (منشئ الغرفة) يمتلك النسخة
+                  الكاملة،
+                  سيتمكن <span class="text-emerald-400 font-black">جميع اللاعبين</span> المنضمين لغرفته من اللعب معه
+                  بجميع الفئات المغلقة والكلمات الخاصة <span class="text-emerald-400 font-black">مجاناً</span>! 🎉
+                </p>
+              </div>
+
+            </div>
+          </div>
         </div>
         <button onclick="showScreen('start')"
           class="btn-gradient w-full py-6 rounded-3xl mt-10 font-black text-white text-2xl text-center font-black">تم،
           لنلعب! 🔥</button>
       </div>
     </div>
+  </div>
 
-    <!-- Modals -->
-    <!-- Settings -->
-    <div id="modal-settings"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
-      <div class="glass-panel max-w-sm w-full text-center">
-        <h3 class="text-2xl font-black mb-8 text-theme-main">الإعدادات العامة ⚙️</h3>
-        <div class="space-y-4">
-          <button onclick="toggleMute()" id="btn-toggle-mute"
-            class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
-            <span>الصوت</span> <span id="lbl-mute">🔊</span>
-          </button>
-          <button onclick="toggleVibration()" id="btn-toggle-vibe"
-            class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
-            <span>الاهتزاز</span> <span id="lbl-vibe">📳</span>
-          </button>
-          <button onclick="toggleTheme()" id="btn-toggle-theme"
+  <!-- Modals -->
+  <!-- Settings -->
+  <div id="modal-settings"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <h3 class="text-2xl font-black mb-8 text-theme-main">الإعدادات العامة ⚙️</h3>
+      <div class="space-y-4">
+        <button onclick="toggleMute()" id="btn-toggle-mute"
+          class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>الصوت</span> <span id="lbl-mute">🔊</span>
+        </button>
+        <button onclick="toggleVibration()" id="btn-toggle-vibe"
+          class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
+          <span>الاهتزاز</span> <span id="lbl-vibe">📳</span>
+        </button>
+        <!-- <button onclick="toggleTheme()" id="btn-toggle-theme"
             class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
             <span>المظهر</span> <span id="lbl-theme">🌙</span>
-          </button>
-          <button onclick="restorePurchasesClick()" id="btn-restore-purchases"
-            class="w-full py-4 bg-yellow-500/10 rounded-2xl border border-yellow-500/30 text-xl font-bold text-yellow-500 flex justify-between px-6 items-center transition-all hover:bg-yellow-500/20 active:scale-95">
-            <span>استرجاع المشتريات</span> <span>🔄</span>
-          </button>
-        </div>
-        <button onclick="closeSettingsModal()"
-          class="w-full py-4 mt-8 btn-gradient rounded-3xl font-black text-white text-xl">إغلاق</button>
-      </div>
-    </div>
-
-    <!-- Premium Start -->
-    <div id="modal-premium"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-4 backdrop-blur-md text-center overflow-y-auto">
-
-      <div
-        class="glass-panel max-w-sm w-full text-center relative border-2 border-yellow-500/20 shadow-[0_0_60px_rgba(234,179,8,0.15)] overflow-hidden">
-
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none">
-        </div>
-        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none">
-        </div>
-
-        <button onclick="closePremiumModal()"
-          class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 transition-colors">✕</button>
-
-        <div class="text-6xl mb-2 animate-bounce mt-4">💎</div>
-        <h3
-          class="text-2xl font-black mb-1 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600">
-          النسخة الكاملة
-        </h3>
-        <p class="text-indigo-200 text-xs font-bold mb-6 opacity-80">استثمار واحد، متعة لا تنتهي!</p>
-
-        <div class="space-y-3 mb-8 text-right relative z-10">
-
-          <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-slate-900/50 to-slate-800/50 rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <span class="text-xl">📚</span>
-              <div class="flex flex-col">
-                <span class="text-xs text-slate-400 font-bold">عدد السوالف</span>
-                <span class="text-[10px] text-slate-500">مكتبة ضخمة لا تتكرر</span>
-              </div>
-            </div>
-            <div class="text-left">
-              <span class="block text-[10px] text-red-400/70 line-through">49 فقط</span>
-              <span class="block text-sm font-black text-emerald-400 text-shadow-glow">⚡ +1000 سالفة</span>
-            </div>
-          </div>
-
-          <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-slate-900/50 to-slate-800/50 rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <span class="text-xl">🔓</span>
-              <div class="flex flex-col">
-                <span class="text-xs text-slate-400 font-bold">جميع الفئات</span>
-                <span class="text-[10px] text-slate-500">حرية الاختيار</span>
-              </div>
-            </div>
-            <div class="text-left">
-              <span class="block text-[10px] text-red-400/70">مغلقة</span>
-              <span class="block text-sm font-black text-emerald-400">مفتوحة بالكامل</span>
-            </div>
-          </div>
-
-          <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-blue-900/20 to-blue-800/20 rounded-2xl border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
-            <div class="flex items-center gap-3">
-              <span class="text-xl">✍️</span>
-              <div class="flex flex-col">
-                <span class="text-xs text-blue-300 font-bold">كلمات خاصة</span>
-                <span class="text-[10px] text-blue-400/70">العب بسوالفكم الخاصة!</span>
-              </div>
-            </div>
-            <div class="text-left">
-              <span class="block text-[10px] text-red-400/70">غير متاح</span>
-              <span class="block text-sm font-black text-blue-400">أضف ما تريد</span>
-            </div>
-          </div>
-
-          <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-purple-900/20 to-purple-800/20 rounded-2xl border border-purple-500/30">
-            <div class="flex items-center gap-3">
-              <span class="text-xl">🚀</span>
-              <div class="flex flex-col">
-                <span class="text-xs text-purple-300 font-bold">التحديثات القادمة</span>
-                <span class="text-[10px] text-purple-400/70">أي ميزة جديدة مستقبلاً</span>
-              </div>
-            </div>
-            <div class="text-left">
-              <span class="block text-sm font-black text-amber-400">مجاناً للأبد ✨</span>
-            </div>
-          </div>
-
-        </div>
-
-        <button onclick="buyPremiumClick()"
-          class="group relative w-full py-5 rounded-3xl font-black text-white text-xl overflow-hidden shadow-[0_0_25px_rgba(234,179,8,0.4)] transition-transform active:scale-95 mb-4">
-
-          <div class="absolute inset-0 bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600 animate-gradient-x">
-          </div>
-
-          <div
-            class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
-          </div>
-
-          <div class="relative flex flex-col items-center leading-none gap-1">
-            <span>اشترِ النسخة الكاملة</span>
-            <span class="text-[10px] text-yellow-100 font-normal opacity-90">دفعة واحدة لمدى الحياة</span>
-          </div>
+          </button> -->
+        <button onclick="restorePurchasesClick()" id="btn-restore-purchases"
+          class="w-full py-4 bg-yellow-500/10 rounded-2xl border border-yellow-500/30 text-xl font-bold text-yellow-500 flex justify-between px-6 items-center transition-all hover:bg-yellow-500/20 active:scale-95">
+          <span>استرجاع المشتريات</span> <span>🔄</span>
         </button>
-
-        <button onclick="closePremiumModal()" class="text-slate-500 text-xs hover:text-white transition-colors py-2">لا
-          شكراً، سأكتفي بالتجربة</button>
       </div>
+      <button onclick="closeSettingsModal()"
+        class="w-full py-4 mt-8 btn-gradient rounded-3xl font-black text-white text-xl">إغلاق</button>
     </div>
-    <!-- Premium End -->
+  </div>
 
-    <!-- Stats -->
-    <div id="modal-stats"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[500] p-6 backdrop-blur-md text-center">
-      <div class="glass-panel max-w-sm w-full text-center">
-        <div id="player-stat-avatar" class="text-6xl mb-4 text-center"></div>
-        <h3 id="player-stat-name" class="text-2xl font-black text-theme-main mb-4 text-center"></h3>
-        <div class="bg-card-theme p-4 rounded-3xl mb-6 text-center">
-          <p class="text-theme-muted text-xs mb-2 font-bold">إجمالي النشاط</p>
-          <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-center">
-            <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
-              <p class="text-indigo-500 text-lg font-black" id="stat-total-games">0</p>
-              <p class="text-[10px] text-theme-muted uppercase">لعبة</p>
+  <!-- Premium Start -->
+  <div id="modal-premium"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-4 backdrop-blur-md text-center overflow-y-auto">
+
+    <div
+      class="glass-panel max-w-sm w-full text-center relative border-2 border-yellow-500/20 shadow-[0_0_60px_rgba(234,179,8,0.15)] overflow-hidden">
+
+      <div class="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none">
+      </div>
+      <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none">
+      </div>
+
+      <button onclick="closePremiumModal()"
+        class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 transition-colors">✕</button>
+
+      <div class="text-6xl mb-2 animate-bounce mt-4">💎</div>
+      <h3
+        class="text-2xl font-black mb-1 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600">
+        النسخة الكاملة
+      </h3>
+      <p class="text-indigo-200 text-xs font-bold mb-6 opacity-80">استثمار واحد، متعة لا تنتهي!</p>
+
+      <div class="space-y-3 mb-8 text-right relative z-10">
+
+        <div
+          class="flex justify-between items-center p-3 bg-gradient-to-r from-slate-900/50 to-slate-800/50 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">📚</span>
+            <div class="flex flex-col">
+              <span class="text-xs text-slate-400 font-bold">عدد السوالف</span>
+              <span class="text-[10px] text-slate-500">مكتبة ضخمة لا تتكرر</span>
             </div>
-            <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
-              <p class="text-yellow-500 text-lg font-black" id="stat-total-points">0</p>
-              <p class="text-[10px] text-theme-muted uppercase">نقاط</p>
+          </div>
+          <div class="text-left">
+            <span class="block text-[10px] text-red-400/70 line-through">49 فقط</span>
+            <span class="block text-sm font-black text-emerald-400 text-shadow-glow">⚡ +1000 سالفة</span>
+          </div>
+        </div>
+
+        <div
+          class="flex justify-between items-center p-3 bg-gradient-to-r from-slate-900/50 to-slate-800/50 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🔓</span>
+            <div class="flex flex-col">
+              <span class="text-xs text-slate-400 font-bold">جميع الفئات</span>
+              <span class="text-[10px] text-slate-500">حرية الاختيار</span>
             </div>
-            <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
-              <p class="text-emerald-500 text-lg font-black" id="stat-total-wins">0</p>
-              <p class="text-[10px] text-theme-muted uppercase">فوز</p>
+          </div>
+          <div class="text-left">
+            <span class="block text-[10px] text-red-400/70">مغلقة</span>
+            <span class="block text-sm font-black text-emerald-400">مفتوحة بالكامل</span>
+          </div>
+        </div>
+
+        <div
+          class="flex justify-between items-center p-3 bg-gradient-to-r from-blue-900/20 to-blue-800/20 rounded-2xl border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">✍️</span>
+            <div class="flex flex-col">
+              <span class="text-xs text-blue-300 font-bold">كلمات خاصة</span>
+              <span class="text-[10px] text-blue-400/70">العب بسوالفكم الخاصة!</span>
             </div>
-            <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
-              <p class="text-red-500 text-lg font-black" id="stat-total-losses">0</p>
-              <p class="text-[10px] text-theme-muted uppercase">خسارة</p>
+          </div>
+          <div class="text-left">
+            <span class="block text-[10px] text-red-400/70">غير متاح</span>
+            <span class="block text-sm font-black text-blue-400">أضف ما تريد</span>
+          </div>
+        </div>
+
+        <div
+          class="flex justify-between items-center p-3 bg-gradient-to-r from-purple-900/20 to-purple-800/20 rounded-2xl border border-purple-500/30">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🚀</span>
+            <div class="flex flex-col">
+              <span class="text-xs text-purple-300 font-bold">التحديثات القادمة</span>
+              <span class="text-[10px] text-purple-400/70">أي ميزة جديدة مستقبلاً</span>
             </div>
           </div>
-        </div>
-        <p class="text-theme-muted text-[10px] mb-3 text-right font-bold">تفاصيل الأدوار:</p>
-        <div class="grid grid-cols-2 gap-4 mb-8 text-right">
-          <div class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right">
-            <p class="text-[10px] text-emerald-500 font-bold mb-1 text-right">🕵️ المحققون</p>
-            <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
-                  id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span></div>
-          </div>
-          <div class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right">
-            <p class="text-[10px] text-indigo-500 font-bold mb-1 text-right">😶‍🌫️‍ ضايع</p>
-            <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
-                  id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span></div>
-          </div>
-          <div class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right">
-            <p class="text-[10px] text-orange-400 font-bold mb-1 text-right">🎭 عميل</p>
-            <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
-                  id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span></div>
-          </div>
-          <div class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right">
-            <p class="text-[10px] text-yellow-400 font-bold mb-1 text-right">🤫 مموه</p>
-            <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
-                  id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span></div>
+          <div class="text-left">
+            <span class="block text-sm font-black text-amber-400">مجاناً للأبد ✨</span>
           </div>
         </div>
-        <button onclick="closeStatsModal()"
-          class="w-full py-4 btn-secondary-theme rounded-2xl font-black text-center">إغلاق</button>
-      </div>
-    </div>
 
-    <div id="modal-rename"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-6 backdrop-blur-md text-center">
-      <div class="glass-panel max-w-sm w-full text-center">
-        <h3 class="text-2xl font-black mb-6 text-theme-main">تغيير الاسم ✏️</h3>
-        <input type="text" id="rename-input"
-          class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-2xl p-3 text-right text-white font-bold mb-6"
-          placeholder="اكتب الاسم الجديد...">
-        <div class="flex gap-4 text-center">
-          <button onclick="closeRenameModal()"
-            class="flex-1 py-4 btn-secondary-theme rounded-3xl font-bold text-lg">إلغاء</button>
-          <button onclick="submitRename()"
-            class="flex-1 py-4 btn-gradient rounded-3xl font-black text-white text-lg">حفظ</button>
+      </div>
+
+      <button onclick="buyPremiumClick()"
+        class="group relative w-full py-5 rounded-3xl font-black text-white text-xl overflow-hidden shadow-[0_0_25px_rgba(234,179,8,0.4)] transition-transform active:scale-95 mb-4">
+
+        <div class="absolute inset-0 bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600 animate-gradient-x">
+        </div>
+
+        <div
+          class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
+        </div>
+
+        <div class="relative flex flex-col items-center leading-none gap-1">
+          <span>اشترِ النسخة الكاملة</span>
+          <span class="text-[10px] text-yellow-100 font-normal opacity-90">دفعة واحدة لمدى الحياة</span>
+        </div>
+      </button>
+
+      <button onclick="closePremiumModal()" class="text-slate-500 text-xs hover:text-white transition-colors py-2">لا
+        شكراً، سأكتفي بالتجربة</button>
+    </div>
+  </div>
+  <!-- Premium End -->
+
+  <!-- Stats -->
+  <div id="modal-stats"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[500] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <div id="player-stat-avatar" class="text-6xl mb-4 text-center"></div>
+      <h3 id="player-stat-name" class="text-2xl font-black text-theme-main mb-4 text-center"></h3>
+      <div class="bg-card-theme p-4 rounded-3xl mb-6 text-center">
+        <p class="text-theme-muted text-xs mb-2 font-bold">إجمالي النشاط</p>
+        <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-center">
+          <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
+            <p class="text-indigo-500 text-lg font-black" id="stat-total-games">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">لعبة</p>
+          </div>
+          <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
+            <p class="text-yellow-500 text-lg font-black" id="stat-total-points">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">نقاط</p>
+          </div>
+          <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
+            <p class="text-emerald-500 text-lg font-black" id="stat-total-wins">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">فوز</p>
+          </div>
+          <div class="bg-fuchsia-500/10 p-3 rounded-2xl border border-fuchsia-500/20 text-center">
+            <p class="text-red-500 text-lg font-black" id="stat-total-losses">0</p>
+            <p class="text-[10px] text-theme-muted uppercase">خسارة</p>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Alert -->
-    <div id="modal-alert"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-6 backdrop-blur-md text-center">
-      <div class="glass-panel max-w-sm w-full text-center">
-        <h3 class="text-2xl font-black mb-4 text-yellow-500">تنبيه! ⚠️</h3>
-        <p id="alert-message" class="text-theme-muted font-bold mb-8 text-center"></p>
-        <button onclick="closeAlert()"
-          class="w-full py-4 btn-gradient rounded-3xl font-black text-white text-xl text-center">موافق</button>
-      </div>
-    </div>
-
-    <!-- Confirm -->
-    <div id="modal-confirm"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center">
-      <div class="glass-panel max-w-sm w-full text-center">
-        <h3 class="text-3xl font-black mb-4 text-red-500 text-center">تأكيد! ⚠️</h3>
-        <p class="mb-10 text-theme-muted text-lg font-bold text-center">هل تريد تصفير النقاط؟</p>
-        <div class="flex gap-4 text-center">
-          <button onclick="closeModal()"
-            class="flex-1 py-5 btn-secondary-theme rounded-3xl font-bold text-xl text-center">تراجع</button>
-          <button onclick="resetPoints()"
-            class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white text-xl text-center">نعم</button>
+      <p class="text-theme-muted text-[10px] mb-3 text-right font-bold">تفاصيل الأدوار:</p>
+      <div class="grid grid-cols-2 gap-4 mb-8 text-right">
+        <div class="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-right">
+          <p class="text-[10px] text-emerald-500 font-bold mb-1 text-right">🕵️ المحققون</p>
+          <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
+                id="stat-det-w">0</span></span><span>خسارة: <span id="stat-det-l">0</span></span></div>
+        </div>
+        <div class="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-right">
+          <p class="text-[10px] text-indigo-500 font-bold mb-1 text-right">😶‍🌫️‍ ضايع</p>
+          <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
+                id="stat-out-w">0</span></span><span>خسارة: <span id="stat-out-l">0</span></span></div>
+        </div>
+        <div class="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 text-right">
+          <p class="text-[10px] text-orange-400 font-bold mb-1 text-right">🎭 عميل</p>
+          <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
+                id="stat-agt-w">0</span></span><span>خسارة: <span id="stat-agt-l">0</span></span></div>
+        </div>
+        <div class="bg-yellow-500/10 p-3 rounded-2xl border border-yellow-500/20 text-right">
+          <p class="text-[10px] text-yellow-400 font-bold mb-1 text-right">🤫 مموه</p>
+          <div class="flex justify-between text-xs font-black text-right text-theme-main"><span>فوز: <span
+                id="stat-und-w">0</span></span><span>خسارة: <span id="stat-und-l">0</span></span></div>
         </div>
       </div>
+      <button onclick="closeStatsModal()"
+        class="w-full py-4 btn-secondary-theme rounded-2xl font-black text-center">إغلاق</button>
     </div>
+  </div>
 
-    <div id="modal-exit-confirm"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-6 backdrop-blur-md text-center">
-      <div class="glass-panel max-w-sm w-full text-center">
-        <div class="text-6xl mb-4">⚠️</div>
-        <h3 class="text-2xl font-black mb-4 text-red-500">هل تريد الخروج؟</h3>
-
-        <p id="exit-modal-desc" class="text-theme-muted font-bold mb-8 text-center text-sm leading-relaxed">
-        </p>
-
-        <div class="flex gap-4 text-center">
-          <button onclick="closeExitModal()"
-            class="flex-1 py-4 btn-secondary-theme rounded-3xl font-bold text-lg">بقاء</button>
-          <button onclick="confirmExit()"
-            class="flex-1 py-4 bg-red-600 rounded-3xl font-black text-white text-lg hover:bg-red-700">خروج</button>
-        </div>
+  <div id="modal-rename"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <h3 class="text-2xl font-black mb-6 text-theme-main">تغيير الاسم ✏️</h3>
+      <input type="text" id="rename-input"
+        class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-2xl p-3 text-right text-white font-bold mb-6"
+        placeholder="اكتب الاسم الجديد...">
+      <div class="flex gap-4 text-center">
+        <button onclick="closeRenameModal()"
+          class="flex-1 py-4 btn-secondary-theme rounded-3xl font-bold text-lg">إلغاء</button>
+        <button onclick="submitRename()"
+          class="flex-1 py-4 btn-gradient rounded-3xl font-black text-white text-lg">حفظ</button>
       </div>
     </div>
+  </div>
 
-    <!-- Category (Quick Change) Modal (Modified to use Quick Selection Logic) -->
-    <div id="modal-category"
-      class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
-      <div class="glass-panel max-w-sm w-full text-center font-black">
-        <h3 class="text-2xl font-black mb-8 text-theme-main underline decoration-indigo-500 text-center">تغيير الفئة
-        </h3>
-        <!-- This grid now uses the quick selection logic -->
-        <div id="modal-categories-grid" class="grid grid-cols-2 gap-4 mb-10 text-center text-white"></div>
-        <button onclick="closeCategoryModal()"
-          class="w-full py-5 btn-gradient rounded-3xl font-black text-white text-xl text-center">تأكيد وإغلاق</button>
+  <!-- Alert -->
+  <div id="modal-alert"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <h3 class="text-2xl font-black mb-4 text-yellow-500">تنبيه! ⚠️</h3>
+      <p id="alert-message" class="text-theme-muted font-bold mb-8 text-center"></p>
+      <button onclick="closeAlert()"
+        class="w-full py-4 btn-gradient rounded-3xl font-black text-white text-xl text-center">موافق</button>
+    </div>
+  </div>
+
+  <!-- Confirm -->
+  <div id="modal-confirm"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[100] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <h3 class="text-3xl font-black mb-4 text-red-500 text-center">تأكيد! ⚠️</h3>
+      <p class="mb-10 text-theme-muted text-lg font-bold text-center">هل تريد تصفير النقاط؟</p>
+      <div class="flex gap-4 text-center">
+        <button onclick="closeModal()"
+          class="flex-1 py-5 btn-secondary-theme rounded-3xl font-bold text-xl text-center">تراجع</button>
+        <button onclick="resetPoints()"
+          class="flex-1 py-5 bg-red-600 rounded-3xl font-black text-white text-xl text-center">نعم</button>
       </div>
+    </div>
+  </div>
+
+  <div id="modal-exit-confirm"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[3000] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center">
+      <div class="text-6xl mb-4">⚠️</div>
+      <h3 class="text-2xl font-black mb-4 text-red-500">هل تريد الخروج؟</h3>
+
+      <p id="exit-modal-desc" class="text-theme-muted font-bold mb-8 text-center text-sm leading-relaxed">
+      </p>
+
+      <div class="flex gap-4 text-center">
+        <button onclick="closeExitModal()"
+          class="flex-1 py-4 btn-secondary-theme rounded-3xl font-bold text-lg">بقاء</button>
+        <button onclick="confirmExit()"
+          class="flex-1 py-4 bg-red-600 rounded-3xl font-black text-white text-lg hover:bg-red-700">خروج</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category (Quick Change) Modal (Modified to use Quick Selection Logic) -->
+  <div id="modal-category"
+    class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-[2000] p-6 backdrop-blur-md text-center">
+    <div class="glass-panel max-w-sm w-full text-center font-black">
+      <h3 class="text-2xl font-black mb-6 text-theme-main text-center">اختيار الفئة</h3>
+
+      <div id="modal-categories-grid"
+        class="grid grid-cols-2 gap-4 mb-6 text-center text-white max-h-[40vh] overflow-y-auto p-1"></div>
+
+      <button onclick="openComprehensiveCategory()"
+        class="w-full py-4 mb-3 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-slate-300 hover:bg-white/10 transition-colors">
+        تعديل القائمة الشاملة ⚙️
+      </button>
+
+      <button onclick="closeCategoryModal()"
+        class="w-full py-5 btn-gradient rounded-3xl font-black text-white text-xl text-center">تأكيد وإغلاق</button>
     </div>
   </div>
 
@@ -1268,7 +1405,8 @@
       <div class="text-7xl mb-4 animate-bounce mt-4">⭐</div>
 
       <h3 class="text-2xl font-black mb-2 text-theme-main">هل تستمتع باللعبة؟</h3>
-      <p class="text-theme-muted text-sm font-bold mb-6">دعمك لنا بتقييم 5 نجوم في المتجر يساعدنا على إضافة سوالف وميزات
+      <p class="text-theme-muted text-sm font-bold mb-6">دعمك لنا بتقييم 5 نجوم في المتجر يساعدنا على إضافة سوالف
+        وميزات
         جديدة! 😍</p>
 
       <button onclick="submitRatingClick()"

@@ -11,10 +11,35 @@ let isPremium = false;
 // أي فئة غير مكتوبة هنا ستكون مغلقة بقفل 🔒
 const FREE_CATEGORIES = ["خضروات", "فواكه", "عملات", "حيوانات", "عواصم", "دول", "مهن"];
 
+// 💡 مفتاح التحكم في نظام اللعب الجماعي (أونلاين) 💡
+// true = يجب أن يملك جميع اللاعبين النسخة الكاملة للعب الفئات المدفوعة.
+// false = المضيف فقط يحتاج النسخة الكاملة، والبقية يلعبون مجاناً.
+const STRICT_PREMIUM_MODE = false;
+
 // التحقق عند تشغيل اللعبة
 if (localStorage.getItem('isPremium') === 'true') {
   isPremium = true;
 }
+
+// دالة يستدعيها الأندرويد بصمت عند فتح التطبيق للتحقق من المشتريات
+window.syncPremiumState = function (isPurchased) {
+  isPremium = isPurchased;
+
+  if (isPurchased) {
+    localStorage.setItem("isPremium", "true");
+  } else {
+    localStorage.removeItem("isPremium");
+  }
+
+  updatePremiumUI(); // تحديث زر الشراء (إظهاره أو إخفائه)
+
+  // إعادة رسم الفئات لإغلاق/فتح الأقفال بصمت تام
+  if (typeof renderCategorySelectionGrid === 'function') {
+    renderCategorySelectionGrid();
+  }
+
+  console.log("تم مزامنة حالة الشراء بصمت:", isPurchased);
+};
 
 // 2. هذه الدالة الجديدة التي سيناديها الأندرويد عند كل تشغيل
 // status: ستكون true إذا كان يملك اللعبة، و false إذا لم يملكها (أو عمل Refund)
@@ -121,10 +146,10 @@ window.addEventListener('load', () => {
 function selectMode(mode) {
   if (mode === 'offline') {
     isOnline = false;
-    showScreen('category-select');
+    showScreen('setup'); // الدخول المباشر للإعدادات
+    updateCurrentCategoryUI(); // تحديث النص
   } else {
     isOnline = true;
-    // التغيير هنا: نستدعي دالة الإعداد التي ترسم الصور بدلاً من إظهار الشاشة فوراً
     showOnlineSetup();
   }
 }
@@ -359,7 +384,8 @@ function joinRoom() {
       // إرسال طلب الانضمام (بدون اسم)
       myConn.send({
         type: 'JOIN',
-        avatar: avatar
+        avatar: avatar,
+        isPremium: isPremium // 👈 هذا هو السطر الناقص (اللاعب يخبر المضيف أنه اشترى اللعبة)
       });
 
       showScreen('online-lobby');
@@ -413,7 +439,10 @@ function joinRoom() {
     conn.on('data', (data) => handleClientData(data));
 
     conn.on('close', () => {
-      abortGame("أغلق المضيف الغرفة! 🛑");
+      // لا تظهر رسالة الخطأ إلا إذا كان الانقطاع مفاجئاً (اللاعب لا يزال يعتبر نفسه أونلاين)
+      if (isOnline) {
+        abortGame("أغلق المضيف الغرفة! 🛑");
+      }
     });
 
     conn.on('error', (err) => {
@@ -474,6 +503,7 @@ function handleHostData(data, conn) {
       peerId: conn.peer,
       isHost: false,
       isReady: false,
+      isPremium: data.isPremium || false, // 👈 هذا هو السطر الناقص (المضيف يسجل حالة اللاعب في دفتره)
       points: 0,
       lastSeen: Date.now()
     };
@@ -1069,24 +1099,31 @@ function toggleTheme() {
 }
 
 function updateSettingsUI() {
-  document.getElementById('lbl-mute').innerText = isMuted ? '🔇' : '🔊';
-  document.getElementById('lbl-vibe').innerText = isVibrationEnabled ? '📳' : '📴';
-  document.getElementById('lbl-theme').innerText = isDarkMode ? '🌙' : '☀️';
+  const lblMute = document.getElementById('lbl-mute');
+  if (lblMute) lblMute.innerText = isMuted ? '🔇' : '🔊';
+
+  const lblVibe = document.getElementById('lbl-vibe');
+  if (lblVibe) lblVibe.innerText = isVibrationEnabled ? '📳' : '📴';
+
+  const lblTheme = document.getElementById('lbl-theme');
+  if (lblTheme) lblTheme.innerText = isDarkMode ? '🌙' : '☀️';
 }
 
 // Helpers
 // --- Premium Functions ---
 
+// متغير جديد لمعرفة هل اللاعب ضغط على الزر بنفسه أم لا
+let isManualRestoreRequest = false;
+
 // دالة زر استرجاع المشتريات من الإعدادات
 function restorePurchasesClick() {
-  // إغلاق الإعدادات لإظهار التنبيه بوضوح
   closeSettingsModal();
 
   if (typeof Android !== "undefined" && Android.restorePurchases) {
+    isManualRestoreRequest = true; // 👈 تفعيل فلتر الحماية (الطلب يدوي)
     showAlert("جاري البحث عن مشترياتك السابقة... ⏳");
-    Android.restorePurchases(); // طلب الاسترجاع من كود الأندرويد (Kotlin/Java)
+    Android.restorePurchases();
   } else {
-    // للتجربة في المتصفح
     showAlert("هذه الميزة تعمل فقط على تطبيق الأندرويد الفعلي 📱");
   }
 }
@@ -1094,25 +1131,31 @@ function restorePurchasesClick() {
 // الدالة التي سيرد عليها الأندرويد بعد فحص جوجل بلاي
 window.onRestoreComplete = function (isSuccessful) {
   if (isSuccessful) {
-    // نجح الاسترجاع
+    // تحديث البيانات وفتح الفئات بصمت دائماً لضمان عمل اللعبة
     isPremium = true;
     localStorage.setItem('isPremium', 'true');
+    updatePremiumUI();
 
-    updatePremiumUI(); // سيقوم بإخفاء الأزرار
-
-    // تحديث الأقفال في الفئات إذا كان اللاعب في شاشة الفئات
     if (typeof renderCategorySelectionGrid === 'function') {
       renderCategorySelectionGrid();
     }
 
-    sounds.win();
-    createConfetti();
-    showAlert("💎 مبروك! تم استرجاع مشترياتك وتفعيل النسخة الكاملة بنجاح!");
+    // 🛡️ التنبيه والاحتفال يظهر فقط إذا اللاعب طلب الاسترجاع يدوياً
+    if (isManualRestoreRequest) {
+      sounds.win();
+      createConfetti();
+      showAlert("💎 مبروك! تم استرجاع مشترياتك وتفعيل النسخة الكاملة بنجاح!");
+    }
   } else {
-    // لم ينجح الاسترجاع (لم يشتريها مسبقاً)
-    sounds.wrong();
-    showAlert("لم نتمكن من العثور على مشتريات سابقة لهذا الحساب ❌");
+    // تنبيه الفشل يظهر فقط للطلب اليدوي أيضاً
+    if (isManualRestoreRequest) {
+      sounds.wrong();
+      showAlert("لم نتمكن من العثور على مشتريات سابقة لهذا الحساب ❌");
+    }
   }
+
+  // إعادة تصفير المتغير بعد الانتهاء
+  isManualRestoreRequest = false;
 };
 
 function openPremiumModal() {
@@ -1165,6 +1208,17 @@ function openLeaderboard(fromScreen) {
 // دالة لإغلاق الصدارة والعودة للمكان الصحيح
 function closeLeaderboard() {
   showScreen(returnScreenId); // العودة
+
+  // ✨ النزول التلقائي لأسفل الشاشة إذا كنا عائدين لصفحة النتائج ✨
+  if (returnScreenId === 'final') {
+    setTimeout(() => {
+      const finalScreen = document.getElementById('screen-final');
+      if (finalScreen) {
+        finalScreen.scrollTo({ top: finalScreen.scrollHeight, behavior: 'smooth' });
+      }
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 50);
+  }
 }
 
 // دالة لتصفير واجهة المؤقت فوراً
@@ -1233,12 +1287,72 @@ function updateOnlineSettingsUI() {
   }
 }
 
+// 🛠️ دالة مساعدة لضمان بناء شاشة الكشف (تعالج التعارض بين الأونلاين والأوفلاين)
+function ensureRevealScreenExists() {
+  const screenReveal = document.getElementById('screen-reveal');
+  if (screenReveal && !document.getElementById('reveal-role-text')) {
+    screenReveal.innerHTML = `
+      <div class="text-7xl sm:text-8xl mb-6"></div>
+      <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
+      <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-8 text-indigo-500"></h2>
+
+      <div class="card-scene w-full max-w-sm mx-auto mb-8 h-[400px] sm:h-[420px]">
+        <div class="card-object w-full h-full" id="role-card">
+          
+          <div class="card-face card-face-front absolute inset-0 w-full h-full overflow-hidden bg-gradient-to-br from-slate-900 to-black border-2 border-indigo-500/30 shadow-[0_0_30px_rgba(99,102,241,0.2)] rounded-[2.5rem]">
+            <div class="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0deg,#4f46e5_90deg,#8b5cf6_180deg,transparent_270deg,#4f46e5_360deg)] animate-border-spin opacity-80"></div>
+            
+            <div class="absolute inset-[3px] bg-gradient-to-br from-slate-950 to-black rounded-[calc(2.5rem-3px)] z-10">
+              <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBoNDBNNDAgMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-30"></div>
+              <div class="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            </div>
+            
+            <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4">
+              <h3 class="text-theme-muted font-bold text-sm mb-6 animate-pulse">ضع إصبعك للكشف</h3>
+              <div id="fingerprint-scanner" class="relative w-32 h-32 flex items-center justify-center cursor-pointer group active:scale-95 transition-transform duration-200" onmousedown="startScan(event)" ontouchstart="startScan(event)" onmouseup="cancelScan()" ontouchend="cancelScan()" onmouseleave="cancelScan()">
+                <svg class="w-14 h-14 text-indigo-500/50 transition-all duration-300 z-10 group-hover:text-indigo-500/80" id="scanner-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.93-2.85-1.45-6.45-1.45-9.28.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.2-.41.2zm6.27 12c-.25 0-.48-.19-.5-.45-.09-1.39-.03-2.79.16-4.18.36-2.59 2.05-4.43 4.54-4.93.27-.05.53.12.59.39.05.27-.12.53-.39.59-1.89.38-3.17 1.78-3.44 3.73-.18 1.3-.23 2.6-.15 3.9.02.28-.19.52-.47.54-.11.01-.23 0-.34-.49zM9.6 20.3c-.27 0-.5-.21-.52-.49-.1-2.18.23-4.52.95-6.73.53-1.63 1.46-3.08 2.7-4.21.21-.19.53-.18.72.03.19.21.18.53-.03.72-1.07 1-1.87 2.24-2.33 3.66-.66 2.03-.96 4.17-.87 6.17.02.27-.2.5-.47.52-.05 0-.1 0-.15-.17zm6 1.4c-.26 0-.49-.2-.51-.46-.14-2.18.17-4.4.89-6.42.54-1.51 1.44-2.82 2.6-3.79.22-.18.53-.15.72.06.18.22.15.53-.06.72-1 1.05-1.77 2.18-2.24 3.5-.66 1.84-.94 3.86-.81 5.86.02.28-.19.52-.47.54-.04-.01-.08-.01-.12-.01z" /></svg>
+                        <div class="absolute inset-0 rounded-full overflow-hidden z-20 pointer-events-none">
+                          <div id="scan-beam" class="absolute w-full h-1 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,1)] top-0 hidden opacity-80"></div>
+                        </div>
+                        <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none z-30" viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="48" stroke="rgba(99, 102, 241, 0.2)" stroke-width="2" fill="none"></circle>
+                          <circle cx="50" cy="50" r="48" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" class="opacity-0" id="scan-progress" stroke-dasharray="301.6" stroke-dashoffset="301.6"></circle>
+                        </svg>
+                      </div>
+                      <p id="scan-status" class="text-xs text-indigo-400 mt-6 font-mono h-4">انتظار البيانات...</p>
+                    </div>
+                  </div>
+                  
+                  <div class="card-face card-face-back absolute inset-0 w-full h-full overflow-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-black border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] rounded-[2.5rem]">
+                    <div class="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0deg,#10b981_90deg,#34d399_180deg,transparent_270deg,#10b981_360deg)] animate-border-spin opacity-80"></div>
+                    <div class="absolute inset-[3px] bg-gradient-to-tl from-slate-950 via-slate-900 to-black rounded-[calc(2.5rem-3px)] z-10">
+                      <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                    </div>
+                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4">
+                      <p id="reveal-role-text" class="text-xl sm:text-2xl font-bold mb-4"></p>
+                      <div id="reveal-img-placeholder" class="text-7xl sm:text-8xl mb-4 drop-shadow-2xl"></div>
+                      <p id="reveal-secret-word" class="text-3xl sm:text-5xl font-black text-emerald-400 mb-6 tracking-wider break-words w-full px-2 leading-tight drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]" style="direction: rtl; unicode-bidi: embed;"></p>
+                      <p id="reveal-word-desc" class="text-sm sm:text-base text-blue-400 mt-4 font-bold bg-blue-500/10 p-2 rounded-xl border border-blue-500/20 relative z-10"></p>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              <button id="btn-reveal-action" onclick="toggleReveal()" class="btn-gradient w-full py-6 rounded-3xl font-black text-2xl text-white hidden">كشف الدور</button>
+              <button id="btn-next-player" onclick="nextPlayerAction()" class="btn-gradient w-full py-6 rounded-3xl font-black text-2xl text-white hidden">التالي ⏭️</button>
+            `;
+  }
+}
+
 // دالة نسخ كود الغرفة
 function copyCode() {
   const codeElement = document.getElementById('lobby-room-code');
   if (!codeElement) return;
 
   const code = codeElement.innerText;
+
+  // 🛡️ درع الحماية: إذا كان النص الحالي هو "تم النسخ"، أوقف الدالة فوراً!
+  if (code.includes('تم')) return;
 
   // استخدام API الحافظة
   navigator.clipboard.writeText(code).then(() => {
@@ -1304,7 +1418,17 @@ function closeExitModal() {
 
 // تنفيذ الخروج الفعلي
 function confirmExit() {
+  // 1. إخفاء نافذة التأكيد فوراً وبدون أي انتظار
+  const exitModal = document.getElementById('modal-exit-confirm');
+  if (exitModal) {
+    exitModal.classList.add('hidden');
+    exitModal.classList.remove('flex');
+  }
+
   if (isOnline) {
+    // 👈 السطر السحري: نخبر النظام أننا نخرج بإرادتنا لمنع إطلاق تنبيه الانقطاع المفاجئ
+    isOnline = false;
+
     // إرسال رسالة وداع فورية قبل قطع الاتصال
     if (isHost) {
       // المضيف يخبر الجميع أنه خارج
@@ -1316,7 +1440,7 @@ function confirmExit() {
       }
     }
 
-    // تأخير بسيط جداً (100ms) لضمان وصول الرسالة قبل التدمير
+    // تأخير بسيط جداً لضمان وصول الرسالة قبل التدمير
     setTimeout(() => {
       if (myPeer) { myPeer.destroy(); myPeer = null; }
       if (myConn) { myConn.close(); myConn = null; }
@@ -1331,28 +1455,100 @@ function confirmExit() {
 }
 
 function cleanupAndReload() {
+  // 1. إيقاف كل المؤقتات الحية (المسؤولة عن 90% من الأخطاء)
+  if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
+  if (state.interval) { clearInterval(state.interval); state.interval = null; }
+  if (state.guessInterval) { clearInterval(state.guessInterval); state.guessInterval = null; }
+  if (scanTimer) { clearTimeout(scanTimer); scanTimer = null; }
+
+  // 2. تدمير اتصالات الأونلاين (WebRTC)
+  if (myConn) { myConn.close(); myConn = null; }
+  Object.values(hostConnections).forEach(conn => { if (conn && conn.open) conn.close(); });
+  if (myPeer) { myPeer.destroy(); myPeer = null; }
+
+  // 3. تصفير المتغيرات العامة
   isOnline = false;
   isHost = false;
+  isGameStarted = false;
+  amIReady = false;
+  onlinePlayers = [];
+  hostConnections = {};
+  myPlayerId = null;
+  roomCode = null;
+  lastLobbyState = "";
+  votesReceived = 0;
+  revealReadyCount = 0;
+
+  // 4. تصفير كائن الجولة بالكامل (مع الاحتفاظ بالفئات التي اختارها اللاعب مسبقاً)
+  state = {
+    players: [], currentRoles: [], secretData: null, timer: 60, initialTimer: 60, interval: null,
+    revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: false,
+    outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "عشوائي",
+    allowedCategories: state.allowedCategories, // نحتفظ بخياراته السابقة
+    usedWords: [], customWords: state.customWords, lastWinner: null, votingMode: 'individual', voterIndex: 0,
+    votesAccumulated: {}, panicMode: false, smartDistractors: true, blindModeActive: false, blindRoundType: null,
+    guessInterval: null, panicModeAllowed: false, hintEnabled: false
+  };
+
+  // 5. 🧹 تصفير بقايا الواجهة (Inputs & Buttons & Checkboxes) 🧹
+  const roomInput = document.getElementById('room-code-input');
+  if (roomInput) roomInput.value = ''; // مسح كود الغرفة القديم
+
+  const readyBtn = document.getElementById('btn-client-ready');
+  if (readyBtn) {
+    readyBtn.innerText = "أنا جاهز! ✅";
+    readyBtn.className = "btn-secondary-theme w-full py-5 rounded-2xl font-black text-xl border-emerald-500/50";
+  }
+
+  // 1. شريط اللاعبين (أوفلاين)
+  const inputPlayers = document.getElementById('input-players');
+  if (inputPlayers) inputPlayers.value = '3';
+
+  // 2. شريط الوقت (أوفلاين)
+  const inputTime = document.getElementById('input-time');
+  if (inputTime) inputTime.value = '60';
+
+  // 3. شريط الوقت (أونلاين)
+  const onlineTimeInput = document.getElementById('online-time-input');
+  if (onlineTimeInput) onlineTimeInput.value = '60';
+
+  // إطفاء جميع أزرار التفعيل (Checkboxes) للأوفلاين والأونلاين
+  const checkboxes = [
+    'check-double-agent', 'check-undercover', 'check-panic-mode', 'check-guessing', 'check-blind-mode', 'check-hint',
+    'online-check-panic', 'online-check-guessing', 'online-check-blind', 'online-check-double-agent', 'online-check-undercover', 'online-check-hint'
+  ];
+
+  checkboxes.forEach(id => {
+    const chk = document.getElementById(id);
+    if (chk) chk.checked = false; // نضعها كلها على "مغلق"
+  });
+
+  // تحديث النصوص المرتبطة بالوقت والأزرار لكي ينعكس الإغلاق على الشاشة (مرة واحدة تكفي)
+  if (typeof updateSetupInfo === 'function') updateSetupInfo();
+  if (typeof updateOnlineTime === 'function') updateOnlineTime('60'); // تحديث نص وقت الأونلاين
+  if (typeof updateOnlineSettingsUI === 'function') updateOnlineSettingsUI();
+
+  // 6. إزالة حمايات الخروج
   window.onbeforeunload = null;
   window.onpopstate = null;
-  window.location.href = window.location.pathname;
+
+  // 7. العودة السلسة للبداية
+  initApp();
 }
 
 function abortGame(reason) {
-  // 1. إيقاف اللعبة وتنظيف الحالة
-  isGameStarted = false;
-  isOnline = false;
-  clearInterval(state.interval);
+  // 1. إيقاف المؤقتات فوراً لكي تتوقف اللعبة تماماً أثناء قراءة اللاعب للرسالة
+  if (state.interval) clearInterval(state.interval);
   if (heartbeatInterval) clearInterval(heartbeatInterval);
+  if (state.guessInterval) clearInterval(state.guessInterval);
 
-  // 2. إزالة جميع حمايات الخروج
+  // 2. إزالة حمايات الخروج
   window.onbeforeunload = null;
   window.onpopstate = null;
 
-  // 3. عرض التنبيه (بدون توقيت تلقائي)
-  // الصفحة لن تعيد التحميل إلا بعد أن يقرأ اللاعب الرسالة ويضغط موافق
+  // 3. عرض التنبيه، وعندما يضغط اللاعب "موافق"، نستخدم التنظيف الناعم!
   showAlert("🛑 " + reason, () => {
-    window.location.href = window.location.pathname; // العودة للرئيسية
+    cleanupAndReload(); // 👈 السحر هنا: عودة سلسة بدون أي Refresh
   });
 }
 
@@ -1362,7 +1558,7 @@ function formatTimeLabel(s) {
   let mText = "";
 
   // تحديد صيغة الدقائق
-  if (m === 1) mText = "دقيقة واحدة";
+  if (m === 1) mText = "دقيقة";
   else if (m === 2) mText = "دقيقتان";
   else if (m >= 3 && m <= 10) mText = `${m} دقائق`;
   else mText = `${m} دقيقة`; // من 11 فما فوق (وأيضاً الصفر إذا وجد)
@@ -1640,67 +1836,23 @@ function closeStatsModal() { document.getElementById('modal-stats').classList.ad
 function closeAlert() { document.getElementById('modal-alert').classList.add('hidden'); }
 
 //Render Quick Category Selection ---
-/* function renderQuickCategorySelection(gridId) {
-  const grid = document.getElementById(gridId);
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  // 1. خيار "عشوائي" (دائماً في البداية)
-  const isRandomActive = state.selectedCategory === 'عشوائي';
-  grid.innerHTML += `
-    <div onclick="selectCategory('عشوائي', '${gridId}')" 
-         class="category-card ${isRandomActive ? 'active' : ''}">
-         <span class="text-2xl">🎲</span>
-         <span class="text-xs">عشوائي</span>
-    </div>`;
-
-  // 2. عرض الفئات المسموحة (Allowed Categories)
-  state.allowedCategories.forEach(cat => {
-
-    // شرط خاص للكلمات الخاصة: لا تعرضها في الاختيار السريع إلا إذا كان هناك عدد كافٍ من الكلمات
-    if (cat === "كلمات خاصة" && state.customWords.length < 4) {
-      return; // تخطي هذا التكرار (لا تعرض الزر)
-    }
-
-    // البحث عن الإيموجي الثابت في categoryGroups
-    let emoji = "❓";
-
-    // نلف على كل المجموعات للبحث عن الفئة الحالية
-    for (const group of Object.values(categoryGroups)) {
-      const foundItem = group.find(item => item.id === cat);
-      if (foundItem) {
-        emoji = foundItem.emoji;
-        break; // وجدنا الايموجي، نوقف البحث
-      }
-    }
-
-    const isActive = state.selectedCategory === cat;
-
-    // إضافة الكرت للشبكة
-    grid.innerHTML += `
-        <div onclick="selectCategory('${cat}', '${gridId}')" 
-             class="category-card ${isActive ? 'active' : ''}">
-             <span class="text-2xl">${emoji}</span>
-             <span class="text-xs">${cat}</span>
-        </div>`;
-  });
-} */
-
 function renderQuickCategorySelection(gridId) {
   const grid = document.getElementById(gridId);
   if (!grid) return;
   grid.innerHTML = '';
 
-  // 1. خيار "عشوائي"
-  const isRandomActive = state.selectedCategory === 'عشوائي';
-  grid.innerHTML += `
-    <div onclick="selectCategory('عشوائي', '${gridId}')" 
-         class="category-card ${isRandomActive ? 'active' : ''}">
-         <span class="text-2xl">🎲</span>
-         <span class="text-xs">عشوائي</span>
-    </div>`;
+  // 1. خيار عشوائي (يظهر فقط إذا كان هناك أكثر من فئة أو صفر/الكل)
+  if (state.allowedCategories.length !== 1) {
+    const isRandomActive = state.selectedCategory === 'عشوائي';
+    const label = state.allowedCategories.length === 0 ? "كل الفئات" : "عشوائي";
+    grid.innerHTML += `
+        <div onclick="selectCategory('عشوائي', '${gridId}')" class="category-card ${isRandomActive ? 'active' : ''}">
+             <span class="text-2xl">🎲</span>
+             <span class="text-xs">${label}</span>
+        </div>`;
+  }
 
-  // 2. الفئات المسموحة
+  // 2. عرض الفئات المختارة فقط
   state.allowedCategories.forEach(cat => {
     if (cat === "كلمات خاصة" && state.customWords.length < 4) return;
 
@@ -1711,15 +1863,11 @@ function renderQuickCategorySelection(gridId) {
     }
 
     const isActive = state.selectedCategory === cat;
-
-    // 🔒 منطق القفل للقائمة السريعة
     const isLocked = !isPremium && !FREE_CATEGORIES.includes(cat);
-    const lockedClass = isLocked ? 'opacity-50 grayscale' : '';
     const lockIcon = isLocked ? '🔒 ' : '';
 
     grid.innerHTML += `
-        <div onclick="selectCategory('${cat}', '${gridId}')" 
-             class="category-card ${isActive ? 'active' : ''} ${lockedClass}">
+        <div onclick="selectCategory('${cat}', '${gridId}')" class="category-card ${isActive ? 'active' : ''} ${isLocked ? 'opacity-50 grayscale' : ''}">
              <span class="text-2xl">${emoji}</span>
              <span class="text-xs">${lockIcon}${cat}</span>
         </div>`;
@@ -1735,6 +1883,24 @@ function openCategoryModal() {
   }
 }
 function closeCategoryModal() { const m = document.getElementById('modal-category'); if (m) { m.classList.add('hidden'); m.classList.remove('flex'); } }
+
+let categoryOriginScreen = 'setup'; // ذاكرة لحفظ الشاشة التي جئنا منها
+
+// دالة ذكية تكتشف مكانك الحالي قبل فتح القائمة الشاملة
+function openComprehensiveCategory() {
+  if (!document.getElementById('screen-final').classList.contains('hidden')) {
+    categoryOriginScreen = 'final';
+  } else if (!document.getElementById('screen-online-lobby').classList.contains('hidden')) {
+    categoryOriginScreen = 'online-lobby';
+  } else if (!document.getElementById('screen-setup').classList.contains('hidden')) {
+    categoryOriginScreen = 'setup';
+  } else {
+    categoryOriginScreen = 'start';
+  }
+
+  showScreen('category-select');
+  closeCategoryModal();
+}
 
 function checkResetButtonVisibility() {
   const trigger = document.getElementById('btn-reset-points-trigger');
@@ -1784,39 +1950,6 @@ function showAlert(msg, onDismiss = null) {
 }
 
 // --- Category Selection Logic (Grouped) ---
-/* function renderCategorySelectionGrid() {
-  const grid = document.getElementById('selection-grid');
-  if (!grid) return; grid.innerHTML = '';
-
-  for (const [groupName, cats] of Object.entries(categoryGroups)) {
-    const header = document.createElement('div');
-    header.className = "section-header"; header.innerText = groupName;
-    grid.appendChild(header);
-    const subGrid = document.createElement('div');
-    subGrid.className = "grid grid-cols-3 gap-2 text-center mb-4";
-
-    cats.forEach(catItem => {
-      const catName = catItem.id;   // الاسم: "دول"
-      const catEmoji = catItem.emoji; // الايموجي: "🌍"
-
-      // التحقق من وجود الفئة في البيانات
-      if (wordBank[catName] || catName === "كلمات خاصة") {
-        const isSelected = state.allowedCategories.includes(catName);
-
-        subGrid.innerHTML += `
-            <div onclick="toggleCategorySelection('${catName}')" class="category-card ${isSelected ? 'selected active' : ''}">
-                <div class="check-badge">✓</div>
-                <span class="text-2xl">${catEmoji}</span>
-                <span class="text-xs font-bold">${catName}</span>
-            </div>
-        `;
-      }
-    });
-    grid.appendChild(subGrid);
-  }
-  updateCatCounter();
-} */
-
 function renderCategorySelectionGrid() {
   const grid = document.getElementById('selection-grid');
   if (!grid) return;
@@ -1838,11 +1971,7 @@ function renderCategorySelectionGrid() {
       if (wordBank[catName] || catName === "كلمات خاصة") {
         const isSelected = state.allowedCategories.includes(catName);
 
-        // 🔒 التحقق: هل الفئة مغلقة؟
-        // (إذا لم تكن بريميوم) AND (الفئة ليست في القائمة المجانية)
         const isLocked = !isPremium && !FREE_CATEGORIES.includes(catName);
-
-        // تنسيق القفل: نضيف كلاس grayscale ونغير الايموجي
         const lockIcon = isLocked ? '<span class="absolute top-1 left-1 text-xs px-1">🔒</span>' : '';
         const lockedClass = isLocked ? 'opacity-60 grayscale cursor-not-allowed' : '';
         const clickAction = isLocked ? `openPremiumModal()` : `toggleCategorySelection('${catName}')`;
@@ -1860,21 +1989,17 @@ function renderCategorySelectionGrid() {
     grid.appendChild(subGrid);
   }
   updateCatCounter();
-}
 
-/* function toggleCategorySelection(cat) {
-  if (state.allowedCategories.includes(cat)) {
-    state.allowedCategories = state.allowedCategories.filter(c => c !== cat);
-  } else {
-    if (state.allowedCategories.length < 12) {
-      state.allowedCategories.push(cat);
+  // ✅ التعديل الذكي: إظهار مربع إدخال الكلمات فور تحديد فئة "كلمات خاصة"
+  const customUI = document.getElementById('custom-words-ui');
+  if (customUI) {
+    if (state.allowedCategories.includes('كلمات خاصة')) {
+      customUI.classList.remove('hidden');
     } else {
-      showAlert("الحد الأقصى 12 فئة!");
+      customUI.classList.add('hidden');
     }
   }
-  sounds.tick();
-  renderCategorySelectionGrid();
-} */
+}
 
 function toggleCategorySelection(cat) {
   // 🔒 حماية: إذا لم يكن بريميوم والفئة ليست مجانية -> افتح نافذة الشراء
@@ -1896,29 +2021,86 @@ function toggleCategorySelection(cat) {
   renderCategorySelectionGrid();
 }
 
-function updateCatCounter() {
-  const count = state.allowedCategories.length;
-  const counter = document.getElementById('cat-counter');
-  const btn = document.getElementById('btn-confirm-cats');
+function updateCurrentCategoryUI() {
+  let text = state.selectedCategory;
+  let emoji = "🎲";
 
-  counter.innerText = `${count}/12`;
+  if (text !== "عشوائي") {
+    for (const group of Object.values(categoryGroups)) {
+      const found = group.find(item => item.id === text);
+      if (found) { emoji = found.emoji; break; }
+    }
+  }
 
-  if (count >= 6 && count <= 12) {
-    counter.classList.remove('text-red-500'); counter.classList.add('text-primary');
-    btn.disabled = false; btn.style.opacity = "1"; btn.style.filter = "none"; btn.style.cursor = "pointer";
-  } else {
-    counter.classList.add('text-red-500'); counter.classList.remove('text-primary');
-    btn.disabled = true; btn.style.opacity = "0.5"; btn.style.filter = "grayscale(100%)"; btn.style.cursor = "not-allowed";
+  // تحديث شاشة الأوفلاين
+  const offlineText = document.getElementById('setup-current-cat-text');
+  if (offlineText) {
+    if (state.allowedCategories.length === 0 && text === 'عشوائي') {
+      offlineText.innerText = `جميع الفئات 🎲`;
+    } else if (text === 'عشوائي') {
+      offlineText.innerText = `عشوائي (من المختار) 🎲`;
+    } else {
+      offlineText.innerText = `${text} ${emoji}`;
+    }
+  }
+
+  // تحديث زر المضيف في الأونلاين
+  const hostEmoji = document.getElementById('host-current-cat-emoji');
+  const hostText = document.getElementById('host-current-cat-text');
+  if (hostEmoji && hostText) {
+    hostEmoji.innerText = emoji;
+    if (state.allowedCategories.length === 0 && text === 'عشوائي') hostText.innerText = 'كل الفئات';
+    else hostText.innerText = text;
   }
 }
 
+// تعديل دالة الاختيار لتقوم بتحديث النصوص
+function selectCategory(cat, gridId) {
+  if (cat === 'كلمات خاصة' && !isPremium) return openPremiumModal();
+  if (!isPremium && !FREE_CATEGORIES.includes(cat) && cat !== 'عشوائي') return openPremiumModal();
+
+  state.selectedCategory = cat;
+  if (gridId === 'modal-categories-grid') renderQuickCategorySelection('modal-categories-grid');
+  sounds.tick();
+
+  updateCurrentCategoryUI();
+}
+
+function updateCatCounter() {
+  const count = state.allowedCategories.length;
+  const counter = document.getElementById('cat-counter');
+  counter.innerText = count === 0 ? "الكل" : count;
+  counter.classList.add('text-primary');
+}
+
+// دالة تأكيد الفئات (النسخة النهائية المفتوحة)
 function confirmCategories() {
-  if (state.allowedCategories.length < 6) { showAlert("اختر 6 فئات على الأقل!"); return; }
-  // Default selectedCategory to 'Random' initially if not set or invalid
-  if (!state.allowedCategories.includes(state.selectedCategory) && state.selectedCategory !== 'عشوائي') {
+  // 🛡️ حماية: منع التأكيد إذا اختار "كلمات خاصة" ولم يضف كلمات كافية
+  if (state.allowedCategories.includes('كلمات خاصة') && state.customWords.length < 4) {
+    showAlert("الرجاء إضافة 4 كلمات خاصة على الأقل للبدء! ✍️");
+    return; // توقف ولا تخرج من الشاشة
+  }
+
+  if (state.allowedCategories.length === 1) {
+    state.selectedCategory = state.allowedCategories[0];
+  } else {
     state.selectedCategory = 'عشوائي';
   }
-  showScreen('setup');
+
+  showScreen(categoryOriginScreen);
+  updateCurrentCategoryUI();
+
+  // ✨ النزول التلقائي لأسفل الشاشة إذا كنا عائدين لصفحة النتائج ✨
+  if (categoryOriginScreen === 'final') {
+    setTimeout(() => {
+      const finalScreen = document.getElementById('screen-final');
+      if (finalScreen) {
+        // النزول بنعومة لأسفل الشاشة
+        finalScreen.scrollTo({ top: finalScreen.scrollHeight, behavior: 'smooth' });
+      }
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 50); // تأخير بسيط جداً لضمان تحميل الشاشة أولاً
+  }
 }
 
 // --- Setup Logic ---
@@ -1959,42 +2141,6 @@ function renderActiveCategoryGrid() {
   });
 }
 
-/* function selectCategory(cat, gridId) {
-  state.selectedCategory = cat;
-  if (gridId === 'active-category-grid') renderActiveCategoryGrid();
-  // Update Quick Change modal UI if active
-  if (gridId === 'modal-categories-grid') renderQuickCategorySelection('modal-categories-grid');
-  sounds.tick();
-
-  // Show custom words UI only if user manually adds them or selects a hypothetical custom category (not implemented in selection screen)
-  // For now, keep hidden unless 'كلمات خاصة' exists and is selected
-  if (cat === 'كلمات خاصة') document.getElementById('custom-words-ui').classList.remove('hidden');
-  else document.getElementById('custom-words-ui').classList.add('hidden');
-} */
-
-function selectCategory(cat, gridId) {
-  // 🔒 حماية الكلمات الخاصة
-  if (cat === 'كلمات خاصة' && !isPremium) {
-    openPremiumModal();
-    return;
-  }
-
-  // 🔒 حماية الفئات المدفوعة في القائمة السريعة
-  if (!isPremium && !FREE_CATEGORIES.includes(cat) && cat !== 'عشوائي') {
-    openPremiumModal();
-    return;
-  }
-
-  state.selectedCategory = cat;
-  if (gridId === 'active-category-grid') renderActiveCategoryGrid();
-  if (gridId === 'modal-categories-grid') renderQuickCategorySelection('modal-categories-grid');
-  sounds.tick();
-
-  // إظهار واجهة الكلمات الخاصة فقط إذا تم اختيارها وكان المستخدم بريميوم
-  if (cat === 'كلمات خاصة') document.getElementById('custom-words-ui').classList.remove('hidden');
-  else document.getElementById('custom-words-ui').classList.add('hidden');
-}
-
 // --- Main Functions ---
 function addCustomWord() {
   const input = document.getElementById('custom-word-input');
@@ -2021,12 +2167,17 @@ function setVotingMode(mode) {
   state.votingMode = mode;
   const groupBtn = document.getElementById('btn-vote-group');
   const indivBtn = document.getElementById('btn-vote-individual');
+
+  // التصميمات الجديدة للأزرار المليئة بالعرض
+  const activeClass = "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-indigo-600 text-white shadow-lg";
+  const inactiveClass = "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-white";
+
   if (mode === 'group') {
-    groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
-    indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-theme-main";
+    groupBtn.className = activeClass;
+    indivBtn.className = inactiveClass;
   } else {
-    indivBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
-    groupBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-theme-main";
+    indivBtn.className = activeClass;
+    groupBtn.className = inactiveClass;
   }
   sounds.tick();
 }
@@ -2111,28 +2262,6 @@ function setAvatar(pIdx, av) {
   triggerVibrate(10);
 }
 
-// دالة تأكيد الفئات
-function confirmCategories() {
-  // التحقق العام
-  if (state.allowedCategories.length < 6) {
-    showAlert("اختر 6 فئات على الأقل!");
-    return;
-  }
-
-  // منطق الأونلاين للمضيف
-  if (isOnline && isHost) {
-    showScreen('online-lobby');
-    // يمكن إضافة broadcast هنا لإخبار اللاعبين بانتهاء اختيار الفئات إذا أردت
-    return;
-  }
-
-  // منطق الأوفلاين الأصلي
-  if (!state.allowedCategories.includes(state.selectedCategory) && state.selectedCategory !== 'عشوائي') {
-    state.selectedCategory = 'عشوائي';
-  }
-  showScreen('setup');
-}
-
 function startOnlineGame() {
   if (onlinePlayers.length < 3) return showAlert("3 لاعبين على الأقل!");
 
@@ -2147,11 +2276,25 @@ function startOnlineGame() {
     return;
   }
 
-  if (state.allowedCategories.length < 6) {
-    showAlert("يجب اختيار 6 فئات على الأقل للبدء! 📚");
-    showScreen('category-select'); // توجيه المضيف لصفحة الاختيار
-    return;
+  // 👇🚨 كود التحقق من النسخة المدفوعة 🚨👇
+  if (typeof STRICT_PREMIUM_MODE !== 'undefined' && STRICT_PREMIUM_MODE) {
+    // إذا كانت الفئة "عشوائي"، نسمح ببدء اللعبة، لأن النظام سيفلتر الفئات تلقائياً لاحقاً.
+    // نتحقق فقط إذا اختار المضيف فئة محددة بعينها.
+    if (state.selectedCategory !== 'عشوائي') {
+      let isUsingPremium = !FREE_CATEGORIES.includes(state.selectedCategory);
+
+      if (isUsingPremium) {
+        const freePlayers = onlinePlayers.filter(p => !p.isHost && p.isPremium !== true);
+        if (freePlayers.length > 0) {
+          const names = freePlayers.map(p => p.name).join('، ');
+          showAlert(`الفئة المحددة (${state.selectedCategory}) تحتاج للنسخة الكاملة 💎.\nاللاعبون: (${names}) يملكون النسخة المجانية فقط.`);
+          checkAllReady();
+          return;
+        }
+      }
+    }
   }
+  // 👆🚨 نهاية كود التحقق 🚨👆
 
   isGameStarted = true;
 
@@ -2205,106 +2348,9 @@ function startOnlineGame() {
   });
 }
 
-function handleCategoryBack() {
-  if (isOnline && isHost) {
-    showScreen('online-lobby'); // العودة للوبي إذا كنت مضيفاً
-  } else {
-    showScreen('start'); // العودة للرئيسية في الوضع العادي
-  }
-}
-
 function setupOnlineRevealScreen() {
   // 1. إعادة بناء الشاشة إذا كانت ممسوحة
-  const screenReveal = document.getElementById('screen-reveal');
-  if (screenReveal && !document.getElementById('reveal-role-text')) {
-    // ... (نفس كود HTML البناء السابق) ...
-    // اختصاراً، استخدم نفس كود البناء الذي أعطيتك إياه في الرد السابق
-    // سأضع النسخة المختصرة هنا، تأكد من وجود كود الـ innerHTML الكامل
-    /* screenReveal.innerHTML = `
-      <div class="text-7xl sm:text-8xl mb-6">📱</div>
-      <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
-      <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-10 text-indigo-500"></h2>
-      <div class="card-scene">
-        <div class="card-object" id="role-card">
-          <div class="card-face card-face-front relative overflow-hidden">
-            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBoNDBNNDAgMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-30"></div>
-            <div class="z-10 flex flex-col items-center">
-              <h3 class="text-theme-muted font-bold text-sm mb-6 animate-pulse">ضع إصبعك للكشف</h3>
-              <div id="fingerprint-scanner" class="relative w-32 h-32 flex items-center justify-center cursor-pointer group active:scale-95 transition-transform duration-200" onmousedown="startScan(event)" ontouchstart="startScan(event)" onmouseup="cancelScan()" ontouchend="cancelScan()" onmouseleave="cancelScan()">
-                <svg class="w-14 h-14 text-indigo-500/50 transition-all duration-300 z-10 group-hover:text-indigo-500/80" id="scanner-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.93-2.85-1.45-6.45-1.45-9.28.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.2-.41.2zm6.27 12c-.25 0-.48-.19-.5-.45-.09-1.39-.03-2.79.16-4.18.36-2.59 2.05-4.43 4.54-4.93.27-.05.53.12.59.39.05.27-.12.53-.39.59-1.89.38-3.17 1.78-3.44 3.73-.18 1.3-.23 2.6-.15 3.9.02.28-.19.52-.47.54-.11.01-.23 0-.34-.49zM9.6 20.3c-.27 0-.5-.21-.52-.49-.1-2.18.23-4.52.95-6.73.53-1.63 1.46-3.08 2.7-4.21.21-.19.53-.18.72.03.19.21.18.53-.03.72-1.07 1-1.87 2.24-2.33 3.66-.66 2.03-.96 4.17-.87 6.17.02.27-.2.5-.47.52-.05 0-.1 0-.15-.17zm6 1.4c-.26 0-.49-.2-.51-.46-.14-2.18.17-4.4.89-6.42.54-1.51 1.44-2.82 2.6-3.79.22-.18.53-.15.72.06.18.22.15.53-.06.72-1 1.05-1.77 2.18-2.24 3.5-.66 1.84-.94 3.86-.81 5.86.02.28-.19.52-.47.54-.04-.01-.08-.01-.12-.01z" /></svg>
-                <div class="absolute inset-0 rounded-full overflow-hidden z-20 pointer-events-none">
-                  <div id="scan-beam" class="absolute w-full h-1 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,1)] top-0 hidden opacity-80"></div>
-                </div>
-                <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none z-30" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="48" stroke="rgba(99, 102, 241, 0.2)" stroke-width="2" fill="none"></circle>
-                  <circle cx="50" cy="50" r="48" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" class="opacity-0" id="scan-progress" stroke-dasharray="301.6" stroke-dashoffset="301.6"></circle>
-                </svg>
-              </div>
-              <p id="scan-status" class="text-xs text-indigo-400 mt-4 font-mono h-4">انتظار البيانات...</p>
-            </div>
-          </div>
-          <div class="card-face card-face-back flex flex-col items-center justify-center">
-            <p id="reveal-role-text" class="text-xl sm:text-2xl font-bold mb-4"></p>
-            <div id="reveal-img-placeholder" class="text-7xl sm:text-8xl mb-4"></div>
-            <p id="reveal-secret-word" class="text-3xl sm:text-5xl font-black text-emerald-500 mb-6 tracking-wider break-words w-full px-2 leading-tight" style="direction: rtl; unicode-bidi: embed;"></p>
-            <p id="reveal-word-desc" class="text-base sm:text-lg text-theme-muted mt-4 font-bold"></p>
-          </div>
-        </div>
-      </div>
-      <button id="btn-reveal-action" onclick="toggleReveal()" class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white hidden">كشف الدور</button>
-      <button id="btn-next-player" onclick="nextPlayerAction()" class="btn-gradient w-full py-7 rounded-3xl font-black text-2xl text-white hidden">التالي ⏭️</button>
-      `; */
-    screenReveal.innerHTML = `
-      <div class="text-7xl sm:text-8xl mb-6"></div>
-      <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
-      <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-8 text-indigo-500"></h2>
-
-      <div class="card-scene w-full max-w-sm mx-auto mb-8 h-[400px] sm:h-[420px]">
-        <div class="card-object w-full h-full" id="role-card">
-          
-          <div class="card-face card-face-front absolute inset-0 w-full h-full overflow-hidden bg-gradient-to-br from-slate-900 to-black border-2 border-indigo-500/30 shadow-[0_0_30px_rgba(99,102,241,0.2)] rounded-[2.5rem]">
-            <div class="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0deg,#4f46e5_90deg,#8b5cf6_180deg,transparent_270deg,#4f46e5_360deg)] animate-border-spin opacity-80"></div>
-            
-            <div class="absolute inset-[3px] bg-gradient-to-br from-slate-950 to-black rounded-[calc(2.5rem-3px)] z-10">
-              <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBoNDBNNDAgMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-30"></div>
-              <div class="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            </div>
-            
-            <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4">
-              <h3 class="text-theme-muted font-bold text-sm mb-6 animate-pulse">ضع إصبعك للكشف</h3>
-              <div id="fingerprint-scanner" class="relative w-32 h-32 flex items-center justify-center cursor-pointer group active:scale-95 transition-transform duration-200" onmousedown="startScan(event)" ontouchstart="startScan(event)" onmouseup="cancelScan()" ontouchend="cancelScan()" onmouseleave="cancelScan()">
-                <svg class="w-14 h-14 text-indigo-500/50 transition-all duration-300 z-10 group-hover:text-indigo-500/80" id="scanner-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.93-2.85-1.45-6.45-1.45-9.28.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.2-.41.2zm6.27 12c-.25 0-.48-.19-.5-.45-.09-1.39-.03-2.79.16-4.18.36-2.59 2.05-4.43 4.54-4.93.27-.05.53.12.59.39.05.27-.12.53-.39.59-1.89.38-3.17 1.78-3.44 3.73-.18 1.3-.23 2.6-.15 3.9.02.28-.19.52-.47.54-.11.01-.23 0-.34-.49zM9.6 20.3c-.27 0-.5-.21-.52-.49-.1-2.18.23-4.52.95-6.73.53-1.63 1.46-3.08 2.7-4.21.21-.19.53-.18.72.03.19.21.18.53-.03.72-1.07 1-1.87 2.24-2.33 3.66-.66 2.03-.96 4.17-.87 6.17.02.27-.2.5-.47.52-.05 0-.1 0-.15-.17zm6 1.4c-.26 0-.49-.2-.51-.46-.14-2.18.17-4.4.89-6.42.54-1.51 1.44-2.82 2.6-3.79.22-.18.53-.15.72.06.18.22.15.53-.06.72-1 1.05-1.77 2.18-2.24 3.5-.66 1.84-.94 3.86-.81 5.86.02.28-.19.52-.47.54-.04-.01-.08-.01-.12-.01z" /></svg>
-                <div class="absolute inset-0 rounded-full overflow-hidden z-20 pointer-events-none">
-                  <div id="scan-beam" class="absolute w-full h-1 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,1)] top-0 hidden opacity-80"></div>
-                </div>
-                <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none z-30" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="48" stroke="rgba(99, 102, 241, 0.2)" stroke-width="2" fill="none"></circle>
-                  <circle cx="50" cy="50" r="48" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" class="opacity-0" id="scan-progress" stroke-dasharray="301.6" stroke-dashoffset="301.6"></circle>
-                </svg>
-              </div>
-              <p id="scan-status" class="text-xs text-indigo-400 mt-6 font-mono h-4">انتظار البيانات...</p>
-            </div>
-          </div>
-          
-          <div class="card-face card-face-back absolute inset-0 w-full h-full overflow-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-black border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] rounded-[2.5rem]">
-            <div class="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0deg,#10b981_90deg,#34d399_180deg,transparent_270deg,#10b981_360deg)] animate-border-spin opacity-80"></div>
-            <div class="absolute inset-[3px] bg-gradient-to-tl from-slate-950 via-slate-900 to-black rounded-[calc(2.5rem-3px)] z-10">
-              <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-            </div>
-            <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4">
-              <p id="reveal-role-text" class="text-xl sm:text-2xl font-bold mb-4"></p>
-              <div id="reveal-img-placeholder" class="text-7xl sm:text-8xl mb-4 drop-shadow-2xl"></div>
-              <p id="reveal-secret-word" class="text-3xl sm:text-5xl font-black text-emerald-400 mb-6 tracking-wider break-words w-full px-2 leading-tight drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]" style="direction: rtl; unicode-bidi: embed;"></p>
-              <p id="reveal-word-desc" class="text-sm sm:text-base text-blue-400 mt-4 font-bold bg-blue-500/10 p-2 rounded-xl border border-blue-500/20 relative z-10"></p>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-      <button id="btn-reveal-action" onclick="toggleReveal()" class="btn-gradient w-full py-6 rounded-3xl font-black text-2xl text-white hidden">كشف الدور</button>
-      <button id="btn-next-player" onclick="nextPlayerAction()" class="btn-gradient w-full py-6 rounded-3xl font-black text-2xl text-white hidden">التالي ⏭️</button>
-`;
-  }
+  ensureRevealScreenExists();
 
   // تصفير الماسح
   resetScanner();
@@ -2493,19 +2539,37 @@ function setupRoles() {
 
   // منطق العشوائي
   if (cat === "عشوائي") {
-    // 🔒 في العشوائي: نختار فقط من الفئات المسموحة للمستخدم
-    let availableCats = [...state.allowedCategories];
+    let availableCats = [];
 
-    // إذا كان مجاني، نتأكد أن العشوائي لا يختار فئة مدفوعة بالخطأ
-    if (!isPremium) {
+    // إذا لم يحدد شيء، اجلب كل الفئات من اللعبة
+    if (state.allowedCategories.length === 0) {
+      for (const group of Object.values(categoryGroups)) {
+        availableCats.push(...group.map(item => item.id));
+      }
+    } else {
+      availableCats = [...state.allowedCategories];
+    }
+
+    let restrictToFree = !isPremium;
+    if (isOnline && isHost && typeof STRICT_PREMIUM_MODE !== 'undefined' && STRICT_PREMIUM_MODE) {
+      const hasFreePlayers = onlinePlayers.some(p => !p.isHost && p.isPremium !== true);
+      if (hasFreePlayers) restrictToFree = true;
+    }
+
+    if (restrictToFree) {
       availableCats = availableCats.filter(c => FREE_CATEGORIES.includes(c));
     }
 
-    if (state.customWords.length >= 4) {
-      availableCats.push("كلمات خاصة");
+    // إدراج الكلمات الخاصة إذا كانت مستوفية الشروط
+    if (state.customWords.length >= 4 && (state.allowedCategories.length === 0 || state.allowedCategories.includes("كلمات خاصة"))) {
+      if (!availableCats.includes("كلمات خاصة")) availableCats.push("كلمات خاصة");
       wordBank["كلمات خاصة"] = state.customWords;
     }
-    if (availableCats.length === 0) availableCats = ["طعام"]; // احتياط
+
+    // تنظيف الفئات الفارغة لتجنب الأخطاء
+    availableCats = availableCats.filter(c => wordBank[c] && wordBank[c].length > 0);
+
+    if (availableCats.length === 0) availableCats = ["طعام"]; // احتياط أخير
     cat = availableCats[Math.floor(Math.random() * availableCats.length)];
   }
 
@@ -2668,6 +2732,9 @@ function setupRoles() {
 }
 
 function startRevealSequence() {
+  // 1. إعادة بناء الشاشة إذا كانت ممسوحة (تعالج تعارض الأونلاين/الأوفلاين)
+  ensureRevealScreenExists();
+
   // ✅ إضافة: تصفير واجهة المؤقت مسبقاً لمنع ظهور الوقت القديم
   resetTimerUI();
 
@@ -3103,12 +3170,13 @@ function showPanicWaitScreen(name, isPanic = true) {
 // ==========================================
 
 let votesHistory = []; // مصفوفة لتخزين تاريخ التصويت (للرسم)
+let isVoteLocked = false; // متغير القفل العام لمنع النقرات المزدوجة
 
-// 1. بدء التصويت (توجيه حسب النمط)
 function startVoting() {
   playVotingSound();
   state.voterIndex = 0;
   state.votesHistory = []; // تصفير السجل
+  isVoteLocked = false; // 🔓 فتح القفل في بداية الجولة
 
   if (state.votingMode === 'individual') {
     // نمط الفردي: نبدأ سلسلة التصويت السري
@@ -3121,7 +3189,6 @@ function startVoting() {
 
 // 2. عرض شاشة التصويت الفردي (خطوة بخطوة)
 function showIndividualVotingStep() {
-  // إذا انتهى الجميع
   if (state.voterIndex >= state.players.length) {
     calculateIndividualResults();
     return;
@@ -3130,7 +3197,6 @@ function showIndividualVotingStep() {
   const voter = state.players[state.voterIndex];
   showScreen('voting');
 
-  // تحديث النصوص
   const title = document.querySelector('#screen-voting h2');
   const subtitle = document.getElementById('voting-instruction');
   const indicator = document.getElementById('voter-indicator');
@@ -3140,9 +3206,11 @@ function showIndividualVotingStep() {
   indicator.innerText = `الدور على: ${voter.avatar} ${voter.name}`;
   subtitle.innerHTML = `يا <span class="text-indigo-400 font-black">${voter.name}</span>، من هو الضايع برأيك؟`;
 
-  // رسم الشبكة (الجميع ما عدا المصوت نفسه)
   const grid = document.getElementById('voting-grid');
   grid.innerHTML = '';
+
+  // 🔓 فك التجميد لكي يتمكن اللاعب الحالي من التصويت
+  grid.classList.remove('pointer-events-none', 'opacity-50');
 
   state.players.forEach(p => {
     if (p.id !== voter.id) {
@@ -3156,23 +3224,32 @@ function showIndividualVotingStep() {
   });
 }
 
-// 3. تسجيل الصوت الفردي
+// 3. تسجيل الصوت الفردي (أوفلاين)
 function castIndividualVote(voterId, targetId) {
-  // تحويل الـ IDs لأرقام لضمان التوافق
+  // 1. تجميد الشاشة فوراً لمنع النقرات المزدوجة السريعة
+  const grid = document.getElementById('voting-grid');
+  if (grid) {
+    if (grid.classList.contains('pointer-events-none')) return;
+    grid.classList.add('pointer-events-none', 'opacity-50');
+  }
+
   voterId = parseInt(voterId);
   targetId = parseInt(targetId);
 
-  if (!state.votesHistory) {
-    state.votesHistory = [];
-  }
+  if (!state.votesHistory) state.votesHistory = [];
 
-  // الآن يمكننا الإضافة بأمان
+  // 2. الحماية الحديدية: إذا كان هذا اللاعب قد صوت مسبقاً، نرفض نقرته فوراً!
+  if (state.votesHistory.some(v => v.voter === voterId)) return;
+
+  // 3. إضافة الصوت بأمان
   state.votesHistory.push({ voter: voterId, target: targetId });
-
   sounds.tick();
-
   state.voterIndex++;
-  showIndividualVotingStep(); // الانتقال للاعب التالي
+
+  // 4. الانتقال للاعب التالي بعد جزء من الثانية
+  setTimeout(() => {
+    showIndividualVotingStep();
+  }, 150);
 }
 
 // 4. عرض شاشة التصويت الجماعي (الكل في شاشة واحدة)
@@ -3189,6 +3266,9 @@ function showGroupVotingScreen() {
 
   const grid = document.getElementById('voting-grid');
   grid.innerHTML = '';
+
+  // 🔓 فك التجميد لكي يتمكن اللاعبون من التصويت في الجولة الجديدة
+  grid.classList.remove('pointer-events-none', 'opacity-50');
 
   state.players.forEach(p => {
     grid.innerHTML += `
@@ -3401,7 +3481,12 @@ function drawArrow(ctx, fromX, fromY, toX, toY, color, width) {
 }
 
 function updateVotingGrid() {
-  const grid = document.getElementById('voting-grid'); grid.innerHTML = '';
+  const grid = document.getElementById('voting-grid');
+  grid.innerHTML = '';
+
+  // 🔓 فك التجميد هنا كإجراء احترازي لكي يستطيع اللاعب التالي التصويت
+  grid.classList.remove('pointer-events-none', 'opacity-50');
+
   if (state.votingMode === 'individual') {
     const voter = state.players[state.voterIndex];
     document.getElementById('voter-indicator').innerText = `دور: ${voter.avatar} ${voter.name}`;
@@ -3409,81 +3494,56 @@ function updateVotingGrid() {
   } else {
     document.getElementById('voter-indicator').classList.add('hidden');
   }
+
   state.players.forEach(p => {
     if (state.votingMode === 'individual' && state.players[state.voterIndex].id === p.id) return;
-    grid.innerHTML += `<button onclick="handleVoteClick(${p.id})" class="p-4 bg-white/5 border rounded-3xl flex flex-col items-center gap-2 active:bg-indigo-500/20 text-theme-main"><span class="text-4xl">${p.avatar}</span><span class="font-bold text-xs">${p.name}</span></button>`;
+    grid.innerHTML += `<button onclick="handleVoteClick(${p.id})" class="p-4 bg-white/5 border rounded-3xl flex flex-col items-center gap-2 active:bg-indigo-500/20 text-theme-main transition-all hover:border-indigo-500 hover:scale-[1.02]"><span class="text-4xl">${p.avatar}</span><span class="font-bold text-xs">${p.name}</span></button>`;
   });
 }
 
+// تسجيل الصوت (للجماعي والأونلاين)
 function handleVoteClick(id) {
+  const grid = document.getElementById('voting-grid');
+
+  // 1. تجميد الشاشة فوراً
+  if (grid) {
+    if (grid.classList.contains('pointer-events-none')) return;
+    grid.classList.add('pointer-events-none', 'opacity-50');
+  }
+
   // الحالة 1: أنا لاعب (Client) في الأونلاين
   if (isOnline && !isHost) {
-    // إرسال الصوت للمضيف مع هويتي (voterId)
     myConn.send({ type: 'VOTE', voterId: myPlayerId, targetId: id });
-
-    // تجميد الشاشة
     document.getElementById('voting-instruction').innerText = "تم إرسال صوتك.. بانتظار النتائج ⏳";
-    document.getElementById('voting-grid').classList.add('pointer-events-none', 'opacity-50');
     return;
   }
 
   // الحالة 2: أنا المضيف (Host) في الأونلاين
   if (isOnline && isHost) {
-    // تسجيل صوتي (المضيف)
-    votesReceived++;
+    // 🛡️ حماية للمضيف: هل صوت المضيف مسبقاً؟
+    if (state.votesHistory && state.votesHistory.some(v => v.voter === myPlayerId)) return;
 
+    votesReceived++;
     if (!state.votesHistory) state.votesHistory = [];
     state.votesHistory.push({ voter: myPlayerId, target: id });
 
-    // تجميد الشاشة للمضيف أيضاً
     document.getElementById('voting-instruction').innerText = "تم تسجيل صوتك.. بانتظار باقي اللاعبين ⏳";
-    document.getElementById('voting-grid').classList.add('pointer-events-none', 'opacity-50');
 
-    // التحقق: هل صوت الجميع (بما فيهم أنا)؟
     if (votesReceived >= onlinePlayers.length) {
       calculateOnlineResults();
     }
-    return; // خروج لكي لا ينفذ كود الأوفلاين بالأسفل
+    return;
   }
 
-  // الحالة 3: اللعب أوفلاين (جهاز واحد)
+  // الحالة 3: اللعب أوفلاين (جهاز واحد - نمط جماعي)
   if (state.votingMode === 'group') {
-
-    // ✅ في التصويت الجماعي: نملأ السجل يدوياً
-    // نفترض أن كل اللاعبين (ما عدا المتهم) صوتوا ضده
     state.votesHistory = [];
     state.players.forEach(p => {
-      if (p.id !== id) { // اللاعب لا يصوت ضد نفسه
+      if (p.id !== id) {
         state.votesHistory.push({ voter: p.id, target: id });
       }
     });
-
     processVoteResult(id);
-
-  } else {
-    // تصويت فردي أوفلاين
-    if (!state.votesAccumulated) state.votesAccumulated = {};
-    if (!state.votesAccumulated[id]) state.votesAccumulated[id] = 0;
-
-    state.votesAccumulated[id]++;
-
-    // ✅ تسجيل الصوت الفردي للعرض
-    const currentVoter = state.players[state.voterIndex];
-    if (!state.votesHistory) state.votesHistory = [];
-    state.votesHistory.push({ voter: currentVoter.id, target: id });
-
-    state.voterIndex++;
-    sounds.tick();
-
-    if (state.voterIndex < state.players.length) {
-      updateVotingGrid();
-    } else {
-      let maxV = -1, winnerId = null;
-      for (const pid in state.votesAccumulated) {
-        if (state.votesAccumulated[pid] > maxV) { maxV = state.votesAccumulated[pid]; winnerId = parseInt(pid); }
-      }
-      processVoteResult(winnerId);
-    }
   }
 }
 
@@ -4419,6 +4479,15 @@ function closePunishmentScreen() {
 
   // 4. الانتقال لشاشة النتائج النهائية
   showScreen('final');
+
+  // ✨ النزول التلقائي لأسفل الشاشة ✨
+  setTimeout(() => {
+    const finalScreen = document.getElementById('screen-final');
+    if (finalScreen) {
+      finalScreen.scrollTo({ top: finalScreen.scrollHeight, behavior: 'smooth' });
+    }
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, 50);
 }
 
 // ==========================================
