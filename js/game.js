@@ -1,6 +1,17 @@
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let isMuted = false;
-let isVibrationEnabled = true;
+
+// ✨ إنشاء متحكم رئيسي للصوت (Master Volume)
+const masterGain = audioCtx.createGain();
+masterGain.connect(audioCtx.destination);
+
+// ✨ استرجاع الإعدادات من الذاكرة (أو وضع الافتراضي)
+let isMuted = localStorage.getItem('spy_muted') === 'true';
+let isVibrationEnabled = localStorage.getItem('spy_vibe_enabled') !== 'false';
+let globalVolume = localStorage.getItem('spy_volume') ? parseFloat(localStorage.getItem('spy_volume')) : 0.4;
+let globalVibrationLevel = localStorage.getItem('spy_vibe_level') ? parseInt(localStorage.getItem('spy_vibe_level')) : 20;
+
+// تطبيق مستوى الصوت فوراً عند التشغيل
+masterGain.gain.value = isMuted ? 0 : globalVolume;
 let isDarkMode = true;
 
 // --- Premium Logic ---
@@ -1086,8 +1097,6 @@ function broadcast(msg) {
 // Settings
 function openSettingsModal() { document.getElementById('modal-settings').classList.remove('hidden'); document.getElementById('modal-settings').classList.add('flex'); updateSettingsUI(); }
 function closeSettingsModal() { document.getElementById('modal-settings').classList.add('hidden'); document.getElementById('modal-settings').classList.remove('flex'); }
-function toggleMute() { isMuted = !isMuted; updateSettingsUI(); }
-function toggleVibration() { isVibrationEnabled = !isVibrationEnabled; if (isVibrationEnabled) triggerVibrate(50); updateSettingsUI(); }
 
 function toggleTheme() {
   isDarkMode = !isDarkMode;
@@ -1098,15 +1107,67 @@ function toggleTheme() {
   localStorage.setItem('spy_theme', isDarkMode ? 'dark' : 'light');
 }
 
+// ✨ دالة سحب شريط الصوت وتلوينه
+function updateVolumeLevel() {
+  const volInput = document.getElementById('input-volume');
+  globalVolume = parseFloat(volInput.value);
+  localStorage.setItem('spy_volume', globalVolume);
+
+  if (globalVolume > 0 && isMuted) {
+    isMuted = false;
+    localStorage.setItem('spy_muted', false);
+  } else if (globalVolume === 0 && !isMuted) {
+    isMuted = true;
+    localStorage.setItem('spy_muted', true);
+  }
+
+  masterGain.gain.value = isMuted ? 0 : globalVolume;
+  updateSettingsUI();
+
+  if (!isMuted) playTone(600, 0.1, 'sine', 0.05);
+}
+
+// ✨ دالة سحب شريط الاهتزاز وتلوينه
+function updateVibrationLevel() {
+  const vibeInput = document.getElementById('input-vibration');
+  globalVibrationLevel = parseInt(vibeInput.value);
+  localStorage.setItem('spy_vibe_level', globalVibrationLevel);
+
+  if (globalVibrationLevel > 0 && !isVibrationEnabled) {
+    isVibrationEnabled = true;
+    localStorage.setItem('spy_vibe_enabled', true);
+  } else if (globalVibrationLevel === 0 && isVibrationEnabled) {
+    isVibrationEnabled = false;
+    localStorage.setItem('spy_vibe_enabled', false);
+  }
+
+  updateSettingsUI();
+  if (isVibrationEnabled) triggerVibrate(100);
+}
+
+// ✨ دالة تحديث الواجهة والتلوين (بعد إزالة الأزرار)
 function updateSettingsUI() {
-  const lblMute = document.getElementById('lbl-mute');
-  if (lblMute) lblMute.innerText = isMuted ? '🔇' : '🔊';
+  // تحديث زر المظهر (داكن/فاتح)
+  const btnTheme = document.getElementById('btn-toggle-theme');
+  if (btnTheme) btnTheme.innerHTML = isDarkMode ? '<span class="text-slate-300">داكن 🌙</span>' : '<span class="text-amber-500">فاتح ☀️</span>';
 
-  const lblVibe = document.getElementById('lbl-vibe');
-  if (lblVibe) lblVibe.innerText = isVibrationEnabled ? '📳' : '📴';
+  // تحديث الصوت وتلوين الشريط
+  const volInput = document.getElementById('input-volume');
+  if (volInput) {
+    volInput.value = globalVolume;
+    const volPercent = (globalVolume / 1) * 100;
+    // إذا كان صفر، سيختفي اللون الأزرق ويصبح رمادياً بالكامل (مما يدل على الإيقاف)
+    volInput.style.background = `linear-gradient(to right, #6366f1 ${volPercent}%, #334155 ${volPercent}%)`;
+  }
 
-  const lblTheme = document.getElementById('lbl-theme');
-  if (lblTheme) lblTheme.innerText = isDarkMode ? '🌙' : '☀️';
+  // تحديث الاهتزاز وتلوين الشريط
+  const vibeInput = document.getElementById('input-vibration');
+  if (vibeInput) {
+    vibeInput.value = globalVibrationLevel;
+    const vibePercent = globalVibrationLevel;
+    // إذا كان صفر، سيختفي اللون الأخضر ويصبح رمادياً بالكامل (مما يدل على الإيقاف)
+    vibeInput.style.background = `linear-gradient(to right, #10b981 ${vibePercent}%, #334155 ${vibePercent}%)`;
+  }
 }
 
 // Helpers
@@ -1293,7 +1354,7 @@ function ensureRevealScreenExists() {
   if (screenReveal && !document.getElementById('reveal-role-text')) {
     screenReveal.innerHTML = `
       <div class="text-7xl sm:text-8xl mb-6"></div>
-      <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
+      <p id="reveal-pass-text" class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى المحقق:</p>
       <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-8 text-indigo-500"></h2>
 
       <div class="card-scene w-full max-w-sm mx-auto mb-8 h-[400px] sm:h-[420px]">
@@ -1568,17 +1629,26 @@ function formatTimeLabel(s) {
 }
 
 function triggerVibrate(ms) {
-  if (!isVibrationEnabled) return;
-  // نضع الكود داخل setTimeout بمدة 0
-  // هذا الحيلة تجعل الاهتزاز يعمل في "طابور" منفصل ولا يعطل اللعبة أبداً
+  if (!isVibrationEnabled || globalVibrationLevel === 0) return;
+
   setTimeout(() => {
     try {
-      const duration = Math.floor(ms); // التأكد أنه رقم صحيح
+      // 1. المتصفح العادي (الويب): نستخدم خدعة تقليل الوقت لأن الويب لا يدعم القوة
+      const timeFactor = globalVibrationLevel / 100;
+      let webPattern = Array.isArray(ms) ? ms.map(val => Math.floor(val * timeFactor)) : Math.floor(ms * timeFactor);
+
+      // 2. تطبيق الأندرويد: نحسب القوة الحقيقية (Amplitude) من 1 إلى 255
+      // 100% = 255
+      // 50% = 127
+      const trueAmplitude = Math.max(1, Math.floor((globalVibrationLevel / 100) * 255));
 
       if (typeof Android !== "undefined" && Android.vibrate) {
-        Android.vibrate(duration);
+        // نرسل المدة الأصلية كاملة، ولكن مع القوة الحقيقية (Amplitude)
+        // ملاحظة: تأكد أن كود الجافا/كوتلن في الأندرويد يستقبل متغيرين (المدة، القوة)
+        Android.vibrate(Array.isArray(ms) ? ms[0] : ms, trueAmplitude);
       } else if (navigator.vibrate) {
-        navigator.vibrate(duration);
+        // إذا كان يلعب من المتصفح العادي، نستخدم نمط الوقت المعدل
+        navigator.vibrate(webPattern);
       }
     } catch (err) {
       console.warn("Vibration failed ignored:", err);
@@ -1586,9 +1656,9 @@ function triggerVibrate(ms) {
   }, 0);
 }
 
-function playTone(f, d, t = 'sine', v = 0.1) { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
-function playFlipSound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'triangle'; o.frequency.setValueAtTime(400, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); o.start(); o.stop(audioCtx.currentTime + 0.2); }
-function playFunnySound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth'; o.frequency.setValueAtTime(300, audioCtx.currentTime); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2); o.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6); o.start(); o.stop(audioCtx.currentTime + 0.6); }
+function playTone(f, d, t = 'sine', v = 0.1) { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(masterGain); o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
+function playFlipSound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(masterGain); o.type = 'triangle'; o.frequency.setValueAtTime(400, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); o.start(); o.stop(audioCtx.currentTime + 0.2); }
+function playFunnySound() { if (isMuted) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(masterGain); o.type = 'sawtooth'; o.frequency.setValueAtTime(300, audioCtx.currentTime); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2); o.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.4); o.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.6); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6); o.start(); o.stop(audioCtx.currentTime + 0.6); }
 
 const sounds = {
   tick: () => { playTone(800, 0.05, 'sine', 0.03); triggerVibrate(15); },
@@ -1605,7 +1675,7 @@ function createHeartThud(time, frequency, decay) {
   const gain = audioCtx.createGain();
 
   osc.connect(gain);
-  gain.connect(audioCtx.destination);
+  gain.connect(masterGain);
 
   // استخدام موجة مثلثة ومفلترة لتعطي صوت مكتوم وقوي
   osc.type = 'triangle';
@@ -1643,20 +1713,19 @@ function playHeartbeatSound() {
 function triggerGlitchEffects() {
   // أ) تشغيل الصوت (AudioContext)
   if (!isMuted) {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    const ctx = new AC();
-    const t = ctx.currentTime;
+    // ✨ نستخدم السياق العام audioCtx بدلاً من إنشاء واحد جديد ✨
+    const t = audioCtx.currentTime;
 
     // توليد ضوضاء بيضاء (تشويش)
-    const bufferSize = ctx.sampleRate * 0.3; // مدة 0.3 ثانية
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const bufferSize = audioCtx.sampleRate * 0.3; // مدة 0.3 ثانية
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
 
-    const noise = ctx.createBufferSource();
+    const noise = audioCtx.createBufferSource();
     noise.buffer = buffer;
 
-    const gain = ctx.createGain();
+    const gain = audioCtx.createGain();
     // جعل الصوت حاداً ومتقطعاً
     gain.gain.setValueAtTime(0.5, t);
     gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
@@ -1664,12 +1733,12 @@ function triggerGlitchEffects() {
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
 
     noise.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(masterGain); // الآن الربط سيعمل بسلاسة لأن كلاهما من audioCtx
     noise.start(t);
   }
 
   // ب) اهتزاز الجهاز
-  triggerVibrate([40, 30, 40, 30]);
+  if (typeof triggerVibrate === 'function') triggerVibrate([40, 30, 40, 30]);
 
   // ج) تفعيل تأثير الـ CSS على الجسم بالكامل
   document.body.classList.add('force-glitch');
@@ -1689,7 +1758,7 @@ function playVotingSound() {
   const oscLow = audioCtx.createOscillator();
   const gainLow = audioCtx.createGain();
   oscLow.connect(gainLow);
-  gainLow.connect(audioCtx.destination);
+  gainLow.connect(masterGain);
 
   oscLow.type = 'sine';
   oscLow.frequency.setValueAtTime(100, t);
@@ -1705,7 +1774,7 @@ function playVotingSound() {
   const oscHigh = audioCtx.createOscillator();
   const gainHigh = audioCtx.createGain();
   oscHigh.connect(gainHigh);
-  gainHigh.connect(audioCtx.destination);
+  gainHigh.connect(masterGain);
 
   oscHigh.type = 'triangle'; // موجة حادة قليلاً
   oscHigh.frequency.setValueAtTime(500, t);
@@ -1728,7 +1797,7 @@ function playWheelTick() {
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
   o.connect(g);
-  g.connect(audioCtx.destination);
+  g.connect(masterGain);
 
   // إعدادات تجعل الصوت يشبه احتكاك المؤشر البلاستيكي
   o.type = 'triangle';
@@ -2153,14 +2222,29 @@ function addCustomWord() {
     }
 
     state.customWords.push({ word, emoji: "✏️", desc: "سالفة خاصة." });
+
+    // ✨ التعديل هنا: حفظ الكلمات في الذاكرة المحلية ✨
+    localStorage.setItem('spy_custom_words', JSON.stringify(state.customWords));
+
     input.value = ''; renderCustomWords();
   }
 }
+
 function renderCustomWords() {
   const list = document.getElementById('custom-words-list');
   if (!list) return; list.innerHTML = '';
-  state.customWords.forEach((w, i) => { list.innerHTML += `<span class="bg-indigo-500/20 px-2 py-1 rounded-full text-xs text-theme-main">${w.word} <button onclick="state.customWords.splice(${i},1);renderCustomWords();">×</button></span>`; });
-  // Note: Custom words are handled by checking if populated in setupRoles
+
+  state.customWords.forEach((w, i) => {
+    // تحسين شكل زر الحذف ليكون أوضح
+    list.innerHTML += `<span class="bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/30 shadow-sm text-xs font-bold text-theme-main flex items-center gap-2">${w.word} <button onclick="removeCustomWord(${i})" class="text-red-400 hover:text-red-500 text-base leading-none">&times;</button></span>`;
+  });
+}
+
+// ✨ دالة جديدة لحذف الكلمة وتحديث الذاكرة ✨
+function removeCustomWord(index) {
+  state.customWords.splice(index, 1);
+  localStorage.setItem('spy_custom_words', JSON.stringify(state.customWords));
+  renderCustomWords();
 }
 
 function setVotingMode(mode) {
@@ -2354,6 +2438,9 @@ function setupOnlineRevealScreen() {
 
   // تصفير الماسح
   resetScanner();
+
+  const passText = document.getElementById('reveal-pass-text');
+  if (passText) passText.classList.add('hidden');
 
   const nextBtnEl = document.getElementById('btn-next-player');
   if (nextBtnEl) nextBtnEl.classList.add('hidden');
@@ -2737,6 +2824,9 @@ function startRevealSequence() {
 
   // ✅ إضافة: تصفير واجهة المؤقت مسبقاً لمنع ظهور الوقت القديم
   resetTimerUI();
+
+  const passText = document.getElementById('reveal-pass-text');
+  if (passText) passText.classList.remove('hidden');
 
   if (state.revealIndex >= state.players.length) return showScreen('game'), startTimer();
 
@@ -4496,7 +4586,7 @@ function closePunishmentScreen() {
 
 // المتغيرات الصوتية
 let scanTimer = null;
-let scanAudioCtx = null;
+// مسحنا scanAudioCtx لأننا سنعتمد على audioCtx الرئيسي للعبة
 let scanOscillator = null;
 let scanGain = null;
 
@@ -4527,30 +4617,36 @@ function startScan(e) {
 
   // 2. البدء بالملء (تأخير بسيط جداً للسماح بالأنيميشن)
   if (progressEl) {
-    // نستخدم Double requestAnimationFrame لضمان الرسم في الإطار التالي
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        progressEl.style.transition = 'stroke-dashoffset 2s linear'; // تفعيل الحركة (2 ثانية)
-        progressEl.style.strokeDashoffset = '0'; // القيمة الممتلئة
+        progressEl.style.transition = 'stroke-dashoffset 2s linear';
+        progressEl.style.strokeDashoffset = '0';
       });
     });
   }
 
-  // --- تشغيل الصوت (نفس الكود السابق) ---
+  // --- تشغيل الصوت بالاعتماد على السياق العام ---
   if (!isMuted) {
-    if (!scanAudioCtx) scanAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    scanOscillator = scanAudioCtx.createOscillator();
-    scanGain = scanAudioCtx.createGain();
+    // نستخدم audioCtx العام مباشرة
+    scanOscillator = audioCtx.createOscillator();
+    scanGain = audioCtx.createGain();
     scanOscillator.type = 'sine';
-    const now = scanAudioCtx.currentTime;
+
+    // نستخدم الوقت من السياق العام
+    const now = audioCtx.currentTime;
+
     scanOscillator.frequency.setValueAtTime(150, now);
     scanOscillator.frequency.exponentialRampToValueAtTime(600, now + 2);
+
     scanGain.gain.setValueAtTime(0, now);
     scanGain.gain.linearRampToValueAtTime(0.05, now + 0.1);
+
+    // الربط الصحيح بدون أخطاء!
     scanOscillator.connect(scanGain);
-    scanGain.connect(scanAudioCtx.destination);
+    scanGain.connect(masterGain);
+
     scanOscillator.start();
-    if (triggerVibrate) triggerVibrate([20]);
+    if (typeof triggerVibrate === 'function') triggerVibrate([20]);
   }
 
   // انتهاء المؤقت
@@ -4573,8 +4669,8 @@ function cancelScan() {
   // إعادة الدائرة للفراغ بسرعة
   if (progressEl) {
     progressEl.style.transition = 'stroke-dashoffset 0.2s ease-out';
-    progressEl.style.strokeDashoffset = '301.6'; // تفريغ
-    progressEl.style.opacity = '0'; // إخفاء
+    progressEl.style.strokeDashoffset = '301.6';
+    progressEl.style.opacity = '0';
   }
 
   if (statusEl) {
@@ -4584,11 +4680,18 @@ function cancelScan() {
 
   // إيقاف الصوت
   if (scanOscillator && scanGain) {
-    const now = scanAudioCtx.currentTime;
+    // نستخدم الوقت من السياق العام
+    const now = audioCtx.currentTime;
     scanGain.gain.cancelScheduledValues(now);
     scanGain.gain.setValueAtTime(scanGain.gain.value, now);
     scanGain.gain.linearRampToValueAtTime(0, now + 0.1);
-    setTimeout(() => { if (scanOscillator) { scanOscillator.stop(); scanOscillator = null; } }, 150);
+
+    setTimeout(() => {
+      if (scanOscillator) {
+        try { scanOscillator.stop(); } catch (e) { }
+        scanOscillator = null;
+      }
+    }, 150);
   }
 }
 
@@ -4799,6 +4902,13 @@ window.addEventListener('DOMContentLoaded', () => {
   // Initialize default selected categories (e.g. none)
   state.allowedCategories = []; // User must select
   isDarkMode = !document.body.classList.contains('light-mode');
+
+  // ✨ جلب الكلمات الخاصة المحفوظة من الذاكرة عند فتح اللعبة ✨
+  const savedCustomWords = localStorage.getItem('spy_custom_words');
+  if (savedCustomWords) {
+    state.customWords = JSON.parse(savedCustomWords);
+  }
+
   updateSettingsUI();
   updateSetupInfo();
   renderCustomWords();

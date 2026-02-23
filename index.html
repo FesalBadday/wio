@@ -646,7 +646,7 @@
       <!-- 5. Reveal Screen -->
       <div id="screen-reveal" class="glass-panel hidden text-center select-none">
         <div class="text-7xl sm:text-8xl mb-6"><!-- 📱 --></div>
-        <p class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى:</p>
+        <p id="reveal-pass-text" class="text-theme-muted mb-2 text-xl font-bold">مرر الجهاز إلى:</p>
         <h2 id="reveal-player-name" class="text-4xl sm:text-6xl font-black mb-8 text-indigo-500"></h2>
 
         <div class="card-scene w-full max-w-sm mx-auto mb-8 h-[400px] sm:h-[420px]">
@@ -922,7 +922,7 @@
       <div id="screen-rules" class="glass-panel hidden text-right">
         <h2
           class="text-3xl sm:text-4xl font-black mb-10 text-indigo-400 border-b-4 border-indigo-500/10 pb-6 text-center font-black text-right">
-          📜 دليل السالفة الشامل</h2>
+          📜 دليل اللعبة</h2>
 
         <div class="space-y-6 text-right">
           <div class="rule-card text-right">
@@ -1132,22 +1132,45 @@
     <div class="glass-panel max-w-sm w-full text-center">
       <h3 class="text-2xl font-black mb-8 text-theme-main">الإعدادات العامة ⚙️</h3>
       <div class="space-y-4">
-        <button onclick="toggleMute()" id="btn-toggle-mute"
-          class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
-          <span>الصوت</span> <span id="lbl-mute">🔊</span>
-        </button>
-        <button onclick="toggleVibration()" id="btn-toggle-vibe"
-          class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
-          <span>الاهتزاز</span> <span id="lbl-vibe">📳</span>
-        </button>
-        <!-- <button onclick="toggleTheme()" id="btn-toggle-theme"
-            class="w-full py-4 bg-white/5 rounded-2xl border text-xl font-bold text-theme-main flex justify-between px-6 items-center">
-            <span>المظهر</span> <span id="lbl-theme">🌙</span>
-          </button> -->
+
+        <div class="bg-white/5 p-4 rounded-3xl border border-white/10 flex justify-between items-center transition-all">
+          <span class="font-bold text-theme-main text-lg">المظهر 🎨</span>
+          <button onclick="toggleTheme()" id="btn-toggle-theme"
+            class="text-sm font-bold p-2 px-4 bg-white/10 rounded-xl transition-transform active:scale-95">
+            <span id="lbl-theme">داكن 🌙</span>
+          </button>
+        </div>
+
+        <div class="bg-white/5 p-4 rounded-3xl border border-white/10 text-right space-y-4 transition-all">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-theme-main text-lg">الصوت 🔊</span>
+          </div>
+          <div class="flex items-center gap-3 transition-all duration-300 w-full" id="sound-slider-container" dir="ltr">
+            <span class="text-sm opacity-70">🔈</span>
+            <input type="range" id="input-volume" min="0" max="1" step="0.1" value="0.4" oninput="updateVolumeLevel()"
+              class="w-full h-2 rounded-lg appearance-none cursor-pointer accent-indigo-500 shadow-inner transition-all">
+            <span class="text-lg">🔊</span>
+          </div>
+        </div>
+
+        <div class="bg-white/5 p-4 rounded-3xl border border-white/10 text-right space-y-4 transition-all">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-theme-main text-lg">الاهتزاز 📳</span>
+          </div>
+          <div class="flex items-center gap-3 transition-all duration-300 w-full" id="vibe-slider-container" dir="ltr">
+            <span class="text-sm opacity-70">📴</span>
+            <input type="range" id="input-vibration" min="0" max="100" step="10" value="20"
+              oninput="updateVibrationLevel()"
+              class="w-full h-2 rounded-lg appearance-none cursor-pointer accent-emerald-500 shadow-inner transition-all">
+            <span class="text-lg">📳</span>
+          </div>
+        </div>
+
         <button onclick="restorePurchasesClick()" id="btn-restore-purchases"
-          class="w-full py-4 bg-yellow-500/10 rounded-2xl border border-yellow-500/30 text-xl font-bold text-yellow-500 flex justify-between px-6 items-center transition-all hover:bg-yellow-500/20 active:scale-95">
+          class="w-full py-4 mt-2 bg-yellow-500/10 rounded-2xl border border-yellow-500/30 text-xl font-bold text-yellow-500 flex justify-between px-6 items-center transition-all hover:bg-yellow-500/20 active:scale-95">
           <span>استرجاع المشتريات</span> <span>🔄</span>
         </button>
+
       </div>
       <button onclick="closeSettingsModal()"
         class="w-full py-4 mt-8 btn-gradient rounded-3xl font-black text-white text-xl">إغلاق</button>
