@@ -2,37 +2,8 @@
 @font-face {
   font-family: 'Cairo';
   font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(../fonts/Cairo-Regular.woff2) format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
-}
-
-/* arabic */
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(../fonts/Cairo-Regular.woff2) format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
-}
-
-/* arabic */
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(../fonts/Cairo-Regular.woff2) format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
-}
-
-/* arabic */
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 900;
+  font-weight: 100 900;
+  /* دمج كل الأوزان هنا إذا كان الخط متغيراً */
   font-display: swap;
   src: url(../fonts/Cairo-Regular.woff2) format('woff2');
   unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
@@ -115,10 +86,6 @@ body {
   padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
 }
 
-/* #custom-word-input {
-  color: var(--text-rules) !important;
-} */
-
 .options-bg {
   background-color: var(--bg-options);
 }
@@ -145,10 +112,6 @@ body {
 .text-slate-300 {
   color: var(--text-rules) !important;
 }
-
-/* .border {
-      border-color: red;
-    } */
 
 .btn-gradient {
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
@@ -623,69 +586,52 @@ input[type="range"]::-webkit-slider-thumb {
   /* المدة يتم تحديدها بالجافاسكربت لتتسارع */
 }
 
-/* ========================================= */
-/* ⚡ تأثير الغليتش (GLITCH EFFECT) ⚡ */
-/* ========================================= */
-
-@keyframes glitch-chaos {
+/* ✨ تأثير الاختراق الرقمي (Cyber Hacker) ✨ */
+@keyframes cyber-scan {
   0% {
-    transform: translate(0) scale(1);
-    filter: hue-rotate(0deg);
-  }
-
-  10% {
-    transform: translate(-5px, 5px) scale(1.02);
-    filter: invert(0.8);
-  }
-
-  20% {
-    transform: translate(5px, -5px) scale(0.98);
-    filter: hue-rotate(90deg) blur(2px);
+    filter: hue-rotate(90deg) brightness(1.5) contrast(1.5);
+    transform: scale(1.02);
   }
 
   30% {
-    transform: translate(-10px, 0) scale(1.05);
-    filter: invert(0);
-  }
-
-  40% {
-    transform: translate(10px, 0) scale(0.95);
-    filter: hue-rotate(180deg);
-  }
-
-  50% {
-    filter: invert(1);
+    filter: hue-rotate(90deg) invert(0.1);
+    transform: translateX(-2px);
   }
 
   100% {
-    transform: translate(0) scale(1);
-    filter: hue-rotate(0deg);
+    filter: hue-rotate(0) brightness(1) contrast(1);
+    transform: scale(1);
   }
 }
 
-.force-glitch {
-  animation: glitch-chaos 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both !important;
-  position: relative;
-  overflow: hidden;
-  /* لمنع ظهور أشرطة التمرير أثناء الاهتزاز */
+@keyframes scanline-drop {
+  0% {
+    top: 0%;
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
-/* طبقة الخطوط (Scanlines) */
-.force-glitch::after {
+.force-cyber-reveal {
+  animation: cyber-scan 0.5s ease-out both !important;
+  position: relative;
+}
+
+.force-cyber-reveal::after {
   content: "";
-  position: fixed;
-  top: 0;
+  position: absolute;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: repeating-linear-gradient(0deg,
-      rgba(0, 0, 0, 0.1),
-      rgba(0, 0, 0, 0.1) 1px,
-      transparent 1px,
-      transparent 2px);
-  z-index: 99999;
+  right: 0;
+  height: 10px;
+  background: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 10px #10b981;
+  animation: scanline-drop 0.4s linear forwards;
   pointer-events: none;
-  mix-blend-mode: exclusion;
+  z-index: 100;
 }
 
 button:disabled {
@@ -732,32 +678,6 @@ button:disabled {
 #scan-progress {
   transition: stroke-dashoffset 2s linear, opacity 0.2s ease;
   transform-origin: center;
-}
-
-/* شعاع الليزر */
-@keyframes scan-beam-anim {
-  0% {
-    top: 0%;
-    opacity: 0;
-  }
-
-  20% {
-    opacity: 0.8;
-  }
-
-  50% {
-    top: 100%;
-    opacity: 0.8;
-  }
-
-  80% {
-    opacity: 0.8;
-  }
-
-  100% {
-    top: 0%;
-    opacity: 0;
-  }
 }
 
 .scanning-active #scan-beam {

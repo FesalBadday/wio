@@ -79,7 +79,7 @@
       <div id="screen-online-setup" class="glass-panel hidden text-center">
         <h2 class="text-3xl font-black mb-4 text-theme-main">إنشاء غرفة 🏠</h2>
         <div class="mb-4 hidden"> <label class="block text-right text-sm text-theme-muted mb-2 font-bold">اسمك:</label>
-          <input type="text" id="host-name-input" ...>
+          <input type="text" id="host-name-input">
         </div>
 
         <div class="mb-6">
@@ -113,7 +113,7 @@
         </div>
 
         <div class="mb-4 hidden"> <label class="block text-right text-sm text-theme-muted mb-2 font-bold">اسمك:</label>
-          <input type="text" id="client-name-input" ...>
+          <input type="text" id="client-name-input">
         </div>
 
         <div class="mb-6">
@@ -163,8 +163,8 @@
             class="grid grid-cols-5 gap-3 p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm shadow-sm">
             <button onclick="openCategoryModal()"
               class="col-span-2 btn-secondary-theme py-3 px-2 rounded-xl text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 hover:scale-[1.02] transition-transform">
-              <span class="text-lg" id="host-current-cat-emoji">📚</span>
-              <span id="host-current-cat-text">تغيير الفئة</span>
+              <span class="text-lg" id="host-current-cat-emoji">🎲</span>
+              <span id="host-current-cat-text">جميع الفئات</span>
             </button>
 
             <div
@@ -236,6 +236,25 @@
                 </div>
                 <div
                   class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all">
+                  <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </label>
+
+              <label
+                class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-fuchsia-500/50 has-[:checked]:bg-fuchsia-500/10 has-[:checked]:shadow-[0_0_15px_rgba(217,70,239,0.15)] group">
+                <input type="checkbox" id="online-check-smart-turns" class="peer sr-only" checked>
+                <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🔄</div>
+                <div class="text-right flex-1">
+                  <span
+                    class="block font-bold text-sm text-slate-300 peer-checked:text-fuchsia-300 transition-colors">توزيع
+                    الأدوار</span>
+                  <span class="block text-[10px] text-theme-muted opacity-70">يحدد النظام من يسأل من بشكل عشوائي</span>
+                </div>
+                <div
+                  class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-fuchsia-500 peer-checked:bg-fuchsia-500 transition-all">
                   <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
@@ -430,7 +449,8 @@
             class="bg-card-theme p-4 rounded-3xl mb-6 shadow-inner border border-white/5 flex justify-between items-center">
             <div class="text-right">
               <p class="text-[10px] text-theme-muted font-bold mb-1">فئة الجولة الحالية:</p>
-              <h4 id="setup-current-cat-text" class="text-base sm:text-lg font-black text-indigo-400">كل الفئات 🎲</h4>
+              <h4 id="setup-current-cat-text" class="text-base sm:text-lg font-black text-indigo-400">جميع الفئات 🎲
+              </h4>
             </div>
             <button onclick="openCategoryModal()"
               class="bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl font-bold text-sm transition-colors border border-white/10">تغيير
@@ -548,6 +568,25 @@
               </div>
               <div
                 class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all">
+                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </label>
+
+            <label id="smart-turns-container"
+              class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-fuchsia-500/50 has-[:checked]:bg-fuchsia-500/10 has-[:checked]:shadow-[0_0_15px_rgba(217,70,239,0.15)] group">
+              <input type="checkbox" id="check-smart-turns" class="peer sr-only" checked>
+              <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🔄</div>
+              <div class="text-right flex-1">
+                <span
+                  class="block font-bold text-sm text-slate-300 peer-checked:text-fuchsia-300 transition-colors">توزيع
+                  الأدوار</span>
+                <span class="block text-[10px] text-theme-muted opacity-70">يحدد النظام من يسأل من بشكل عشوائي</span>
+              </div>
+              <div
+                class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-fuchsia-500 peer-checked:bg-fuchsia-500 transition-all">
                 <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
                   viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
@@ -751,9 +790,18 @@
               style="font-variant-numeric: tabular-nums;">
               00:00
             </div>
-
           </div>
         </div>
+
+        <div id="online-turn-container"
+          class="hidden mb-6 bg-slate-900/50 border border-indigo-500/30 p-4 rounded-2xl w-full max-w-sm mx-auto shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all">
+          <p id="online-turn-text" class="text-lg font-bold text-white mb-4 leading-relaxed"></p>
+          <button id="btn-next-turn" onclick="requestNextTurn()"
+            class="btn-gradient w-full py-3 rounded-xl font-bold text-sm hidden shadow-lg active:scale-95 transition-all">
+            التالي ⏭️
+          </button>
+        </div>
+
         <p class="text-2xl sm:text-3xl text-theme-muted mb-12 font-bold px-4">تناقشوا بذكاء.. لا تكشفوا السالفة
           للضايع!
         </p>
@@ -812,14 +860,11 @@
         <h2 id="final-result-title" class="text-3xl sm:text-5xl font-black mb-6 text-theme-main"></h2>
         <p id="final-roast-msg" class="text-lg sm:text-xl font-bold text-orange-400 mb-8 animate-pulse"></p>
         <div class="bg-card-theme p-8 rounded-[2.5rem] mb-8 border">
-          <p class="text-theme-muted mb-3 font-bold text-sm uppercase tracking-widest">السالفة كانت:</p>
-          <div id="final-word-emoji" class="text-7xl sm:text-8xl mb-3"></div>
+          <p class="text-theme-muted mb-4 font-bold text-sm uppercase tracking-widest">السالفة كانت:</p>
           <p id="final-secret-word"
-            class="text-3xl sm:text-5xl font-black text-emerald-500 mb-6 tracking-wider break-words w-full px-2 leading-tight"
+            class="text-3xl sm:text-5xl font-black text-emerald-500 tracking-wider break-words w-full px-2 leading-tight"
             style="direction: rtl; unicode-bidi: embed;">
           </p>
-          <p id="topic-description" class="text-lg sm:text-xl text-theme-muted opacity-80"></p>
-          <!-- hidden -->
         </div>
         <div class="mb-10 text-right">
           <h3 class="text-2xl sm:text-3xl font-black mb-6 text-center text-theme-main">📊 نتائج الجولة والأدوار</h3>
@@ -843,7 +888,7 @@
           </button>
 
           <button id="btn-final-home" onclick="goHome()" class="py-3 text-theme-muted underline text-base font-bold">
-            العودة للرئيسية
+            العودة للغرفة / الإعدادات
           </button>
         </div>
       </div>
@@ -894,8 +939,8 @@
           </div>
 
           <div class="grid grid-cols-1 gap-3">
-            <!-- <button onclick="resetDefaultPunishments()"
-            class="py-3 bg-white/5 text-xs text-theme-muted rounded-xl hover:bg-white/10">استعادة الافتراضي</button> -->
+            <button onclick="resetDefaultPunishments()"
+              class="py-3 bg-white/5 text-xs text-theme-muted rounded-xl hover:bg-white/10">استعادة الافتراضي</button>
             <button onclick="closePunishmentModal()" class="py-3 btn-gradient rounded-2xl font-bold text-white">حفظ
               وإغلاق</button>
           </div>
@@ -1012,6 +1057,35 @@
               <li class="text-right">🗳️ تصويت جماعي: يتفق الجميع على شخص واحد ويتم اختياره مرة واحدة.</li>
               <li class="text-right">👤 تصويت فردي: يمرر الجهاز بين اللاعبين ليصوت كل شخص سراً، وتحسب النتيجة للأكثر
                 تصويتاً.</li>
+            </ul>
+          </div>
+
+          <div class="rule-card text-right">
+            <h4
+              class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
+              <span class="order-first">🔄</span> توزيع الأدوار التلقائي
+            </h4>
+            <ul class="text-sm space-y-4 font-bold text-slate-300 text-right">
+              <li class="text-right">
+                🎯 <span class="text-emerald-400 font-black">الاستجواب العشوائي:</span>
+                سيختار النظام محققاً عشوائياً، ويحدد له "الضحية" التي يجب أن يوجه لها سؤاله مباشرة.
+              </li>
+              <li class="text-right">
+                ⚖️ <span class="text-emerald-400 font-black">العدالة للجميع:</span>
+                لن يقوم نفس المحقق بطرح سؤالين متتاليين! النظام يضمن أن يأخذ <span
+                  class="text-white font-black bg-white/10 px-1 rounded mx-1">جميع</span> اللاعبين فرصتهم في الأسئلة.
+              </li>
+              <li class="text-right leading-relaxed">
+                👑 <span class="text-yellow-400 font-black">صلاحية المضيف:</span>
+                زر <span
+                  class="bg-indigo-600 text-white text-[10px] px-2 py-1 rounded-md mx-1 font-black shadow-sm">التالي
+                  ⏭️</span> يظهر دائماً في شاشة "منشئ الغرفة" حتى لو لم يكن دوره!
+                <br>
+                <span
+                  class="text-white font-black text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded mt-2 mb-1 inline-block">هذا
+                  ليس خطأً!</span>
+                بل هي أداة سحرية لتخطي دور أي لاعب يتأخر أو ينسى تمرير الدور لإنقاذ الجلسة.
+              </li>
             </ul>
           </div>
 
