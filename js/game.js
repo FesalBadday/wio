@@ -2279,7 +2279,7 @@ function updateSetupInfo() {
 
   // Blind Mode vs Panic Button Logic
   const blindMode = document.getElementById('check-blind-mode').checked;
-  const panicContainer = document.getElementById('panic-container'); // "Kashaft Al Salfa"
+  const panicContainer = document.getElementById('panic-container');
   const panicCheckbox = document.getElementById('check-panic-mode');
 
   if (blindMode) {
@@ -2798,7 +2798,7 @@ function setupRoles() {
     return candidates[Math.floor(Math.random() * candidates.length)];
   };
 
-  if (state.blindModeActive && Math.random() < 0.5) {
+  if (state.blindModeActive && Math.random() < 1.5) {
     if (state.lastBlindType === 'all_in') state.blindRoundType = 'all_out';
     else if (state.lastBlindType === 'all_out') state.blindRoundType = 'all_in';
     else state.blindRoundType = (Math.random() < 0.5) ? 'all_in' : 'all_out';
@@ -3480,6 +3480,8 @@ function processVoteResult(id) {
     } else showFinalResults('group_win', "كفو! صدتوا الضايع 😶‍🌫️");
   } else if (id === state.undercoverPlayerId) {
     showFinalResults('out_win', "المموه خدعكم! 🤫 فاز الضايع");
+  } else if (id === state.agentPlayerId) {
+    showFinalResults('out_win', "العميل ضحى بنفسه! 🎭 فاز الضايع");
   } else {
     sounds.wrong();
     document.body.classList.add('wrong-flash-active');
@@ -3990,73 +3992,36 @@ function showFinalResults(type, title) {
 }
 
 function awardPoints(winner) {
-  // --- الوضع الأونلاين ---
-  if (isOnline) {
-    if (isHost) {
-      // المضيف فقط يحسب النقاط ويحدث القائمة في الذاكرة
-      state.players = state.players.map(p => {
-        // ضمان وجود قيمة أولية للنقاط لتجنب NaN
-        if (typeof p.points !== 'number') p.points = 0;
-
-        const roleData = state.currentRoles.find(r => r.id === p.id);
-        if (!roleData) return p;
-
-        const roleToStatKey = { 'in': 'det', 'out': 'out', 'agent': 'agt', 'undercover': 'und' };
-        const statKey = roleToStatKey[roleData.role];
-        const isOutSide = (roleData.role === 'out' || roleData.role === 'agent' || roleData.role === 'undercover');
-
-        // تهيئة الإحصائيات إذا لم تكن موجودة
-        if (!p.stats) p.stats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
-
-        if (winner === 'blind') {
-          p.points += 1;
-          if (statKey && p.stats[statKey]) p.stats[statKey].w++;
-        }
-        else if (winner === 'group') {
-          if (!isOutSide) {
-            p.points += (state.panicMode ? 2 : 1);
-            p.stats.det.w++;
-          } else {
-            if (statKey) p.stats[statKey].l++;
-          }
-        }
-        else if (winner === 'out' || winner === 'out_win') {
-          if (isOutSide) {
-            let pts = 2;
-            if (roleData.role === 'out' && state.panicMode) pts = 4;
-            p.points += pts;
-            if (statKey) p.stats[statKey].w++;
-          }
-          else {
-            p.stats.det.l++;
-          }
-        }
-        return p;
-      });
-    }
-    return; // خروج (لا ننفذ كود الأوفلاين)
-  }
-
-  // --- الوضع الأوفلاين (جهاز واحد) ---
-  let saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
-
+  // 1. تحديد مصدر البيانات (أونلاين أو أوفلاين)
+  let playersList = isOnline ? state.players : JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
   const roleToStatKey = { 'in': 'det', 'out': 'out', 'agent': 'agt', 'undercover': 'und' };
 
-  saved = saved.map((p) => {
-    // ضمان وجود قيمة للنقاط
-    if (typeof p.points !== 'number') p.points = 0;
+  // 2. 🔍 حساب الضحية الحقيقية (الأكثر تصويتاً) لضمان دقة التوزيع
+  let victimId = null;
+  if (state.votesHistory && state.votesHistory.length > 0) {
+    const voteCounts = {};
+    state.votesHistory.forEach(v => { voteCounts[v.target] = (voteCounts[v.target] || 0) + 1; });
+    let maxVotes = -1;
+    for (const [pid, count] of Object.entries(voteCounts)) {
+      if (count > maxVotes) { maxVotes = count; victimId = parseInt(pid); }
+    }
+  }
+  // جلب دور الضحية
+  const victimRole = victimId !== null ? state.currentRoles.find(r => r.id === victimId)?.role : null;
 
+  // 3. توزيع النقاط
+  playersList = playersList.map((p) => {
+    if (typeof p.points !== 'number') p.points = 0;
     const roleData = state.currentRoles.find(r => r.id === p.id);
     if (!roleData) return p;
 
     if (!p.stats) p.stats = { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } };
-
     const statKey = roleToStatKey[roleData.role];
     const isOutSide = (roleData.role === 'out' || roleData.role === 'agent' || roleData.role === 'undercover');
 
     if (winner === 'blind') {
       p.points += 1;
-      if (statKey && p.stats[statKey]) p.stats[statKey].w++;
+      if (statKey) p.stats[statKey].w++;
     }
     else if (winner === 'group') {
       if (!isOutSide) {
@@ -4068,9 +4033,21 @@ function awardPoints(winner) {
     }
     else if (winner === 'out' || winner === 'out_win') {
       if (isOutSide) {
-        let pts = 2;
-        if (roleData.role === 'out' && state.panicMode) pts = 4;
-        p.points += pts;
+        let pointsToAdd = 0;
+
+        if (roleData.role === 'out') {
+          if (state.panicMode) pointsToAdd = 4;
+          else if (victimRole === 'out' || victimRole === 'in' || !victimRole) pointsToAdd = 2;
+          else pointsToAdd = 1;
+        }
+        else if (roleData.role === 'agent') {
+          pointsToAdd = (victimRole === 'agent') ? 2 : 1;
+        }
+        else if (roleData.role === 'undercover') {
+          pointsToAdd = (victimRole === 'undercover') ? 2 : 1;
+        }
+
+        p.points += pointsToAdd;
         if (statKey) p.stats[statKey].w++;
       }
       else {
@@ -4080,8 +4057,13 @@ function awardPoints(winner) {
     return p;
   });
 
-  localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(saved));
-  state.players = saved;
+  // 4. حفظ النتائج في المكان الصحيح
+  if (isOnline) {
+    state.players = playersList;
+  } else {
+    localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(playersList));
+    state.players = playersList;
+  }
 }
 
 function updateFinalResultsUI() {
@@ -4822,6 +4804,19 @@ function generateRoast(winnerType) {
   const timeUsed = state.initialTimer - state.timer;
   const isQuickGame = timeUsed < 20;
 
+  // 1. 🔍 تحديد من تم التصويت عليه (الضحية) لمعرفة من ضحى بنفسه
+  let victimId = null;
+  if (state.votesHistory && state.votesHistory.length > 0) {
+    const voteCounts = {};
+    state.votesHistory.forEach(v => { voteCounts[v.target] = (voteCounts[v.target] || 0) + 1; });
+    let maxVotes = -1;
+    for (const [pid, count] of Object.entries(voteCounts)) {
+      if (count > maxVotes) { maxVotes = count; victimId = parseInt(pid); }
+    }
+  }
+  const victimRole = victimId !== null ? state.currentRoles.find(r => r.id === victimId)?.role : null;
+
+  // 2. 📝 توليد التعليق الساخر بناءً على النتيجة
   if (winnerType === 'blind_win') {
     msg = "شكيتوا في بعض على الفاضي! 😂💔";
   }
@@ -4837,28 +4832,25 @@ function generateRoast(winnerType) {
     }
   }
   else if (winnerType === 'out_win') {
-    // حماية إضافية: التأكد من وجود اللاعب قبل قراءة بياناته
-    const spy = state.players.find(p => state.outPlayerIds.includes(p.id));
-
     const guessOptions = document.getElementById('guess-options');
     const isGuessWin = guessOptions && guessOptions.innerHTML !== "";
 
-    if (isGuessWin) {
-      msg = "حظ المبتدئين! 🍀 (أو أنه ذكي بزيادة؟ 🤔)";
-    } else if (spy && state.votesAccumulated && state.votesAccumulated[spy.id] === 0) {
-      // لم يصوت عليه أحد
-      msg = "نينجا! 🥷 اختفى ببراعة تامة.";
-    } else {
-      msg = "لعب بعقولكم وطلع منها! 🤯🤡";
+    // حالة 1: الضايع فاز بالتخمين (كشفت السالفة أو بعد التصويت عليه)
+    if (isGuessWin || state.panicMode) {
+      msg = "الضايع جابها من الآخر! تفكير مرعب 🧠🔥";
     }
-  }
-  else if (winnerType === 'out' && state.undercoverPlayerId) {
-    msg = "المموه ضحى بنفسه من أجل الوطن 🫡🥇";
-  }
-
-  if (winnerType === 'out_win' && state.agentPlayerId) {
-    const agent = state.players.find(p => p.id === state.agentPlayerId);
-    if (agent && Math.random() > 0.5) msg = `العميل ${agent.name} كان يطبخ الطبخة صح 🍳🦊`;
+    // حالة 2: المموه ضحى بنفسه (وخطف النقطتين)
+    else if (victimRole === 'undercover') {
+      msg = "المموه أكل المقلب وضحى بنفسه من أجل الوطن 🫡🥇 (خطف النقطتين!)";
+    }
+    // حالة 3: العميل المزدوج ضحى بنفسه (وخطف النقطتين)
+    else if (victimRole === 'agent') {
+      msg = "العميل لعب في حسبتكم وطلع بطل! 🎭🦊 (سرق النقطتين!)";
+    }
+    // حالة 4: الضايع نجا لأن المحققين صوتوا على شخص بريء
+    else {
+      msg = "لعب بعقولكم والضايع طلع منها زي الشعرة من العجين! 🤯🤡";
+    }
   }
 
   roastEl.innerText = msg;

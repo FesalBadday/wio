@@ -1108,7 +1108,7 @@
           <div class="rule-card text-right">
             <h4
               class="font-black text-indigo-400 mb-3 flex items-center justify-start gap-3 text-xl font-black text-right">
-              <span class="order-first">📊</span> نظام النقاط المطور
+              <span class="order-first">📊</span> نظام النقاط
             </h4>
             <div class="text-xs space-y-3 font-bold leading-relaxed text-right">
               <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right">
@@ -1118,34 +1118,46 @@
                   <span class="text-theme-main text-right">0 نقطة</span>
                 </p>
               </div>
+
               <div class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-right">
-                <p class="text-indigo-400 mb-1 text-right">😶‍🌫️
-                  الضايع / 🎭 العميل / 🤫 المموه:</p>
-                <p class="text-slate-300 text-right">الفوز: <span class="text-theme-main text-right">+2 نقطة</span> |
-                  الخسارة:
-                  <span class="text-theme-main text-right">0 نقطة</span>
-                </p>
+                <p class="text-indigo-400 mb-2 text-right font-black border-b border-indigo-500/20 pb-2">😶‍🌫️ فريق
+                  الضايع (الضايع، العميل، المموه):</p>
+                <ul class="text-[11px] space-y-2 text-slate-300 list-disc list-inside">
+                  <li><span class="text-red-400 font-bold">الضايع:</span> <span class="text-theme-main text-right">+2
+                      نقطة</span> (فوز طبيعي) | <span class="text-theme-main text-right">+1 نقطة</span> (إذا خُدع
+                    المحققون وصوتوا للعميل/المموه).</li>
+
+                  <li><span class="text-orange-400 font-bold">العميل:</span> <span class="text-theme-main text-right">+2
+                      نقطة</span> (إذا نجح في جذب التصويت ضده) | <span class="text-theme-main text-right">+1 نقطة</span>
+                    (لأي فوز آخر للضايع).</li>
+
+                  <li><span class="text-yellow-400 font-bold">المموه:</span> <span class="text-theme-main text-right">+2
+                      نقطة</span> (إذا نجح في جذب التصويت ضده) | <span class="text-theme-main text-right">+1 نقطة</span>
+                    (لأي فوز آخر للضايع).</li>
+
+                  <li><span class="text-slate-500 font-bold">الخسارة:</span> <span class="text-theme-main">0 نقطة</span>
+                    للجميع.</li>
+                </ul>
               </div>
 
-              <!-- شرح ميزة كشفت السالفة -->
               <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 text-right mt-2">
                 <p class="text-orange-500 mb-1">🕵️‍♂️ ميزة "كشفت السالفة!" (للضايع):</p>
                 <p class="text-theme-muted">يمكن للضايع الضغط على هذا الزر في أي وقت إذا عرف السالفة.</p>
                 <ul class="list-disc list-inside mt-2 text-theme-muted text-[10px]">
                   <li>لديك <span class="text-theme-main font-bold">10 ثواني</span> فقط للاختيار!</li>
-                  <li>تخمين <span class="text-theme-main font-bold">صحيح</span>: يفوز فوراً بـ <span
-                      class="text-theme-main">+4 نقاط</span>.</li>
-                  <li>تخمين <span class="text-theme-main font-bold">خاطئ</span>: يخسر، ويحصل المحققون على <span
-                      class="text-theme-main">+2 نقاط</span>.</li>
+                  <li>تخمين <span class="text-theme-main font-bold">صحيح</span>: الضايع يربح <span
+                      class="text-theme-main font-bold">+4 نقاط</span> (العميل والمموه <span
+                      class="text-theme-main">+1</span>).</li>
+                  <li>تخمين <span class="text-theme-main font-bold">خاطئ</span>: فريق الضايع يخسر، والمحققون يكسبون
+                    <span class="text-theme-main font-bold">+2 نقاط</span>.
+                  </li>
                 </ul>
               </div>
 
-              <!-- شرح التحدي الأعمى -->
               <div class="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20 text-right mt-2">
                 <p class="text-purple-400 mb-1">🙈 التحدي الأعمى:</p>
                 <p class="text-slate-300">قد لا يكون هناك ضايع أو الكل ضايع! <span class="text-theme-main">الكل يكسب
-                    نقطة
-                    واحدة!</span></p>
+                    نقطة واحدة!</span></p>
               </div>
             </div>
           </div>
