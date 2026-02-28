@@ -1304,32 +1304,21 @@ function generateAutoName() {
 function updateOnlineSettingsUI() {
   const blindChk = document.getElementById('online-check-blind');
   const panicChk = document.getElementById('online-check-panic');
+  const probContainer = document.getElementById('online-blind-probability-container');
 
   if (!blindChk || !panicChk) return;
 
-  // الوصول للبطاقة (العنصر الأب label) لتغيير شكلها
   const panicCard = panicChk.closest('label');
 
   if (blindChk.checked) {
-    // إذا تم تفعيل التحدي الأعمى:
-    // 1. إلغاء تحديد "كشفت السالفة"
     panicChk.checked = false;
-    // 2. تعطيل الزر برمجياً
     panicChk.disabled = true;
-
-    // 3. تغيير الشكل ليبدو معطلاً (باهت وغير قابل للضغط)
-    if (panicCard) {
-      panicCard.classList.add('opacity-40', 'pointer-events-none', 'grayscale');
-    }
+    if (panicCard) panicCard.classList.add('opacity-40', 'pointer-events-none', 'grayscale');
+    if (probContainer) { probContainer.classList.remove('hidden'); probContainer.classList.add('flex'); }
   } else {
-    // إذا تم إلغاء التحدي الأعمى:
-    // 1. إعادة تفعيل الزر
     panicChk.disabled = false;
-
-    // 2. استعادة الشكل الطبيعي
-    if (panicCard) {
-      panicCard.classList.remove('opacity-40', 'pointer-events-none', 'grayscale');
-    }
+    if (panicCard) panicCard.classList.remove('opacity-40', 'pointer-events-none', 'grayscale');
+    if (probContainer) { probContainer.classList.add('hidden'); probContainer.classList.remove('flex'); }
   }
 }
 
@@ -2257,6 +2246,30 @@ function setVotingMode(mode) {
   sounds.tick();
 }
 
+// دالة لتغيير ألوان أزرار نسبة التحدي الأعمى وتخزين قيمتها
+function setBlindProbability(value, context) {
+  // تحديد العناصر بناءً على هل نحن في الأونلاين أم الأوفلاين
+  const prefix = context === 'online' ? 'btn-online-prob-' : 'btn-prob-';
+  const inputId = context === 'online' ? 'online-blind-probability-select' : 'blind-probability-select';
+
+  // 1. تحديث قيمة الحقل المخفي لكي يقرأها النظام
+  document.getElementById(inputId).value = value;
+
+  // 2. تحديث تصميم الأزرار (إضاءة الزر المختار وإطفاء البقية)
+  const activeClass = "flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg";
+  const inactiveClass = "flex-1 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white";
+
+  ['0.05', '0.15', '0.25'].forEach(val => {
+    const btn = document.getElementById(prefix + val);
+    if (btn) {
+      btn.className = (val === value) ? activeClass : inactiveClass;
+    }
+  });
+
+  // تشغيل صوت "تكة" خفيف
+  try { sounds.tick(); } catch (e) { }
+}
+
 function updateSetupInfo() {
   const pVal = document.getElementById('input-players').value;
   const tVal = document.getElementById('input-time').value;
@@ -2281,14 +2294,17 @@ function updateSetupInfo() {
   const blindMode = document.getElementById('check-blind-mode').checked;
   const panicContainer = document.getElementById('panic-container');
   const panicCheckbox = document.getElementById('check-panic-mode');
+  const probContainer = document.getElementById('blind-probability-container');
 
   if (blindMode) {
     panicContainer.classList.add('opacity-50', 'pointer-events-none');
     panicCheckbox.checked = false;
     panicCheckbox.disabled = true;
+    if (probContainer) { probContainer.classList.remove('hidden'); probContainer.classList.add('flex'); } // ✨ إظهار
   } else {
     panicContainer.classList.remove('opacity-50', 'pointer-events-none');
     panicCheckbox.disabled = false;
+    if (probContainer) { probContainer.classList.add('hidden'); probContainer.classList.remove('flex'); } // ✨ إخفاء
   }
 }
 
@@ -2449,6 +2465,7 @@ function startOnlineGame() {
   state.panicModeAllowed = document.getElementById('online-check-panic').checked;
   state.guessingEnabled = document.getElementById('online-check-guessing').checked;
   state.blindModeActive = document.getElementById('online-check-blind').checked;
+  state.blindProbability = parseFloat(document.getElementById('online-blind-probability-select').value) || 0.15;
 
   // تفعيل العميل المزدوج والمموه
   state.doubleAgentActive = document.getElementById('online-check-double-agent').checked;
@@ -2666,6 +2683,7 @@ function startGame() {
   state.guessingEnabled = document.getElementById('check-guessing').checked;
 
   state.blindModeActive = document.getElementById('check-blind-mode').checked;
+  state.blindProbability = parseFloat(document.getElementById('blind-probability-select').value) || 0.15;
   state.hintEnabled = document.getElementById('check-hint').checked;
   state.smartTurnsActive = document.getElementById('check-smart-turns').checked;
 
@@ -2798,7 +2816,7 @@ function setupRoles() {
     return candidates[Math.floor(Math.random() * candidates.length)];
   };
 
-  if (state.blindModeActive && Math.random() < 1.5) {
+  if (state.blindModeActive && Math.random() < (state.blindProbability || 0.15)) {
     if (state.lastBlindType === 'all_in') state.blindRoundType = 'all_out';
     else if (state.lastBlindType === 'all_out') state.blindRoundType = 'all_in';
     else state.blindRoundType = (Math.random() < 0.5) ? 'all_in' : 'all_out';

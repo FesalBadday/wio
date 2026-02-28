@@ -186,24 +186,41 @@
             </h4>
 
             <div class="grid grid-cols-2 gap-3">
-              <label
-                class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-500/10 has-[:checked]:shadow-[0_0_15px_rgba(99,102,241,0.15)] group">
-                <input type="checkbox" id="online-check-blind" class="peer sr-only" onchange="updateOnlineSettingsUI()">
-                <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🙈</div>
-                <div class="text-right flex-1">
-                  <span
-                    class="block font-bold text-sm text-slate-300 peer-checked:text-indigo-300 transition-colors">التحدي
-                    الأعمى</span>
-                  <span class="block text-[10px] text-theme-muted opacity-70">قد لا يكون هناك ضايع أو الكل ضايع!</span>
+              <div class="col-span-2 flex flex-col gap-2">
+                <label
+                  class="relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-500/10 has-[:checked]:shadow-[0_0_15px_rgba(99,102,241,0.15)] group">
+                  <input type="checkbox" id="online-check-blind" class="peer sr-only"
+                    onchange="updateOnlineSettingsUI()">
+                  <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🙈</div>
+                  <div class="text-right flex-1">
+                    <span
+                      class="block font-bold text-sm text-slate-300 peer-checked:text-indigo-300 transition-colors">التحدي
+                      الأعمى</span>
+                    <span class="block text-[10px] text-theme-muted opacity-70">قد لا يكون هناك ضايع أو الكل
+                      ضايع!</span>
+                  </div>
+                  <div
+                    class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all">
+                    <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </label>
+                <div id="online-blind-probability-container"
+                  class="hidden flex-col gap-2 p-3 bg-white/5 rounded-xl border border-white/10 animate-fade-in w-full mt-1">
+                  <span class="text-[10px] font-bold text-indigo-300 text-right pr-1">نسبة الحدوث:</span>
+                  <div class="flex bg-black/40 p-1.5 rounded-2xl border border-white/5 shadow-inner w-full">
+                    <button id="btn-online-prob-0.05" onclick="setBlindProbability('0.05', 'online')"
+                      class="flex-1 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">نادر</button>
+                    <button id="btn-online-prob-0.15" onclick="setBlindProbability('0.15', 'online')"
+                      class="flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg">طبيعي</button>
+                    <button id="btn-online-prob-0.25" onclick="setBlindProbability('0.25', 'online')"
+                      class="flex-1 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">عالي</button>
+                  </div>
+                  <input type="hidden" id="online-blind-probability-select" value="0.15">
                 </div>
-                <div
-                  class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all">
-                  <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-              </label>
+              </div>
 
               <label
                 class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-emerald-500/50 has-[:checked]:bg-emerald-500/10 has-[:checked]:shadow-[0_0_15px_rgba(16,185,129,0.15)] group">
@@ -519,24 +536,39 @@
           </h4>
 
           <div class="grid grid-cols-2 gap-3">
-            <label id="blind-mode-container"
-              class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-500/10 has-[:checked]:shadow-[0_0_15px_rgba(99,102,241,0.15)] group">
-              <input type="checkbox" id="check-blind-mode" class="peer sr-only" onchange="updateSetupInfo()">
-              <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🙈</div>
-              <div class="text-right flex-1">
-                <span
-                  class="block font-bold text-sm text-slate-300 peer-checked:text-indigo-300 transition-colors">التحدي
-                  الأعمى</span>
-                <span class="block text-[10px] text-theme-muted opacity-70">قد لا يكون هناك ضايع أو الكل ضايع!</span>
+            <div class="col-span-2 flex flex-col gap-2">
+              <label id="blind-mode-container"
+                class="relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-500/10 has-[:checked]:shadow-[0_0_15px_rgba(99,102,241,0.15)] group">
+                <input type="checkbox" id="check-blind-mode" class="peer sr-only" onchange="updateSetupInfo()">
+                <div class="text-2xl grayscale peer-checked:grayscale-0 transition-all group-hover:scale-110">🙈</div>
+                <div class="text-right flex-1">
+                  <span
+                    class="block font-bold text-sm text-slate-300 peer-checked:text-indigo-300 transition-colors">التحدي
+                    الأعمى</span>
+                  <span class="block text-[10px] text-theme-muted opacity-70">قد لا يكون هناك ضايع أو الكل ضايع!</span>
+                </div>
+                <div
+                  class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all">
+                  <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </label>
+              <div id="blind-probability-container"
+                class="hidden flex-col gap-2 p-3 bg-white/5 rounded-xl border border-white/10 animate-fade-in w-full mt-1">
+                <span class="text-[10px] font-bold text-indigo-300 text-right pr-1">نسبة الحدوث:</span>
+                <div class="flex bg-black/40 p-1.5 rounded-2xl border border-white/5 shadow-inner w-full">
+                  <button id="btn-prob-0.05" onclick="setBlindProbability('0.05', 'offline')"
+                    class="flex-1 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">نادر</button>
+                  <button id="btn-prob-0.15" onclick="setBlindProbability('0.15', 'offline')"
+                    class="flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-lg">طبيعي</button>
+                  <button id="btn-prob-0.25" onclick="setBlindProbability('0.25', 'offline')"
+                    class="flex-1 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">عالي</button>
+                </div>
+                <input type="hidden" id="blind-probability-select" value="0.15">
               </div>
-              <div
-                class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all">
-                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </label>
+            </div>
 
             <label id="guessing-container"
               class="col-span-2 relative flex items-center gap-3 p-3 bg-white/5 border rounded-xl cursor-pointer transition-all hover:bg-white/10 has-[:checked]:border-emerald-500/50 has-[:checked]:bg-emerald-500/10 has-[:checked]:shadow-[0_0_15px_rgba(16,185,129,0.15)] group">
