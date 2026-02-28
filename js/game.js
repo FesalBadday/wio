@@ -1009,10 +1009,17 @@ function calculateOnlineResults() {
   });
 
   let maxVotes = -1;
-  let victimId = null;
+  let tiedVictims = []; // مصفوفة لحفظ المتعادلين
   for (const [pid, count] of Object.entries(voteCounts)) {
-    if (count > maxVotes) { maxVotes = count; victimId = parseInt(pid); }
+    if (count > maxVotes) {
+      maxVotes = count;
+      tiedVictims = [parseInt(pid)]; // قائمة جديدة
+    } else if (count === maxVotes) {
+      tiedVictims.push(parseInt(pid)); // إضافة المتعادل
+    }
   }
+  // ✨ قانون الأغلبية الصارمة: إذا تعادل أكثر من شخص، لا يوجد ضحية فعلية!
+  let victimId = tiedVictims.length === 1 ? tiedVictims[0] : null;
 
   let winType = '';
   let title = '';
@@ -2194,6 +2201,13 @@ function normalizeArabic(text) {
   return text.replace(/[أإآا]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').trim();
 }
 
+// دالة لتنظيف النصوص من الأكواد الخبيثة
+function sanitizeHTML(str) {
+  return str.replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag]));
+}
+
 function addCustomWord() {
   const input = document.getElementById('custom-word-input');
   const word = input.value.trim();
@@ -2341,7 +2355,7 @@ function initPlayerNames() {
         <div class="player-input-container">
             <div>
                 <label class="player-label">اسم اللاعب ${i + 1}</label>
-                <input type="text" id="name-${i}" value="${p.name}" class="player-input" placeholder="اكتب الاسم...">
+                <input type="text" id="name-${i}" value="${p.name}" maxlength="15" class="player-input" placeholder="اكتب الاسم...">
             </div>
             <input type="hidden" id="avatar-${i}" value="${p.avatar}">
             <div class="avatars-grid">
@@ -2644,15 +2658,21 @@ function startGame() {
       return;
     }
 
+    // ✨ التعديل الجديد: التحقق من طول الاسم (للاحتياط) ✨
+    if (nameVal.length > 15) {
+      showAlert(`الاسم "${nameVal}" طويل جداً! (الحد الأقصى 15 حرف)`);
+      return;
+    }
+
     // 2. التحقق من التكرار عبر تنظيف الاسم
-    const normalizedName = normalizeArabic(nameVal); // ✨ تنظيف الاسم ✨
+    const normalizedName = normalizeArabic(nameVal);
 
     if (enteredNames.has(normalizedName)) {
       showAlert(`الاسم "${nameVal}" مكرر أو مشابه! يرجى تغييره.`);
       return;
     }
 
-    enteredNames.add(normalizedName); // إضافة الاسم المفلتر للقائمة المرجعية
+    enteredNames.add(normalizedName);
   }
   // --- نهاية التعديل ---
 
@@ -2660,7 +2680,7 @@ function startGame() {
   const savedData = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
   for (let i = 0; i < count; i++) {
     const nameInp = document.getElementById(`name-${i}`);
-    const name = nameInp.value.trim();
+    const name = sanitizeHTML(nameInp.value.trim());
     const avatar = document.getElementById(`avatar-${i}`).value;
     const existing = savedData[i];
     state.players.push({
@@ -3444,16 +3464,18 @@ function calculateIndividualResults() {
     voteCounts[v.target] = (voteCounts[v.target] || 0) + 1;
   });
 
-  // معرفة الأكثر تصويتاً
   let maxVotes = -1;
-  let victimId = null;
-
+  let tiedVictims = []; // مصفوفة لحفظ المتعادلين
   for (const [pid, count] of Object.entries(voteCounts)) {
     if (count > maxVotes) {
       maxVotes = count;
-      victimId = parseInt(pid);
+      tiedVictims = [parseInt(pid)]; // قائمة جديدة
+    } else if (count === maxVotes) {
+      tiedVictims.push(parseInt(pid)); // إضافة المتعادل
     }
   }
+  // ✨ قانون الأغلبية الصارمة: إذا تعادل أكثر من شخص، لا يوجد ضحية فعلية!
+  let victimId = tiedVictims.length === 1 ? tiedVictims[0] : null;
 
   // إرسال الضحية للمعالجة
   processVoteResult(victimId);
@@ -4016,13 +4038,22 @@ function awardPoints(winner) {
 
   // 2. 🔍 حساب الضحية الحقيقية (الأكثر تصويتاً) لضمان دقة التوزيع
   let victimId = null;
+
   if (state.votesHistory && state.votesHistory.length > 0) {
     const voteCounts = {};
     state.votesHistory.forEach(v => { voteCounts[v.target] = (voteCounts[v.target] || 0) + 1; });
     let maxVotes = -1;
+    let tiedVictims = []; // مصفوفة لحفظ المتعادلين
     for (const [pid, count] of Object.entries(voteCounts)) {
-      if (count > maxVotes) { maxVotes = count; victimId = parseInt(pid); }
+      if (count > maxVotes) {
+        maxVotes = count;
+        tiedVictims = [parseInt(pid)]; // قائمة جديدة
+      } else if (count === maxVotes) {
+        tiedVictims.push(parseInt(pid)); // إضافة المتعادل
+      }
     }
+    // ✨ قانون الأغلبية الصارمة: إذا تعادل أكثر من شخص، لا يوجد ضحية فعلية!
+    victimId = tiedVictims.length === 1 ? tiedVictims[0] : null;
   }
   // جلب دور الضحية
   const victimRole = victimId !== null ? state.currentRoles.find(r => r.id === victimId)?.role : null;
@@ -4824,13 +4855,22 @@ function generateRoast(winnerType) {
 
   // 1. 🔍 تحديد من تم التصويت عليه (الضحية) لمعرفة من ضحى بنفسه
   let victimId = null;
+
   if (state.votesHistory && state.votesHistory.length > 0) {
     const voteCounts = {};
     state.votesHistory.forEach(v => { voteCounts[v.target] = (voteCounts[v.target] || 0) + 1; });
     let maxVotes = -1;
+    let tiedVictims = []; // مصفوفة لحفظ المتعادلين
     for (const [pid, count] of Object.entries(voteCounts)) {
-      if (count > maxVotes) { maxVotes = count; victimId = parseInt(pid); }
+      if (count > maxVotes) {
+        maxVotes = count;
+        tiedVictims = [parseInt(pid)]; // قائمة جديدة
+      } else if (count === maxVotes) {
+        tiedVictims.push(parseInt(pid)); // إضافة المتعادل
+      }
     }
+    // ✨ قانون الأغلبية الصارمة: إذا تعادل أكثر من شخص، لا يوجد ضحية فعلية!
+    victimId = tiedVictims.length === 1 ? tiedVictims[0] : null;
   }
   const victimRole = victimId !== null ? state.currentRoles.find(r => r.id === victimId)?.role : null;
 
@@ -4886,7 +4926,7 @@ function closeRenameModal() {
 }
 
 function submitRename() {
-  const newName = document.getElementById('rename-input').value.trim();
+  const newName = sanitizeHTML(document.getElementById('rename-input').value.trim());
 
   if (!newName) return showAlert("الاسم لا يمكن أن يكون فارغاً!");
   if (newName.length > 15) return showAlert("الاسم طويل جداً!");
