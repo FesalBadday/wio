@@ -4,11 +4,50 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const masterGain = audioCtx.createGain();
 masterGain.connect(audioCtx.destination);
 
+// ==========================================
+// 💾 النظام الذكي لحفظ البيانات (StorageSystem)
+// ==========================================
+const StorageSystem = {
+  save: function (key, data) {
+    const value = typeof data === 'object' ? JSON.stringify(data) : String(data);
+    if (typeof Android !== "undefined" && Android.saveData) {
+      Android.saveData(key, value);
+    } else {
+      // 🚨 التعديل هنا: استخدام localStorage بدلاً من StorageSystem.save
+      localStorage.setItem(key, value);
+    }
+  },
+  load: function (key, isObject = false) {
+    let value = null;
+    if (typeof Android !== "undefined" && Android.getData) {
+      value = Android.getData(key);
+      if (value === "") value = null;
+    } else {
+      // 🚨 التعديل هنا: استخدام localStorage بدلاً من StorageSystem.load
+      value = localStorage.getItem(key);
+    }
+
+    if (value === null) return null;
+
+    if (isObject) {
+      try { return JSON.parse(value); } catch (e) { return null; }
+    }
+    return value;
+  },
+  remove: function (key) {
+    if (typeof Android !== "undefined" && Android.removeData) {
+      Android.removeData(key);
+    } else {
+      localStorage.removeItem(key);
+    }
+  }
+};
+
 // ✨ استرجاع الإعدادات من الذاكرة (أو وضع الافتراضي)
-let isMuted = localStorage.getItem('spy_muted') === 'true';
-let isVibrationEnabled = localStorage.getItem('spy_vibe_enabled') !== 'false';
-let globalVolume = localStorage.getItem('spy_volume') ? parseFloat(localStorage.getItem('spy_volume')) : 0.4;
-let globalVibrationLevel = localStorage.getItem('spy_vibe_level') ? parseInt(localStorage.getItem('spy_vibe_level')) : 20;
+let isMuted = StorageSystem.load('spy_muted') === 'true';
+let isVibrationEnabled = StorageSystem.load('spy_vibe_enabled') !== 'false';
+let globalVolume = StorageSystem.load('spy_volume') ? parseFloat(StorageSystem.load('spy_volume')) : 0.4;
+let globalVibrationLevel = StorageSystem.load('spy_vibe_level') ? parseInt(StorageSystem.load('spy_vibe_level')) : 20;
 
 // تطبيق مستوى الصوت فوراً عند التشغيل
 masterGain.gain.value = isMuted ? 0 : globalVolume;
@@ -17,32 +56,18 @@ let isDarkMode = true;
 // --- Premium Logic ---
 let isPremium = false;
 
-// --- إعدادات النسخة المجانية ---
-// اكتب هنا أسماء الفئات التي تريدها أن تكون مجانية (مفتوحة للجميع)
-// أي فئة غير مكتوبة هنا ستكون مغلقة بقفل 🔒
-const FREE_CATEGORIES = ["خضروات", "فواكه", "عملات", "حيوانات", "عواصم", "دول", "مهن"];
-
-// 💡 مفتاح التحكم في نظام اللعب الجماعي (أونلاين) 💡
-// true = يجب أن يملك جميع اللاعبين النسخة الكاملة للعب الفئات المدفوعة.
-// false = المضيف فقط يحتاج النسخة الكاملة، والبقية يلعبون مجاناً.
-const STRICT_PREMIUM_MODE = false;
-
 // التحقق عند تشغيل اللعبة
-if (localStorage.getItem('isPremium') === 'true') {
+if (StorageSystem.load('isPremium') === 'true') {
   isPremium = true;
 }
 
-// دالة يستدعيها الأندرويد بصمت عند فتح التطبيق للتحقق من المشتريات
+// دالة يستدعيها الأندرويد بصمت
 window.syncPremiumState = function (status) {
-  isPremium = status === true; // ضمان أن القيمة هي Boolean
-
+  isPremium = status === true;
   if (isPremium) {
-    // اللاعب يمتلك اللعبة: نحفظها في الذاكرة لسرعة الفتح مستقبلاً
-    localStorage.setItem("isPremium", "true");
+    StorageSystem.save("isPremium", "true");
   } else {
-    // اللاعب لا يمتلك اللعبة (أو قام بعمل Refund):
-    localStorage.removeItem("isPremium");
-
+    StorageSystem.remove("isPremium");
     // 🛡️ طبقة الحماية: تنظيف أي فئة مدفوعة كان قد اختارها سابقاً
     state.allowedCategories = state.allowedCategories.filter(cat => FREE_CATEGORIES.includes(cat));
     if (state.selectedCategory !== 'عشوائي' && !FREE_CATEGORIES.includes(state.selectedCategory)) {
@@ -57,6 +82,13 @@ window.syncPremiumState = function (status) {
   if (typeof renderActiveCategoryGrid === 'function') renderActiveCategoryGrid();
   if (typeof updateCurrentCategoryUI === 'function') updateCurrentCategoryUI();
 };
+
+const FREE_CATEGORIES = ["خضروات", "فواكه", "عملات", "حيوانات", "عواصم", "دول", "مهن"];
+
+// 💡 مفتاح التحكم في نظام اللعب الجماعي (أونلاين) 💡
+// true = يجب أن يملك جميع اللاعبين النسخة الكاملة للعب الفئات المدفوعة.
+// false = المضيف فقط يحتاج النسخة الكاملة، والبقية يلعبون مجاناً.
+const STRICT_PREMIUM_MODE = false;
 
 // دالة لتحديث واجهة المستخدم بناءً على حالة الشراء
 function updatePremiumUI() {
@@ -1098,21 +1130,21 @@ function toggleTheme() {
   updateSettingsUI();
 
   // ✅ حفظ الخيار الجديد في ذاكرة المتصفح
-  localStorage.setItem('spy_theme', isDarkMode ? 'dark' : 'light');
+  StorageSystem.save('spy_theme', isDarkMode ? 'dark' : 'light');
 }
 
 // ✨ دالة سحب شريط الصوت وتلوينه
 function updateVolumeLevel() {
   const volInput = document.getElementById('input-volume');
   globalVolume = parseFloat(volInput.value);
-  localStorage.setItem('spy_volume', globalVolume);
+  StorageSystem.save('spy_volume', globalVolume);
 
   if (globalVolume > 0 && isMuted) {
     isMuted = false;
-    localStorage.setItem('spy_muted', false);
+    StorageSystem.save('spy_muted', false);
   } else if (globalVolume === 0 && !isMuted) {
     isMuted = true;
-    localStorage.setItem('spy_muted', true);
+    StorageSystem.save('spy_muted', true);
   }
 
   masterGain.gain.value = isMuted ? 0 : globalVolume;
@@ -1125,14 +1157,14 @@ function updateVolumeLevel() {
 function updateVibrationLevel() {
   const vibeInput = document.getElementById('input-vibration');
   globalVibrationLevel = parseInt(vibeInput.value);
-  localStorage.setItem('spy_vibe_level', globalVibrationLevel);
+  StorageSystem.save('spy_vibe_level', globalVibrationLevel);
 
   if (globalVibrationLevel > 0 && !isVibrationEnabled) {
     isVibrationEnabled = true;
-    localStorage.setItem('spy_vibe_enabled', true);
+    StorageSystem.save('spy_vibe_enabled', true);
   } else if (globalVibrationLevel === 0 && isVibrationEnabled) {
     isVibrationEnabled = false;
-    localStorage.setItem('spy_vibe_enabled', false);
+    StorageSystem.save('spy_vibe_enabled', false);
   }
 
   updateSettingsUI();
@@ -1188,7 +1220,7 @@ window.onRestoreComplete = function (isSuccessful) {
   if (isSuccessful) {
     // تحديث البيانات وفتح الفئات بصمت دائماً لضمان عمل اللعبة
     isPremium = true;
-    localStorage.setItem('isPremium', 'true');
+    StorageSystem.save('isPremium', 'true');
     updatePremiumUI();
 
     if (typeof renderCategorySelectionGrid === 'function') {
@@ -1236,7 +1268,7 @@ function buyPremiumClick() {
 // هذه الدالة يناديها الأندرويد عند نجاح الدفع (أو استعادة المشتريات)
 window.unlockPremiumContent = function () {
   isPremium = true;
-  localStorage.setItem('isPremium', 'true'); // حفظ الحالة للأبد
+  StorageSystem.save('isPremium', 'true'); // حفظ الحالة للأبد
 
   updatePremiumUI(); // إخفاء الزر من الشاشة الرئيسية
   closePremiumModal(); // إغلاق النافذة إذا كانت مفتوحة
@@ -1527,7 +1559,7 @@ function cleanupAndReload() {
     revealIndex: 0, isPaused: false, doubleAgentActive: false, undercoverActive: false, guessingEnabled: false,
     outPlayerIds: [], agentPlayerId: null, undercoverPlayerId: null, selectedCategory: "عشوائي",
     allowedCategories: state.allowedCategories,
-    usedWords: JSON.parse(localStorage.getItem('spy_used_words') || '[]'),
+    usedWords: (StorageSystem.load('spy_used_words', true) || []),
     customWords: state.customWords, lastWinner: null, votingMode: 'individual', voterIndex: 0,
     votesAccumulated: {}, panicMode: false, smartDistractors: true,
     blindModeActive: false, blindRoundType: null, guessInterval: null, panicModeAllowed: false, hintEnabled: false
@@ -1967,7 +1999,7 @@ function checkResetButtonVisibility() {
   // ✅✅✅ ---------------------------------------------- ✅✅✅
 
   // الكود الأصلي للأوفلاين (يبقى كما هو)
-  const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+  const saved = (StorageSystem.load('out_loop_tablet_v4_players', true) || []);
   const hasData = saved.some(p => (p.points || 0) > 0);
   trigger.classList.toggle('hidden', !hasData);
 }
@@ -2219,7 +2251,7 @@ function addCustomWord() {
       return;
     }
     state.customWords.push({ word });
-    localStorage.setItem('spy_custom_words', JSON.stringify(state.customWords));
+    StorageSystem.save('spy_custom_words', state.customWords);
     input.value = ''; renderCustomWords();
   }
 }
@@ -2237,7 +2269,7 @@ function renderCustomWords() {
 // ✨ دالة جديدة لحذف الكلمة وتحديث الذاكرة ✨
 function removeCustomWord(index) {
   state.customWords.splice(index, 1);
-  localStorage.setItem('spy_custom_words', JSON.stringify(state.customWords));
+  StorageSystem.save('spy_custom_words', state.customWords);
   renderCustomWords();
 }
 
@@ -2335,7 +2367,7 @@ function initPlayerNames() {
   const count = parseInt(document.getElementById('input-players').value);
   const container = document.getElementById('names-container');
   if (!container) return; container.innerHTML = '';
-  const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+  const saved = (StorageSystem.load('out_loop_tablet_v4_players', true) || []);
 
   let usedAvatars = [];
 
@@ -2633,14 +2665,14 @@ function setupOnlineRevealScreen() {
 function startGame() {
   // هذا الكود يمسح البيانات القديمة تلقائياً إذا كانت فاسدة
   try {
-    const testData = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players'));
+    const testData = StorageSystem.load('out_loop_tablet_v4_players', true);
     if (testData && testData.length > 0 && !testData[0].stats) {
       // إذا وجدنا بيانات قديمة لا تحتوي على الإحصائيات الجديدة
-      localStorage.removeItem('out_loop_tablet_v4_players');
+      StorageSystem.remove('out_loop_tablet_v4_players'); // ✨ التعديل هنا
       console.log("تم إعادة تعيين البيانات لعدم التوافق");
     }
   } catch (e) {
-    localStorage.removeItem('out_loop_tablet_v4_players');
+    StorageSystem.remove('out_loop_tablet_v4_players'); // ✨ والتعديل هنا أيضاً
   }
 
   const count = parseInt(document.getElementById('input-players').value);
@@ -2677,7 +2709,7 @@ function startGame() {
   // --- نهاية التعديل ---
 
   state.players = [];
-  const savedData = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+  const savedData = (StorageSystem.load('out_loop_tablet_v4_players', true) || []);
   for (let i = 0; i < count; i++) {
     const nameInp = document.getElementById(`name-${i}`);
     const name = sanitizeHTML(nameInp.value.trim());
@@ -2689,7 +2721,7 @@ function startGame() {
       stats: existing?.stats || { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } }
     });
   }
-  localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(state.players));
+  StorageSystem.save('out_loop_tablet_v4_players', state.players);
 
   state.revealOrder = state.players.map((_, i) => i).sort(() => Math.random() - 0.5);
 
@@ -2785,7 +2817,7 @@ function setupRoles() {
   state.usedWords.push(state.secretData.word);
 
   // ✨ حفظ السجل في الذاكرة للأبد (بدون مسح القديم) ✨
-  localStorage.setItem('spy_used_words', JSON.stringify(state.usedWords));
+  StorageSystem.save('spy_used_words', state.usedWords);
 
   // 4. منطق المموه (باستخدام كلمة الربط related)
   let ucData = null;
@@ -4019,11 +4051,11 @@ function showFinalResults(type, title) {
     drawWebOfLies();
   }
 
-  let playedCount = parseInt(localStorage.getItem('games_played_count') || '0');
+  let playedCount = parseInt(StorageSystem.load('games_played_count') || '0');
   playedCount++;
-  localStorage.setItem('games_played_count', playedCount.toString());
+  StorageSystem.save('games_played_count', playedCount.toString());
 
-  let hasRated = localStorage.getItem('has_rated_app') === 'true';
+  let hasRated = StorageSystem.load('has_rated_app') === 'true';
   if (!hasRated && (playedCount === 3 || playedCount === 10 || playedCount === 25)) {
     setTimeout(() => {
       showRatingModal();
@@ -4033,7 +4065,7 @@ function showFinalResults(type, title) {
 
 function awardPoints(winner) {
   // 1. تحديد مصدر البيانات (أونلاين أو أوفلاين)
-  let playersList = isOnline ? state.players : JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+  let playersList = isOnline ? state.players : (StorageSystem.load('out_loop_tablet_v4_players', true) || []);
   const roleToStatKey = { 'in': 'det', 'out': 'out', 'agent': 'agt', 'undercover': 'und' };
 
   // 2. 🔍 حساب الضحية الحقيقية (الأكثر تصويتاً) لضمان دقة التوزيع
@@ -4110,7 +4142,7 @@ function awardPoints(winner) {
   if (isOnline) {
     state.players = playersList;
   } else {
-    localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(playersList));
+    StorageSystem.save('out_loop_tablet_v4_players', playersList);
     state.players = playersList;
   }
 }
@@ -4193,7 +4225,7 @@ function updateLeaderboardUI() {
 
   } else {
     // أوفلاين: نأخذ البيانات من التخزين الدائم
-    dataToShow = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+    dataToShow = (StorageSystem.load('out_loop_tablet_v4_players', true) || []);
     if (titleEl) titleEl.innerText = "🏆 أبطال السوالف";
 
     // إظهار زر التصفير
@@ -4245,7 +4277,7 @@ function openStatsModal(id) {
     p = onlinePlayers.find(player => player.id === id);
   } else {
     // البحث في التخزين المحلي
-    const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+    const saved = (StorageSystem.load('out_loop_tablet_v4_players', true) || []);
     p = saved.find(player => player.id === id); // نستخدم find بدلاً من index المباشر للأمان
   }
 
@@ -4303,9 +4335,9 @@ function restartSameGame() {
 }
 
 function resetPoints() {
-  const saved = JSON.parse(localStorage.getItem('out_loop_tablet_v4_players') || '[]');
+  const saved = (StorageSystem.load('out_loop_tablet_v4_players', true) || []);
   const reset = saved.map(p => ({ ...p, points: 0, stats: { det: { w: 0, l: 0 }, out: { w: 0, l: 0 }, agt: { w: 0, l: 0 }, und: { w: 0, l: 0 } } }));
-  localStorage.setItem('out_loop_tablet_v4_players', JSON.stringify(reset));
+  StorageSystem.save('out_loop_tablet_v4_players', reset);
   state.players = reset;
   closeModal(); updateLeaderboardUI(); checkResetButtonVisibility();
 }
@@ -4383,7 +4415,7 @@ const defaultPunishments = [
   "إمدح الفائز 👑"
 ];
 
-let punishments = JSON.parse(localStorage.getItem('out_loop_punishments')) || [...defaultPunishments];
+let punishments = StorageSystem.load('out_loop_punishments', true) || [...defaultPunishments];
 let wheelCanvas = null;
 let wheelCtx = null;
 let currentWheelRotation = 0;
@@ -4440,7 +4472,7 @@ function addPunishment() {
   }
 
   punishments.push(val);
-  localStorage.setItem('out_loop_punishments', JSON.stringify(punishments));
+  StorageSystem.save('out_loop_punishments', punishments);
   input.value = '';
   renderPunishmentList();
   sounds.tick();
@@ -4449,7 +4481,7 @@ function addPunishment() {
 // حذف عقاب
 function removePunishment(index) {
   punishments.splice(index, 1);
-  localStorage.setItem('out_loop_punishments', JSON.stringify(punishments));
+  StorageSystem.save('out_loop_punishments', punishments);
   renderPunishmentList();
   sounds.flip();
 }
@@ -4457,7 +4489,7 @@ function removePunishment(index) {
 // استعادة الافتراضي
 function resetDefaultPunishments() {
   punishments = [...defaultPunishments];
-  localStorage.setItem('out_loop_punishments', JSON.stringify(punishments));
+  StorageSystem.save('out_loop_punishments', punishments);
   renderPunishmentList();
   showAlert("تمت استعادة العقوبات الافتراضية");
 }
@@ -5122,7 +5154,7 @@ function closeRatingModal() {
 
 function submitRatingClick() {
   // حفظ أن اللاعب وافق على التقييم لكي لا نزعجه مجدداً
-  localStorage.setItem('has_rated_app', 'true');
+  StorageSystem.save('has_rated_app', 'true');
   closeRatingModal();
 
   if (typeof Android !== "undefined" && Android.rateApp) {
@@ -5144,17 +5176,11 @@ window.addEventListener('DOMContentLoaded', () => {
   state.allowedCategories = []; // User must select
   isDarkMode = !document.body.classList.contains('light-mode');
 
-  // ✨ جلب الكلمات الخاصة المحفوظة من الذاكرة عند فتح اللعبة ✨
-  const savedCustomWords = localStorage.getItem('spy_custom_words');
-  if (savedCustomWords) {
-    state.customWords = JSON.parse(savedCustomWords);
-  }
+  const savedCustomWords = StorageSystem.load('spy_custom_words', true);
+  if (savedCustomWords) state.customWords = savedCustomWords;
 
-  // ✨ جلب السوالف الملعوبة سابقاً لكي لا تتكرر أبداً ✨
-  const savedUsedWords = localStorage.getItem('spy_used_words');
-  if (savedUsedWords) {
-    state.usedWords = JSON.parse(savedUsedWords);
-  }
+  const savedUsedWords = StorageSystem.load('spy_used_words', true);
+  if (savedUsedWords) state.usedWords = savedUsedWords;
 
   updateSettingsUI();
   updateSetupInfo();

@@ -24,7 +24,13 @@
   <script>
     (function () {
       try {
-        const savedTheme = localStorage.getItem('spy_theme');
+        let savedTheme = null;
+        if (typeof Android !== "undefined" && Android.getData) {
+          savedTheme = Android.getData('spy_theme');
+          if (savedTheme === "") savedTheme = null;
+        } else {
+          savedTheme = localStorage.getItem('spy_theme');
+        }
         if (savedTheme === 'light') {
           document.body.classList.add('light-mode');
         }
